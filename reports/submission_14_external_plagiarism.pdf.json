@@ -1,0 +1,12 @@
+{
+  "document_id": "submission_14_external_plagiarism.pdf",
+  "total_integrity_risk": "MEDIUM",
+  "scores": {
+    "peer_similarity_percentage": 0.0,
+    "external_similarity_percentage": 33.3,
+    "ai_generated_probability": 16.4
+  },
+  "peer_matches": [],
+  "multimodal_matches": [],
+  "explanations": "Moderate external reference match detected (33.3% exceeds 20.0% threshold)."
+}

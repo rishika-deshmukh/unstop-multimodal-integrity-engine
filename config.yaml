@@ -1,0 +1,44 @@
+# Multimodal Integrity & Plagiarism Engine Configuration
+
+models:
+  embedding_model: "all-MiniLM-L6-v2"
+  whisper_model: "openai/whisper-tiny"
+  ai_detector_model: "roberta-base-openai-detector"
+  gpt2_model: "gpt2"
+  device: "cpu" # Default to CPU for deterministic, commodity-compatible evaluation
+
+chunking:
+  chunk_size_tokens: 250
+  chunk_overlap_tokens: 50
+  min_chunk_words: 15
+
+boilerplate_filter:
+  enabled: true
+  min_doc_frequency: 3        # Chunks occurring in >= 3 docs are flagged as boilerplate
+  similarity_threshold: 0.90  # Cosine similarity for boilerplate clustering
+  short_chunk_word_limit: 15  # Short institutional fragments discounted
+
+similarity:
+  chunk_match_threshold: 0.80 # Cosine similarity threshold for flagging a match
+  sentence_alignment_threshold: 0.75 # Sentence-level re-matching threshold
+  lexical_jaccard_low_threshold: 0.35 # Jaccard cutoff indicating paraphrasing
+
+risk_thresholds:
+  # AI% alone is explicitly prevented from triggering HIGH risk per design guidelines
+  high:
+    peer_min: 50.0
+    external_min: 40.0
+    combined_peer_and_ai:
+      peer_min: 30.0
+      ai_min: 70.0
+  medium:
+    peer_min: 20.0
+    external_min: 20.0
+    ai_min_with_peer:
+      peer_min: 10.0
+      ai_min: 70.0
+    ai_standalone_min: 80.0
+
+paths:
+  external_kb_dir: "./external_kb"
+  reports_dir: "./reports"

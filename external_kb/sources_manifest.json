@@ -1,0 +1,27 @@
+{
+  "kb_fintech_market_entry": {
+    "title": "Neobank Unit Economics and Customer Acquisition in Emerging Markets",
+    "url": "https://en.wikipedia.org/wiki/Neobank",
+    "domain": "Financial Technology"
+  },
+  "kb_cold_chain_logistics": {
+    "title": "Temperature-Controlled Pharmaceutical Supply Chain Infrastructure",
+    "url": "https://en.wikipedia.org/wiki/Cold_chain",
+    "domain": "Supply Chain Management"
+  },
+  "kb_renewable_microgrids": {
+    "title": "Decentralized Solar Microgrid Architecture and Battery Energy Storage",
+    "url": "https://en.wikipedia.org/wiki/Microgrid",
+    "domain": "Renewable Energy"
+  },
+  "kb_e_commerce_retention": {
+    "title": "Quick-Commerce Customer Cohort Retention and Hyperlocal Dark Stores",
+    "url": "https://en.wikipedia.org/wiki/Quick_commerce",
+    "domain": "E-Commerce"
+  },
+  "kb_circular_packaging": {
+    "title": "Circular Economy and Biodegradable Polymers in FMCG Packaging",
+    "url": "https://en.wikipedia.org/wiki/Circular_economy",
+    "domain": "Sustainability"
+  }
+}

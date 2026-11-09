@@ -1,0 +1,26 @@
+{
+  "document_id": "submission_03_logistics_strategy.docx",
+  "total_integrity_risk": "HIGH",
+  "scores": {
+    "peer_similarity_percentage": 50.0,
+    "external_similarity_percentage": 50.0,
+    "ai_generated_probability": 28.5
+  },
+  "peer_matches": [
+    {
+      "matched_file": "submission_04_logistics_rewritten.docx",
+      "similarity_score": 0.87,
+      "lexical_jaccard": 0.18,
+      "lexical_levenshtein": 0.4891,
+      "is_paraphrase": true,
+      "query_passage": "Active refrigeration containers utilizing automated compressor cycles guarantee temperature stability during transcontinental flights, whereas passive thermal shippers rely on vacuum-insulated panels to protect vaccines during domestic road haulage.",
+      "matched_passage": "Active refrigerated enclosures deploying computerized cooling mechanisms ensure temperature consistency during international flight segments, while passive temperature-safe boxes depend on vacuum-insulated panels to safeguard vaccine vials throughout ground truck transport.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1
+      }
+    }
+  ],
+  "multimodal_matches": [],
+  "explanations": "Critical internal peer similarity detected (50.0% exceeds 50.0% threshold)."
+}

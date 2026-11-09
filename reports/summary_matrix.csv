@@ -1,0 +1,16 @@
+document_id,submission_01_original_fintech.pdf,submission_02_video_pitch.mp4,submission_03_logistics_strategy.docx,submission_04_logistics_rewritten.docx,submission_05_corrupt_empty.pdf,submission_06_silent_video.mp4,submission_07_corrupted.docx,submission_08_ev_bus_depot_analysis.pdf,submission_09_ev_battery_lifecycle.docx,submission_10_ev_municipal_finance.pdf,submission_11_ev_route_telemetry.docx,submission_12_ev_grid_load_balancing.pdf,submission_13_ai_generated_essay.docx,submission_14_external_plagiarism.pdf,submission_15_genuine_original.pdf
+submission_01_original_fintech.pdf,1.00,0.97,0.18,0.11,0.00,0.00,0.00,0.24,0.07,0.27,0.14,0.11,0.32,0.13,0.03
+submission_02_video_pitch.mp4,0.97,1.00,0.12,0.07,0.00,0.00,0.00,0.22,0.05,0.23,0.12,0.11,0.22,0.08,-0.01
+submission_03_logistics_strategy.docx,0.18,0.12,1.00,0.87,0.00,0.00,0.00,0.11,0.46,0.16,0.24,0.23,0.09,0.33,0.11
+submission_04_logistics_rewritten.docx,0.11,0.07,0.87,1.00,0.00,0.00,0.00,0.12,0.48,0.12,0.23,0.17,0.05,0.30,0.07
+submission_05_corrupt_empty.pdf,0.00,0.00,0.00,0.00,1.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+submission_06_silent_video.mp4,0.00,0.00,0.00,0.00,0.00,1.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+submission_07_corrupted.docx,0.00,0.00,0.00,0.00,0.00,0.00,1.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+submission_08_ev_bus_depot_analysis.pdf,0.24,0.22,0.11,0.12,0.00,0.00,0.00,1.00,0.36,0.49,0.32,0.49,0.06,0.18,-0.04
+submission_09_ev_battery_lifecycle.docx,0.07,0.05,0.46,0.48,0.00,0.00,0.00,0.36,1.00,0.36,0.25,0.33,0.05,0.19,0.00
+submission_10_ev_municipal_finance.pdf,0.27,0.23,0.16,0.12,0.00,0.00,0.00,0.49,0.36,1.00,0.40,0.32,0.15,0.23,0.00
+submission_11_ev_route_telemetry.docx,0.14,0.12,0.24,0.23,0.00,0.00,0.00,0.32,0.25,0.40,1.00,0.21,0.11,0.05,-0.01
+submission_12_ev_grid_load_balancing.pdf,0.11,0.11,0.23,0.17,0.00,0.00,0.00,0.49,0.33,0.32,0.21,1.00,0.08,0.22,-0.05
+submission_13_ai_generated_essay.docx,0.32,0.22,0.09,0.05,0.00,0.00,0.00,0.06,0.05,0.15,0.11,0.08,1.00,0.33,0.03
+submission_14_external_plagiarism.pdf,0.13,0.08,0.33,0.30,0.00,0.00,0.00,0.18,0.19,0.23,0.05,0.22,0.33,1.00,0.09
+submission_15_genuine_original.pdf,0.03,-0.01,0.11,0.07,0.00,0.00,0.00,-0.04,0.00,0.00,-0.01,-0.05,0.03,0.09,1.00

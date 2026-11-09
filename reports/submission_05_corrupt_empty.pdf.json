@@ -1,0 +1,14 @@
+{
+  "document_id": "submission_05_corrupt_empty.pdf",
+  "total_integrity_risk": "FLAGGED",
+  "scores": {
+    "peer_similarity_percentage": 0.0,
+    "external_similarity_percentage": 0.0,
+    "ai_generated_probability": 0.0
+  },
+  "peer_matches": [],
+  "multimodal_matches": [],
+  "explanations": "Submission flagged or skipped: Zero-byte empty PDF submission: submission_05_corrupt_empty.pdf",
+  "status": "SKIPPED_EMPTY",
+  "warning": "Zero-byte empty PDF submission: submission_05_corrupt_empty.pdf"
+}
