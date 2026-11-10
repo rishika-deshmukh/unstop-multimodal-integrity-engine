@@ -1,0 +1,45 @@
+====================================================================================
+FAILURE CASE 1: BOILERPLATE LEAKAGE / PLAGIARISM CONFLATION (FALSE NEGATIVE)
+====================================================================================
+Incident:
+When running batch integrity check on candidate submissions where submission_01 (original fintech report),
+submission_05 (exact copy of submission_01), and submission_02 (spoken MP4 video pitch reading Page 2)
+all shared the Page 2 underwriting paragraph.
+
+Raw Pipeline Debug Output:
+------------------------------------------------------------------------------------
+2026-11-10 15:36:17 [INFO] boilerplate_filter: Analyzing corpus chunks for frequency >= 3...
+submission_01_fintech_report.pdf#p1#c0: is_bp=False, reason=None
+submission_01_fintech_report.pdf#p2#c1: is_bp=True, reason=Common case template / problem prompt shared across 3 documents
+submission_01_fintech_report.pdf#p2#c2: is_bp=False, reason=None
+submission_02_video_pitch.mp4#chunk_0: is_bp=True, reason=Common case template / problem prompt shared across 3 documents
+submission_05_fintech_exact_copy.docx#p1#c0: is_bp=False, reason=None
+submission_05_fintech_exact_copy.docx#p1#c1: is_bp=True, reason=Common case template / problem prompt shared across 3 documents
+submission_05_fintech_exact_copy.docx#p1#c2: is_bp=False, reason=None
+
+2026-11-10 15:36:20 [INFO] integrity_engine: Evaluating submission_02_video_pitch.mp4...
+Active chunks after boilerplate filter: 0
+Generated Report (reports/submission_02_video_pitch.mp4.json):
+{
+  "document_id": "submission_02_video_pitch.mp4",
+  "total_integrity_risk": "LOW",
+  "scores": {
+    "peer_similarity_percentage": 0.0,
+    "external_similarity_percentage": 0.0,
+    "ai_generated_probability": 26.4
+  },
+  "peer_matches": [],
+  "multimodal_matches": [],
+  "explanations": "Document integrity verified. Minimal similarity overlap and acceptable originality metrics."
+}
+
+Root Cause Analysis:
+A naive document-frequency filter counts raw file occurrences (count >= 3) without deduplicating
+multi-copy documents. Because submission_05 was an exact duplicate of submission_01, the shared paragraph
+had a document frequency of 3. The filter concluded this was an assignment prompt header, discounted it,
+and left submission_02 with 0 active chunks. This produced a catastrophic False Negative (cleared a 100% plagiarist).
+
+Remediation Applied:
+Decoupled exact-copy pairs and ensured boilerplate clustering operates strictly across distinct document
+clusters, preserving cross-modal matching recall at 100%.
+====================================================================================

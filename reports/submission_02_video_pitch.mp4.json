@@ -9,16 +9,19 @@
   "peer_matches": [],
   "multimodal_matches": [
     {
-      "matched_file": "submission_01_original_fintech.pdf",
-      "similarity_score": 0.97,
-      "lexical_jaccard": 0.9524,
-      "lexical_levenshtein": 0.9433,
+      "matched_file": "submission_01_fintech_report.pdf",
+      "similarity_score": 0.98,
+      "lexical_jaccard": 1.0,
+      "lexical_levenshtein": 1.0,
       "is_paraphrase": false,
-      "query_passage": "Operating margins contracted by 4.2% over the third quarter due to escalated cloud server expenditures and customer verification fees.",
-      "matched_passage": "Operating margins contracted by 4.2 percent over the third quarter due to escalated cloud server expenditures and customer verification fees.",
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
+      "query_passage": "The core competitive advantage relies on vertical integration of credit underwriting models with real-time transactional payment gateways.",
+      "matched_passage": "The core competitive advantage relies on vertical integration of credit underwriting models with real-time transactional payment gateways.",
       "location": {
+        "query_page": null,
+        "matched_page": 2,
         "query_timestamp": "00:00:00 - 00:00:31",
-        "matched_page": 2
+        "matched_timestamp": null
       }
     }
   ],

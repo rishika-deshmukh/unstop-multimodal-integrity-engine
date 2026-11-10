@@ -1,26 +1,38 @@
-.PHONY: setup download test run evaluate clean
+ifeq ($(OS),Windows_NT)
+    VENV_BIN = venv\Scripts
+    PYTHON = $(VENV_BIN)\python.exe
+    PIP = $(VENV_BIN)\pip.exe
+    RM = rmdir /s /q
+else
+    VENV_BIN = venv/bin
+    PYTHON = $(VENV_BIN)/python
+    PIP = $(VENV_BIN)/pip
+    RM = rm -rf
+endif
+
+.PHONY: setup download test run evaluate benchmark clean
 
 setup:
-	python -m venv venv
-	.\venv\Scripts\python.exe -m pip install --upgrade pip
-	.\venv\Scripts\python.exe -m pip install -r requirements.txt
-	.\venv\Scripts\python.exe -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
+	python3 -m venv venv || python -m venv venv
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -r requirements.txt
+	$(PYTHON) -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
 
 download:
-	.\venv\Scripts\python.exe scripts\download_models.py
-
-generate-data:
-	.\venv\Scripts\python.exe scripts\generate_synthetic_dataset.py
+	$(PYTHON) scripts/download_models.py
 
 test:
-	.\venv\Scripts\python.exe -m pytest tests/ -v
+	$(PYTHON) -m pytest tests/ -v
 
 run:
-	.\venv\Scripts\python.exe run_integrity_check.py --input_dir ./sample_submissions --output_dir ./reports
+	$(PYTHON) run_integrity_check.py --input_dir ./sample_submissions --output_dir ./reports
 
 evaluate:
-	.\venv\Scripts\python.exe evaluate.py
+	$(PYTHON) evaluate.py
+
+benchmark:
+	$(PYTHON) scripts/benchmark.py
 
 clean:
-	rmdir /s /q reports 2>nul || true
-	rmdir /s /q .pytest_cache 2>nul || true
+	$(RM) reports 2>/dev/null || $(RM) reports 2>nul || true
+	$(RM) .pytest_cache 2>/dev/null || $(RM) .pytest_cache 2>nul || true

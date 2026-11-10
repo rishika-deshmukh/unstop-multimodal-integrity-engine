@@ -30,14 +30,14 @@ def test_pdf_extractor_valid_and_zero_byte():
     extractor = PDFExtractor()
     
     # 1. Zero-byte PDF (Scenario 3)
-    p_zero = SAMPLE_DIR / "submission_05_corrupt_empty.pdf"
+    p_zero = SAMPLE_DIR / "submission_06_corrupt_empty.pdf"
     doc_zero = extractor.extract(p_zero)
     assert doc_zero.status == "SKIPPED_EMPTY"
     assert not doc_zero.is_usable
     assert "Zero-byte" in (doc_zero.warning_message or "")
 
     # 2. Valid PDF
-    p_valid = SAMPLE_DIR / "submission_01_original_fintech.pdf"
+    p_valid = SAMPLE_DIR / "submission_01_fintech_report.pdf"
     doc_valid = extractor.extract(p_valid)
     assert doc_valid.status == "SUCCESS"
     assert doc_valid.is_usable
@@ -48,7 +48,7 @@ def test_docx_extractor_valid_and_corrupt():
     extractor = DOCXExtractor()
 
     # 1. Corrupt DOCX (Scenario 3)
-    p_corrupt = SAMPLE_DIR / "submission_07_corrupted.docx"
+    p_corrupt = SAMPLE_DIR / "submission_08_corrupted.docx"
     doc_corrupt = extractor.extract(p_corrupt)
     assert doc_corrupt.status == "SKIPPED_CORRUPT"
     assert not doc_corrupt.is_usable
@@ -63,8 +63,8 @@ def test_docx_extractor_valid_and_corrupt():
 
 def test_video_extractor_silent_handling():
     # Silent MP4 (Scenario 3)
-    extractor = VideoExtractor(model_name="base", device="cpu")
-    p_silent = SAMPLE_DIR / "submission_06_silent_video.mp4"
+    extractor = VideoExtractor(model_name="openai/whisper-tiny", device="cpu")
+    p_silent = SAMPLE_DIR / "submission_07_silent_video.mp4"
     doc_silent = extractor.extract(p_silent)
     assert doc_silent.status == "SKIPPED_SILENT"
     assert not doc_silent.is_usable

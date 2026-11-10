@@ -1,0 +1,14 @@
+{
+  "document_id": "submission_07_silent_video.mp4",
+  "total_integrity_risk": "FLAGGED",
+  "scores": {
+    "peer_similarity_percentage": 0.0,
+    "external_similarity_percentage": 0.0,
+    "ai_generated_probability": 0.0
+  },
+  "peer_matches": [],
+  "multimodal_matches": [],
+  "explanations": "Submission flagged or skipped: Video contains no audible audio track or is completely silent: submission_07_silent_video.mp4",
+  "status": "SKIPPED_SILENT",
+  "warning": "Video contains no audible audio track or is completely silent: submission_07_silent_video.mp4"
+}

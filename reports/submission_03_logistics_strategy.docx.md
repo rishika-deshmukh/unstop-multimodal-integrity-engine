@@ -2,13 +2,13 @@
 
 **Overall Assessment:** **🔴 HIGH INTEGRITY RISK**
 
-**System Recommendation:** Critical internal peer similarity detected (50.0% exceeds 50.0% threshold).
+**System Recommendation:** Critical internal peer similarity detected (100.0% exceeds 50.0% threshold).
 
 ## 1. Multi-Signal Integrity Scores
 
 | Signal Metric | Score | Decision Boundary Threshold |
 | :--- | :---: | :---: |
-| **Internal Peer-to-Peer Similarity** | **50.0%** | ≥ 50.0% (High), ≥ 20.0% (Medium) |
+| **Internal Peer-to-Peer Similarity** | **100.0%** | ≥ 50.0% (High), ≥ 20.0% (Medium) |
 | **External / Reference Similarity** | **50.0%** | ≥ 40.0% (High), ≥ 20.0% (Medium) |
 | **AI-Generated Content Likelihood** | **28.5%** | Probabilistic (≥ 80.0% Medium alone) |
 
@@ -23,15 +23,23 @@
 
 ## 4. Internal Peer Document Overlaps & Paraphrasing (Scenario 2)
 
-### Overlap #1 — Target: `submission_04_logistics_rewritten.docx` ⚠️ **[SYNONYM-BASED PARAPHRASE DETECTED]**
+### Overlap #1 — Target: `submission_05_logistics_exact_copy.pdf`
 | Semantic Cosine Sim | Lexical Jaccard Sim | Levenshtein Sim | Page References |
 | :---: | :---: | :---: | :---: |
-| **0.87** | **0.18** | **0.49** | Query: Pg 1 ↔ Match: Pg 1 |
-> **Reviewer Note:** High dense embedding similarity (>0.80) with low lexical Jaccard (<0.35) confirms semantic rewriting evasion.
+| **0.98** | **1.00** | **1.00** | Query: Pg 1 ↔ Match: Pg 1 |
 - **Query Passage:**
   > *"Active refrigeration containers utilizing automated compressor cycles guarantee temperature stability during transcontinental flights, whereas passive thermal shippers rely on vacuum-insulated panels to protect vaccines during domestic road haulage."*
 - **Matched Source Passage:**
-  > *"Active refrigerated enclosures deploying computerized cooling mechanisms ensure temperature consistency during international flight segments, while passive temperature-safe boxes depend on vacuum-insulated panels to safeguard vaccine vials throughout ground truck transport."*
+  > *"Active refrigeration containers utilizing automated compressor cycles guarantee temperature stability during transcontinental flights, whereas passive thermal shippers rely on vacuum-insulated panels to protect vaccines during domestic road haulage."*
+
+### Overlap #2 — Target: `submission_05_logistics_exact_copy.pdf`
+| Semantic Cosine Sim | Lexical Jaccard Sim | Levenshtein Sim | Page References |
+| :---: | :---: | :---: | :---: |
+| **1.00** | **1.00** | **1.00** | Query: Pg 1 ↔ Match: Pg 1 |
+- **Query Passage:**
+  > *"Real-time sensor telemetry triggers automated rerouting protocols whenever ambient temperature excursions exceed regulatory tolerance thresholds."*
+- **Matched Source Passage:**
+  > *"Real-time sensor telemetry triggers automated rerouting protocols whenever ambient temperature excursions exceed regulatory tolerance thresholds."*
 
 ## 5. External Knowledge Base & Web References
 

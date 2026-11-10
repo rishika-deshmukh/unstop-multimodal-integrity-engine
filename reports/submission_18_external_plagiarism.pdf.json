@@ -1,0 +1,12 @@
+{
+  "document_id": "submission_18_external_plagiarism.pdf",
+  "total_integrity_risk": "HIGH",
+  "scores": {
+    "peer_similarity_percentage": 0.0,
+    "external_similarity_percentage": 50.0,
+    "ai_generated_probability": 14.5
+  },
+  "peer_matches": [],
+  "multimodal_matches": [],
+  "explanations": "Extensive uncredited external source matching detected (50.0% exceeds 40.0% threshold)."
+}

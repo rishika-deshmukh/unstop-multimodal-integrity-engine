@@ -22,13 +22,13 @@
 Identified audio speech matching written submission passages:
 
 
-### Match #1 — Target: `submission_01_original_fintech.pdf` (Similarity: **0.97**)
+### Match #1 — Target: `submission_01_fintech_report.pdf` (Similarity: **0.98**)
 - **Query Location:** `00:00:00 - 00:00:31`
 - **Matched File Location:** `Page 2`
 - **Offending Query Spoken/Text:**
-  > *"Operating margins contracted by 4.2% over the third quarter due to escalated cloud server expenditures and customer verification fees."*
+  > *"The core competitive advantage relies on vertical integration of credit underwriting models with real-time transactional payment gateways."*
 - **Matched Counterpart:**
-  > *"Operating margins contracted by 4.2 percent over the third quarter due to escalated cloud server expenditures and customer verification fees."*
+  > *"The core competitive advantage relies on vertical integration of credit underwriting models with real-time transactional payment gateways."*
 
 ## 4. Internal Peer Document Overlaps & Paraphrasing (Scenario 2)
 

@@ -1,0 +1,230 @@
+{
+  "pairwise_metrics": {
+    "threshold": 0.8,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "confusion_matrix": {
+      "tp": 4,
+      "fp": 0,
+      "tn": 101,
+      "fn": 0
+    }
+  },
+  "degraded_file_tests": [
+    {
+      "file": "submission_06_corrupt_empty.pdf",
+      "expected_status": "SKIPPED_EMPTY",
+      "actual_status": "SKIPPED_EMPTY",
+      "expected_risk": "FLAGGED",
+      "actual_risk": "FLAGGED",
+      "passed": true
+    },
+    {
+      "file": "submission_07_silent_video.mp4",
+      "expected_status": "SKIPPED_SILENT",
+      "actual_status": "SKIPPED_SILENT",
+      "expected_risk": "FLAGGED",
+      "actual_risk": "FLAGGED",
+      "passed": true
+    },
+    {
+      "file": "submission_08_corrupted.docx",
+      "expected_status": "SKIPPED_CORRUPT",
+      "actual_status": "SKIPPED_CORRUPT",
+      "expected_risk": "FLAGGED",
+      "actual_risk": "FLAGGED",
+      "passed": true
+    }
+  ],
+  "threshold_sensitivity_sweep": [
+    {
+      "threshold": 0.65,
+      "tp": 4,
+      "fp": 0,
+      "tn": 101,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "diagnosis": "Permissive boundary; elevated false-positive risk on technical overlap."
+    },
+    {
+      "threshold": 0.7,
+      "tp": 4,
+      "fp": 0,
+      "tn": 101,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "diagnosis": "High-recall boundary; captures weak paraphrasing with 0 false alarms."
+    },
+    {
+      "threshold": 0.75,
+      "tp": 4,
+      "fp": 0,
+      "tn": 101,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "diagnosis": "High-recall boundary; captures weak paraphrasing with 0 false alarms."
+    },
+    {
+      "threshold": 0.8,
+      "tp": 4,
+      "fp": 0,
+      "tn": 101,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "diagnosis": "Production Default: Optimal operating balance; 100% Precision & 100% Recall."
+    },
+    {
+      "threshold": 0.85,
+      "tp": 4,
+      "fp": 0,
+      "tn": 101,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "diagnosis": "Conservative boundary; borderline for subtle lexical paraphrasing."
+    },
+    {
+      "threshold": 0.9,
+      "tp": 2,
+      "fp": 0,
+      "tn": 101,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "diagnosis": "Strict verbatim copy boundary; fails on synonym-replaced paraphrasing."
+    },
+    {
+      "threshold": 0.95,
+      "tp": 2,
+      "fp": 0,
+      "tn": 101,
+      "fn": 2,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "diagnosis": "Strict verbatim copy boundary; fails on synonym-replaced paraphrasing."
+    }
+  ],
+  "ai_detector_scores": [
+    {
+      "doc_id": "submission_01_fintech_report.pdf",
+      "type": "original_target",
+      "is_llm": false,
+      "ai_prob": 12.8
+    },
+    {
+      "doc_id": "submission_02_video_pitch.mp4",
+      "type": "cross_modal_copy",
+      "is_llm": false,
+      "ai_prob": 26.4
+    },
+    {
+      "doc_id": "submission_03_logistics_strategy.docx",
+      "type": "original_target",
+      "is_llm": false,
+      "ai_prob": 28.5
+    },
+    {
+      "doc_id": "submission_04_logistics_rewritten.docx",
+      "type": "paraphrased_copy",
+      "is_llm": false,
+      "ai_prob": 72.8
+    },
+    {
+      "doc_id": "submission_05_logistics_exact_copy.pdf",
+      "type": "exact_copy",
+      "is_llm": false,
+      "ai_prob": 26.0
+    },
+    {
+      "doc_id": "submission_06_corrupt_empty.pdf",
+      "type": "degraded_empty",
+      "is_llm": false,
+      "ai_prob": 0.0
+    },
+    {
+      "doc_id": "submission_07_silent_video.mp4",
+      "type": "degraded_silent",
+      "is_llm": false,
+      "ai_prob": 0.0
+    },
+    {
+      "doc_id": "submission_08_corrupted.docx",
+      "type": "degraded_corrupt",
+      "is_llm": false,
+      "ai_prob": 0.0
+    },
+    {
+      "doc_id": "submission_09_ev_depot_charging.pdf",
+      "type": "template_prompt_sharing",
+      "is_llm": false,
+      "ai_prob": 13.2
+    },
+    {
+      "doc_id": "submission_10_ev_battery_degradation.docx",
+      "type": "template_prompt_sharing",
+      "is_llm": false,
+      "ai_prob": 12.8
+    },
+    {
+      "doc_id": "submission_11_ev_municipal_debt.pdf",
+      "type": "template_prompt_sharing",
+      "is_llm": false,
+      "ai_prob": 12.6
+    },
+    {
+      "doc_id": "submission_12_ev_route_energy.docx",
+      "type": "template_prompt_sharing",
+      "is_llm": false,
+      "ai_prob": 12.5
+    },
+    {
+      "doc_id": "submission_13_ev_grid_balancing.pdf",
+      "type": "template_prompt_sharing",
+      "is_llm": false,
+      "ai_prob": 11.7
+    },
+    {
+      "doc_id": "submission_14_chatgpt_essay.docx",
+      "type": "ai_generated_chatgpt",
+      "is_llm": true,
+      "ai_prob": 23.0
+    },
+    {
+      "doc_id": "submission_15_claude_synthesis.pdf",
+      "type": "ai_generated_claude",
+      "is_llm": true,
+      "ai_prob": 19.4
+    },
+    {
+      "doc_id": "submission_16_quantum_hardware.pdf",
+      "type": "genuine_original",
+      "is_llm": false,
+      "ai_prob": 13.6
+    },
+    {
+      "doc_id": "submission_17_quantum_algorithms.docx",
+      "type": "genuine_original",
+      "is_llm": false,
+      "ai_prob": 15.1
+    },
+    {
+      "doc_id": "submission_18_external_plagiarism.pdf",
+      "type": "external_copy",
+      "is_llm": false,
+      "ai_prob": 14.5
+    }
+  ]
+}

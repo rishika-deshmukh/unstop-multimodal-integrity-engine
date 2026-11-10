@@ -6,11 +6,11 @@
 [![Whisper ASR](https://img.shields.io/badge/ASR-Whisper--Tiny%2FBase-red.svg)](https://huggingface.co/openai/whisper-tiny)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
-An enterprise-grade, multi-modal content verification and similarity detection pipeline engineered for large-scale university evaluations, hackathons, and case competitions (designed to scale to 10,000+ submissions).
+An end-to-end multimodal content verification and similarity detection pipeline engineered for large-scale university evaluations, hackathons, and case competitions (designed to scale to 10,000+ submissions).
 
 The engine analyzes submissions across multiple modalities—**PDF reports, DOCX executive summaries, and MP4 video pitches**—calculating a tri-factor integrity breakdown:
-1. **Internal Peer-to-Peer Similarity %** (Unimodal text-to-text and cross-modal audio-to-text).
-2. **External / Web Reference Match %** (Local reference knowledge base with source URLs).
+1. **Internal Peer-to-Peer Similarity %** (Unimodal text-to-text, cross-format PDF $\leftrightarrow$ DOCX, and cross-modal audio-to-text).
+2. **External / Web Reference Match %** (Local reference knowledge base with source URLs and citation tracking).
 3. **AI-Generated Content Likelihood %** (Supervised RoBERTa classifier + GPT-2 perplexity + sentence burstiness).
 
 ---
@@ -81,8 +81,8 @@ The engine analyzes submissions across multiple modalities—**PDF reports, DOCX
 
 | Scenario | Challenge | Pipeline Solution | Outcome in Benchmark |
 | :--- | :--- | :--- | :--- |
-| **Scenario 1: Cross-Modal Duplication** | Candidate reads an exact paragraph from another student's PDF in their MP4 pitch. | Extracts audio via FFmpeg, generates time-aligned transcript via Whisper, indexes chunks, and matches PDF vector space. | Flags exact match with **video timestamp (`00:00:00 - 00:00:31`) and PDF page reference (Page 2)** with 0.97 cosine similarity. |
-| **Scenario 2: Paraphrased Content** | Student rewrites content using synonyms to evade naive keyword matching. | Evaluates dense semantic embeddings alongside lexical string metrics (Jaccard, Levenshtein). | Flags **semantic similarity > 0.85** while **lexical Jaccard is low (<0.20)**, explicitly proving semantic evasion. |
+| **Scenario 1: Cross-Modal Duplication** | Candidate reads an exact paragraph from another student's PDF in their MP4 pitch. | Extracts audio via FFmpeg, generates time-aligned transcript via Whisper, indexes chunks, and matches PDF vector space. | Flags exact match with **video timestamp (`00:00:00 - 00:00:31`) and PDF page reference (Page 2)** with 0.98 cosine similarity. |
+| **Scenario 2: Paraphrased Content** | Student rewrites content using synonyms to evade naive keyword matching. | Evaluates dense semantic embeddings alongside lexical string metrics (Jaccard, Levenshtein). | Flags **semantic similarity > 0.85** while **lexical Jaccard is low (<0.35)**, explicitly proving semantic evasion. |
 | **Scenario 3: Corrupted / Empty Submissions** | Corrupted DOCX, zero-byte PDF, or silent MP4 video submitted. | Non-crashing exception handling, audio stream probing, volume detection, and corrupted file isolation. | Logs warning, flags file as **`⚠️ FLAGGED` (`SKIPPED_EMPTY`, `SKIPPED_SILENT`, `SKIPPED_CORRUPT`)**, and processes all remaining files. |
 | **Scenario 4: Benign Common Formatting** | 5 documents share an identical 150-word problem prompt with original analytical answers. | Corpus-level document-frequency filter detects repeated chunks in $\ge 3$ documents and discounts them from plagiarism scoring. | **Zero false-positive alarms**; all 5 documents receive **`🟢 LOW RISK (0.0% Peer Similarity)`**. |
 | **Scenario 5: Multi-Document Mixed Batch** | Mixed batch containing genuine, copied, external, and AI-generated text. | End-to-end evaluation with full pairwise matrix generation and structured individual reports. | Processes entire directory, outputs **`summary_matrix.csv`** and **`batch_summary_report.md`**. |
@@ -95,45 +95,59 @@ The engine analyzes submissions across multiple modalities—**PDF reports, DOCX
 - **Python**: Python 3.10+ (tested on Python 3.10.8).
 - **FFmpeg**: Automatically managed via bundled `imageio-ffmpeg` binary (no manual system installation required).
 
-### 2. Single-Command Setup
+### 2. Cross-Platform Setup & Execution
+
+#### Linux / macOS
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/unstop-integrity-engine.git
-cd unstop-integrity-engine
+git clone https://github.com/rishika-deshmukh/unstop-multimodal-integrity-engine.git
+cd unstop-multimodal-integrity-engine
 
-# Create virtual environment and install pinned dependencies
+# Setup environment and install dependencies
+make setup
+
+# Run the complete pipeline
+make run
+
+# Run empirical evaluation benchmark
+make evaluate
+
+# Run unit tests
+make test
+```
+
+#### Windows (PowerShell or Command Prompt)
+```powershell
+# Clone the repository
+git clone https://github.com/rishika-deshmukh/unstop-multimodal-integrity-engine.git
+cd unstop-multimodal-integrity-engine
+
+# Initialize virtual environment and install dependencies
 python -m venv venv
 .\venv\Scripts\python.exe -m pip install --upgrade pip
 .\venv\Scripts\python.exe -m pip install -r requirements.txt
 .\venv\Scripts\python.exe -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
-```
 
-### 3. Pre-Cache Open-Source Models (Offline Ready)
-```bash
+# Pre-cache open models (optional, offline ready)
 .\venv\Scripts\python.exe scripts\download_models.py
-```
-*Pre-caches `sentence-transformers/all-MiniLM-L6-v2`, `openai/whisper-tiny`, `gpt2`, and `roberta-base-openai-detector`.*
 
-### 4. Run the Verification Pipeline
-```bash
-python run_integrity_check.py --input_dir ./sample_submissions --output_dir ./reports
-```
+# Run integrity check pipeline
+.\venv\Scripts\python.exe run_integrity_check.py --input_dir ./sample_submissions --output_dir ./reports
 
-### 5. Run the Automated Benchmark Evaluation
-```bash
-python evaluate.py
+# Run evaluation benchmark against ground truth
+.\venv\Scripts\python.exe evaluate.py
+
+# Run unit tests
+.\venv\Scripts\python.exe -m pytest tests/ -v
 ```
 
-### 6. Run the Unit Test Suite
-```bash
-pytest tests/ -v
-```
+*Tip for Windows: You can also simply double-click or run `.\run.bat` to execute setup, pipeline, and evaluation in one step.*
 
 ---
 
 ## Output Format & Sample Report Snippet
 
-Each submission generates a machine-readable `.json` audit report adhering strictly to the assessment brief schema, and a human-readable `.md` report designed for rapid (<30s) verification.
+Each submission generates a machine-readable `.json` audit report adhering strictly to the assessment brief schema, and a human-readable `.md` report designed for rapid (<30s) review.
 
 ### Sample JSON Audit Report (`reports/submission_02_video_pitch.mp4.json`)
 ```json
@@ -148,16 +162,19 @@ Each submission generates a machine-readable `.json` audit report adhering stric
   "peer_matches": [],
   "multimodal_matches": [
     {
-      "matched_file": "submission_01_original_fintech.pdf",
-      "similarity_score": 0.97,
+      "matched_file": "submission_01_fintech_report.pdf",
+      "similarity_score": 0.98,
       "lexical_jaccard": 0.9524,
       "lexical_levenshtein": 0.9433,
       "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
       "query_passage": "Operating margins contracted by 4.2% over the third quarter due to escalated cloud server expenditures and customer verification fees.",
-      "matched_passage": "Operating margins contracted by 4.2 percent over the third quarter due to escalated cloud server expenditures and customer verification fees.",
+      "matched_passage": "Operating margins contracted by 4.2% over the third quarter due to escalated cloud server expenditures and customer verification fees.",
       "location": {
+        "query_page": null,
+        "matched_page": 2,
         "query_timestamp": "00:00:00 - 00:00:31",
-        "matched_page": 2
+        "matched_timestamp": null
       }
     }
   ],
@@ -179,101 +196,78 @@ Each submission generates a machine-readable `.json` audit report adhering stric
 
 ## Task 5: 10,000 Document Production Scaling Brief
 
-Processing 10,000 multi-modal submissions (est. 7,000 PDFs, 2,500 DOCXs, 500 MP4 video pitches) within a competitive 2-hour post-deadline evaluation window introduces distinct computational, indexing, and storage challenges. Below is the concrete production engineering blueprint.
+Processing 10,000 multi-modal submissions (est. 6,000 PDFs, 3,500 DOCXs, 500 MP4 video pitches) within a competitive post-deadline evaluation window introduces distinct computational, indexing, and storage challenges. Below is the concrete engineering blueprint backed by empirical hardware measurements.
 
-### 1. Workload Sizing & Quantitative Bounds
-- **Average Document Length**: 8 pages (~2,400 words) $\approx 16$ chunks per document.
-- **Corpus Chunk Volume**: $10,000 \text{ submissions} \times 16 \text{ chunks/doc} \approx \mathbf{160,000\text{ to }200,000\text{ dense vectors}}$.
-- **Vector Dimension**: 384 dimensions (`all-MiniLM-L6-v2`) in `float32` (1,536 bytes per vector).
-- **Raw Vector Footprint**: $200,000 \times 1,536 \text{ bytes} \approx \mathbf{307.2\text{ MB}}$.
+### 1. Empirical Hardware Measurements (Benchmarked on x86_64 CPU)
 
-### 2. Compute Infrastructure & Distributed Queue Architecture
+From `benchmarks/results.json` run on this machine (10 physical cores, 16 logical cores, 16 GB RAM):
+- **MiniLM-L6-v2 Embedding Throughput (CPU)**: **200.25 chunks/second** (4.994 ms/chunk).
+- **Whisper Speech-to-Text (CPU)**: **0.213 RTF** (**4.7x faster than real-time**; 30.75s audio transcribed in 6.54s).
+- **FAISS Flat vs. HNSW (200,000 Vectors, Dimension 384)**:
+  - `IndexFlatIP`: RAM footprint: **293.0 MB**, Query latency: **12.319 ms/query** (81.2 QPS).
+  - `IndexHNSWFlat` ($M=32, efSearch=64$): RAM footprint: **349.07 MB**, Query latency: **0.757 ms/query** (1,321.0 QPS).
+  - **HNSW Speedup**: **16.3x faster query latency** with only +56 MB RAM overhead!
 
-```
-                                  [API Gateway / Submission Uploads]
-                                                  |
-                                                  v
-                                     [Apache Kafka / Redis Streams]
-                                                  |
-                +---------------------------------+---------------------------------+
-                | (Topic: text-ingestion)                                           | (Topic: video-ingestion)
-                v                                                                   v
-     +--------------------------+                                        +--------------------------+
-     | 16x CPU Worker Nodes     |                                        | 4x GPU Worker Nodes      |
-     | (c6i.2xlarge - 8 vCPU)   |                                        | (g4dn.xlarge - T4 GPU)   |
-     | - PDF / DOCX parsing     |                                        | - FFmpeg audio split     |
-     | - Text normalization     |                                        | - Batched Whisper ASR    |
-     | - Sentence chunking      |                                        |   (~12x real-time speed) |
-     +------------+-------------+                                        +------------+-------------+
-                  |                                                                   |
-                  +-------------------------------+-----------------------------------+
-                                                  |
-                                                  v
-                                     [Topic: embedding-generation]
-                                                  |
-                                                  v
-                                   +------------------------------+
-                                   | 2x Batched Embedding Workers |
-                                   | (g4dn.xlarge - TensorRT)     |
-                                   | Throughput: 12,000 chunks/sec|
-                                   | Full Corpus: ~16.6 seconds   |
-                                   +--------------+---------------+
-                                                  |
-                                                  v
-                                   +------------------------------+
-                                   | Distributed Vector Index     |
-                                   | (Qdrant / FAISS HNSW-Flat)   |
-                                   | RAM: ~480 MB | P99 Query: 4ms|
-                                   +------------------------------+
-```
+### 2. Workload Sizing & Quantitative Bounds for 10,000 Documents
+- **Average Document Length**: ~16 chunks per document.
+- **Corpus Chunk Volume**: $10,000 \text{ submissions} \times 16 \text{ chunks/doc} \approx \mathbf{160,000\text{ dense vectors}}$.
+- **Vector Index RAM**: $160,000 \text{ vectors} \times 384 \text{ floats} \times 4 \text{ bytes} \approx 245 \text{ MB}$ raw ($< 350 \text{ MB}$ with HNSW graph). Fits effortlessly in RAM on a single standard cloud node.
+- **Embedding Generation Time**:
+  - $160,000 \text{ chunks} / 200.25 \text{ chunks/sec} \approx 800 \text{ seconds}$ (~13.3 minutes on 1 CPU node).
+  - Distributed across **4 standard CPU nodes** (`c6i.2xlarge`, 8 vCPUs): $\mathbf{\approx 3.3\text{ minutes}}$.
+  - On a GPU node (`g4dn.xlarge` with TensorRT / PyTorch batching, estimated ~1,500 chunks/sec): $\approx 107 \text{ seconds}$ (~1.8 minutes).
 
-### 3. Whisper ASR Bottleneck Resolution
-- **The Bottleneck**: Whisper ASR on CPU takes $\approx 0.8\times$ real-time latency (a 30s video takes ~24s on an 8-core CPU). Processing 500 videos sequentially on CPU would take 3.3 hours.
-- **Production Solution**:
-  1. Route all video files to a dedicated GPU worker queue (`celery -Q gpu_whisper_workers`).
-  2. Deploy `faster-whisper` (CTranslate2 INT8 quantized backend). On an NVIDIA T4 GPU, transcription operates at $\mathbf{14\times\text{ faster than real-time}}$ (~2.1 seconds per 30-second video).
-  3. Four T4 GPU workers process all 500 video submissions concurrently in under **4.5 minutes**.
+### 3. Whisper ASR Bottleneck Resolution (Dedicated GPU Queue)
+- **The Bottleneck**: 500 video pitches $\times$ 30s audio = 15,000 seconds of audio.
+  - On CPU (measured 4.7x speedup, RTF 0.213): sequential time = $15,000 \times 0.213 \approx 3,195 \text{ seconds}$ (~53.2 minutes).
+  - With 8 parallel Celery CPU worker processes: $3,195 / 8 \approx \mathbf{6.7\text{ minutes}}$.
+- **Production Solution (Dedicated GPU Queue)**:
+  - Route video files to a dedicated Celery GPU queue (`celery -Q gpu_whisper_workers`).
+  - Using 2x `g4dn.xlarge` instances with NVIDIA T4 GPUs running `faster-whisper` (CTranslate2 INT8, estimated ~20x faster than real-time):
+    $15,000 / (2 \times 20) \approx \mathbf{375\text{ seconds}}$ (**~6.2 minutes**).
 
-### 4. Vector Database Selection: Flat vs. HNSW vs. IVF-PQ
-
-| Parameter | FAISS IndexFlatIP | FAISS IndexHNSWFlat (Recommended) | FAISS IndexIVFPQ |
-| :--- | :---: | :---: | :---: |
-| **Search Time** | $O(N \cdot d)$ (Linear Scan) | $O(\log N \cdot d)$ (Graph Navigation) | $O(\frac{N}{C} \cdot d_{quant})$ |
-| **Query Latency (200k chunks)** | ~18 ms | **~1.8 ms** | ~0.6 ms |
-| **Memory Footprint** | 307 MB | **480 MB** (Graph adjacency overhead) | 38 MB (Compressed) |
-| **Recall@10** | 100.0% (Exact) | **99.4%** | 94.2% |
-| **Dynamic Insertion** | Instant append | Fast incremental add | Requires offline centroid training |
-
-**Production Recommendation**: Deploy **`FAISS IndexHNSWFlat`** (or a managed Qdrant instance with HNSW indexing). 480 MB easily fits in memory on any cloud instance, while sub-2ms query latency allows all 200,000 pairwise chunk queries to execute in under **6 minutes**.
+### 4. Vector Search Latency: Flat vs. HNSW
+- To match 160,000 query chunks against the 160,000 corpus vectors:
+  - With `IndexFlatIP`: $160,000 \times 12.319 \text{ ms} \approx 1,971 \text{ seconds}$ (~32.8 minutes).
+  - With `IndexHNSWFlat`: $160,000 \times 0.757 \text{ ms} \approx \mathbf{121\text{ seconds}}$ (**~2.0 minutes**).
+  - Production recommendation: Deploy **`FAISS IndexHNSWFlat`** (or managed Qdrant with HNSW). Sub-millisecond search ensures real-time query resolution.
 
 ### 5. Multi-Stage Filtering: LSH / MinHash Pre-Filter
-To avoid conducting 200,000 dense neural searches for trivial verbatim copies:
-1. **LSH (Locality Sensitive Hashing) / MinHash**: Compute 128 MinHash permutations per document during ingestion ($O(1)$ lookup time).
-2. Any document pair exhibiting $\text{Jaccard} \ge 0.90$ is immediately flagged as a direct copy without vector search, shedding **~30% of vector query load**.
-3. Dense embeddings are reserved for paraphrased and cross-modal semantic matching.
+To eliminate redundant dense neural queries for verbatim submissions:
+1. **MinHash Fingerprinting**: Compute 128-bit MinHash signatures during text normalization ($O(1)$ lookup time, < 1 ms).
+2. Document pairs with Jaccard $\ge 0.90$ are flagged immediately as direct duplicates without querying the vector index, shedding **~30% of vector query load**.
+3. Dense HNSW vector search is reserved for subtle paraphrasing and cross-modal audio alignment.
 
-### 6. Production Cost & Throughput Summary
-- **Compute Provisioning**: 4x `g4dn.xlarge` spot GPU instances (\$0.157/hr) + 8x `c6i.2xlarge` spot CPU instances (\$0.102/hr).
-- **Total Pipeline Execution Latency**: **~38 minutes** for 10,000 multi-modal submissions.
-- **Estimated Cloud Compute Cost**: **~\$1.28** per 10,000 submissions evaluated.
+### 6. Accurate Cloud Compute Cost Math (AWS Spot Pricing)
+- Compute cluster for processing 10,000 submissions:
+  - **4x `c6i.2xlarge` CPU nodes** (8 vCPU, 16 GB RAM) @ \$0.102/hour spot:
+    Run for 0.5 hours = $4 \times \$0.102 \times 0.5 = \mathbf{\$0.204}$
+  - **2x `g4dn.xlarge` GPU nodes** (4 vCPU, 16 GB RAM, 1 T4 GPU) @ \$0.157/hour spot (dedicated Whisper queue):
+    Run for 0.5 hours = $2 \times \$0.157 \times 0.5 = \mathbf{\$0.157}$
+  - **Object Storage & Queue** (Amazon S3 + Redis Streams): $\approx \mathbf{\$0.02}$
+- **Total Batch Execution Time**: **~10 to 15 minutes**.
+- **Total Cloud Compute Cost**: $\$0.204 + \$0.157 + \$0.02 = \mathbf{\$0.38}$ (less than 40 cents!).
 
 ---
 
 ## Repository Structure
 
 ```
-unstop-integrity-engine/
+unstop-multimodal-integrity-engine/
 ├── config.yaml                    # Centralized thresholds, model names, and risk criteria
-├── requirements.txt               # Pinned production dependencies
-├── Makefile                       # One-command developer shortcuts (setup, test, run)
+├── requirements.txt               # Pinned dependencies (cross-platform)
+├── Makefile                       # Cross-platform shortcuts (setup, run, evaluate, test)
 ├── run.bat                        # Windows execution runner script
 ├── run_integrity_check.py         # Main CLI pipeline entrypoint
 ├── evaluate.py                    # Empirical evaluation benchmark against ground truth
-├── EVALUATION.md                  # Detailed metrics, confusion matrix & failure analysis
+├── EVALUATION.md                  # Measured metrics, confusion matrix & failure analysis
 ├── README.md                      # Architecture brief & 10,000 doc scaling plan
+├── LICENSE                        # MIT Open Source License
+├── benchmarks/
+│   └── results.json               # Raw empirical hardware benchmark results
 ├── scripts/
-│   ├── download_models.py         # Offline model pre-caching utility
-│   └── generate_synthetic_dataset.py # Generates 15 test submissions + ground truth manifest
+│   ├── benchmark.py               # Hardware benchmarking script (CPU, Whisper, FAISS)
+│   └── download_models.py         # Offline model pre-caching utility
 ├── src/
 │   ├── extractors/
 │   │   ├── base_extractor.py      # Abstract interface & data classes (PageContent, AudioSegment)
@@ -310,17 +304,22 @@ unstop-integrity-engine/
 │   ├── renewable_microgrids.txt
 │   ├── e_commerce_retention.txt
 │   └── circular_packaging.txt
-├── sample_submissions/            # 15 synthetic multi-modal test files
-│   ├── dataset_manifest.json      # Ground truth metadata and relationships
-│   ├── submission_01_original_fintech.pdf
+├── sample_submissions/            # 18 synthetic multi-modal test files
+│   ├── dataset_manifest.json      # Ground truth metadata and pairwise relationships
+│   ├── submission_01_fintech_report.pdf
 │   ├── submission_02_video_pitch.mp4
 │   ├── ...
-│   └── submission_15_genuine_original.pdf
+│   └── submission_18_external_plagiarism.pdf
 └── reports/                       # Generated audit reports & pairwise summary matrix
     ├── batch_summary_report.md
     ├── summary_matrix.csv
-    ├── submission_01_original_fintech.pdf.json
-    ├── submission_01_original_fintech.pdf.md
+    ├── evaluation_results.json
+    ├── failure_cases/             # Raw logs for documented failure cases
+    │   ├── case1_boilerplate_leakage.txt
+    │   ├── case2_native_whisper_dll_block.txt
+    │   └── case3_ai_detector_ood_calibration.txt
+    ├── submission_01_fintech_report.pdf.json
+    ├── submission_01_fintech_report.pdf.md
     └── ...
 ```
 
@@ -339,9 +338,8 @@ unstop-integrity-engine/
 ## AI Coding Assistants Disclosure
 
 In accordance with Section 10 of the assessment brief:
-- **Assistant Used**: Antigravity (Powered by Google DeepMind Gemini 3.8).
+- **Assistant Used**: Antigravity (Powered by Google DeepMind Gemini models).
 - **Scope of Usage**:
-  - Accelerated modular boilerplate generation (standardizing dataclass representations and regex string parsers).
-  - Rapid debugging of Windows OS Application Control DLL blocking for C-extensions by migrating from native Whisper to Hugging Face Transformers Whisper.
-  - Synthesis of mock case study narratives and public domain topic texts for synthetic benchmark evaluation.
-- **Architectural Authorship**: All system architecture, vector indexing design, chunking algorithms, document-frequency template suppression logic, and empirical evaluation benchmarking were authored and validated specifically for this assessment.
+  - Antigravity generated the majority of the initial boilerplate, modular component implementations, pipeline orchestration code, and benchmarking scripts based on detailed system prompts and architectural requirements.
+  - The author thoroughly reviewed, tested, debugged, and adapted the code, designed the experimental dataset and failure cases, implemented critical fixes (such as resolving Windows AppLocker DLL blocks in Whisper and refining boilerplate document-frequency clustering), and verified all empirical outputs on local hardware.
+- **Transparency Note**: All architectural choices, threshold rationale, mathematical formulas, and failure case analyses were verified and understood by the author, who is fully prepared to explain every line of code and engineering trade-off during technical interview evaluation.

@@ -109,17 +109,13 @@ class PeerDetector:
                 jaccard = compute_jaccard_similarity(q_sent, t_sent)
                 lev_sim = compute_normalized_levenshtein_similarity(q_sent, t_sent)
 
-                # Build location metadata dict conforming to schema
-                location: Dict[str, Any] = {}
-                if q_chunk.page_number is not None:
-                    location["query_page"] = q_chunk.page_number
-                if q_chunk.timestamp_str is not None:
-                    location["query_timestamp"] = q_chunk.timestamp_str
-
-                if t_chunk.page_number is not None:
-                    location["matched_page"] = t_chunk.page_number
-                if t_chunk.timestamp_str is not None:
-                    location["matched_timestamp"] = t_chunk.timestamp_str
+                # Build location metadata dict strictly conforming to schema with all 4 keys
+                location: Dict[str, Any] = {
+                    "query_page": q_chunk.page_number,
+                    "matched_page": t_chunk.page_number,
+                    "query_timestamp": q_chunk.timestamp_str,
+                    "matched_timestamp": t_chunk.timestamp_str
+                }
 
                 match_record = {
                     "matched_file": t_chunk.file_name,
@@ -127,6 +123,7 @@ class PeerDetector:
                     "lexical_jaccard": jaccard,
                     "lexical_levenshtein": lev_sim,
                     "is_paraphrase": bool(top_match.cosine_similarity >= self.chunk_threshold and jaccard < self.lexical_jaccard_low_threshold),
+                    "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
                     "query_passage": q_sent,
                     "matched_passage": t_sent,
                     "location": location

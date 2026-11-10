@@ -116,7 +116,13 @@ class ExternalDetector:
                     "matched_file": t_chunk.file_name,
                     "similarity_score": round(top_match.cosine_similarity, 2),
                     "query_passage": q_sent,
-                    "matched_passage": t_sent
+                    "matched_passage": t_sent,
+                    "location": {
+                        "query_page": q_chunk.page_number,
+                        "matched_page": None,
+                        "query_timestamp": q_chunk.timestamp_str,
+                        "matched_timestamp": None
+                    }
                 })
 
         coverage_pct = round((len(matched_chunk_ids) / len(active_chunks)) * 100.0, 1)

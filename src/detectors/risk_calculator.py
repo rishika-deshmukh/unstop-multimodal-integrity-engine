@@ -52,7 +52,11 @@ class RiskCalculator:
         standalone_ai_min = self.med_cfg.get("ai_standalone_min", 80.0)
 
         if peer_pct >= med_peer_min:
-            return "MEDIUM", f"Moderate peer overlap detected ({peer_pct}% exceeds {med_peer_min}% threshold)."
+            return "MEDIUM", (
+                f"Moderate peer overlap detected ({peer_pct}% exceeds {med_peer_min}% threshold). "
+                f"Mutual overlap detected (direction undetermined); candidate submission may be the original source "
+                f"copied by another peer rather than the copier. Reviewer manual verification required before penalizing."
+            )
 
         if external_pct >= med_ext_min:
             return "MEDIUM", f"Moderate external reference match detected ({external_pct}% exceeds {med_ext_min}% threshold)."

@@ -1,106 +1,158 @@
 # Empirical Benchmark Evaluation & Technical Analysis
 
-This evaluation report provides empirical validation of the **Multimodal Submission Integrity & Plagiarism Detection Engine**. All metrics, confusion matrices, and sensitivity tables were computed directly by running `evaluate.py` against the synthetic ground-truth manifest (`sample_submissions/dataset_manifest.json`) across all 15 multi-modal submission files.
+This evaluation report provides empirical validation of the **Multimodal Submission Integrity & Plagiarism Detection Engine**. All metrics, confusion matrices, hardware benchmarks, and sensitivity tables were computed directly by running `evaluate.py` and `scripts/benchmark.py` against the ground-truth dataset (`sample_submissions/dataset_manifest.json`) across all 18 multi-modal submission files on commodity x86_64 CPU hardware.
 
 ---
 
 ## 1. Quantitative Benchmark Results
 
-The benchmark evaluates 15 multi-format candidate submissions across five core operational scenarios:
-- **Plagiarism & Duplication Targets**: Cross-modal speech duplication (MP4 $\leftrightarrow$ PDF), synonym-rewritten paraphrasing (DOCX $\leftrightarrow$ DOCX), direct peer copying, and external knowledge base plagiarism.
+The benchmark evaluates 18 multi-format candidate submissions across five core operational scenarios:
+- **Plagiarism & Duplication Targets**: Cross-modal speech duplication (MP4 $\leftrightarrow$ PDF), synonym-rewritten paraphrasing (DOCX $\leftrightarrow$ DOCX), cross-format exact verbatim copying (PDF $\leftrightarrow$ DOCX), and external knowledge base plagiarism (PDF $\leftrightarrow$ Wikipedia reference KB).
 - **Corrupted & Degraded Submissions**: Zero-byte PDF, silent MP4 video without an audible track, and corrupted binary DOCX files.
-- **Benign Controls**: 5 submissions sharing an identical 150-word case problem prompt with completely original analytical solutions (Scenario 4 Judgment Test).
-- **Hard Negative Controls**: Genuine, original human-written academic paper (Scenario 5).
+- **Benign Competition Controls**: 5 submissions sharing an identical 150-word case problem prompt with completely original analytical solutions (Scenario 4 Template Test).
+- **Hard Negative Controls**: 2 independent human-authored technical papers on similar topics (superconducting quantum hardware vs variational quantum eigensolver algorithms).
+- **AI-Generated Controls**: Genuine ChatGPT (GPT-4o) and Claude 3.5 Sonnet generated submissions.
 
-### Evaluation Metrics Summary
+### Pairwise Evaluation Metrics (Threshold = 0.80)
 
-| Evaluation Profile | Accuracy | Precision | Recall | F1 Score | False Positives |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Mode A: Immediate Escalation (`HIGH` or `FLAGGED`)** | **86.67%** | **100.00%** | **75.00%** | **85.71%** | **0** |
-| **Mode B: Comprehensive Action (`HIGH`, `MEDIUM`, or `FLAGGED`)** | **100.00%** | **100.00%** | **100.00%** | **100.00%** | **0** |
+Pairwise similarity classification is evaluated over all pairs of non-degraded files ($15 \times 14 / 2 = 105$ pairs) against the ground truth labels in `dataset_manifest.json`:
 
-*Note: In Mode A, `submission_01` (original fintech PDF copied by video) and `submission_14` (33% external match) receive `MEDIUM` risk, correctly preventing premature immediate disqualification while flagging for human review. Mode B captures all integrity interventions with 100% precision and 100% recall.*
+| Metric | Measured Value | Operational Meaning |
+| :--- | :---: | :--- |
+| **Accuracy** | **100.00%** | All 105 non-degraded document pairs classified correctly |
+| **Precision** | **100.00%** | Zero false-positive plagiarism accusations across all controls |
+| **Recall** | **100.00%** | 100% detection of exact copy, paraphrase, and cross-modal video pairs |
+| **F1 Score** | **100.00%** | Harmonic mean of precision and recall |
 
-### Confusion Matrix (Mode B: Comprehensive Integrity Action)
+### Pairwise Confusion Matrix
 
 ```
-                       Predicted Clean (LOW)   |   Predicted Action (HIGH / MED / FLAGGED)
------------------------------------------------+------------------------------------------
-Actual Negative (Clean)        7 (TN)          |                   0 (FP)
-Actual Positive (Plagiarized)  0 (FN)          |                   8 (TP)
+                       Predicted Clean (< 0.80)   |   Predicted Plagiarized (>= 0.80)
+--------------------------------------------------+----------------------------------
+Actual Negative (Benign / Unrelated)    101 (TN)  |                 0 (FP)
+Actual Positive (Plagiarized Pairs)       0 (FN)  |                 4 (TP)
 ```
 
-- **True Positives (8)**: `submission_01` (peer source), `submission_02` (cross-modal MP4), `submission_03` (paraphrase target), `submission_04` (paraphrase copy), `submission_05` (empty PDF), `submission_06` (silent MP4), `submission_07` (corrupt DOCX), `submission_14` (external plagiarism).
-- **True Negatives (7)**: `submission_08` to `submission_12` (5 case studies sharing 150-word prompt), `submission_13` (AI sample without peer copy), `submission_15` (genuine original control).
-- **False Positives (0)**: Zero clean documents were falsely penalized as plagiarized.
+- **True Positives (4 pairs)**:
+  1. `submission_01_fintech_report.pdf` $\leftrightarrow$ `submission_02_video_pitch.mp4` (Cross-modal speech duplicate; cosine: **0.98**)
+  2. `submission_03_logistics_strategy.docx` $\leftrightarrow$ `submission_05_logistics_exact_copy.pdf` (Cross-format exact copy; cosine: **1.00**)
+  3. `submission_03_logistics_strategy.docx` $\leftrightarrow$ `submission_04_logistics_rewritten.docx` (Synonym-replaced paraphrase; cosine: **0.87**, Jaccard: **0.28**)
+  4. `submission_04_logistics_rewritten.docx` $\leftrightarrow$ `submission_05_logistics_exact_copy.pdf` (Paraphrased counterpart to exact copy; cosine: **0.85**)
+- **True Negatives (101 pairs)**:
+  - 10 pairwise combinations among the 5 EV case submissions (`submission_09` to `submission_13`) sharing the 150-word prompt header (max similarity: **0.46**, safely below 0.80 cutoff).
+  - Hard negative pair `submission_16_quantum_hardware.pdf` $\leftrightarrow$ `submission_17_quantum_algorithms.docx` (cosine: **0.53**, correctly cleared as independent work).
+  - 90 other pairwise comparisons between independent submissions (all similarities $\le 0.34$).
+- **False Positives (0)**: Zero benign pairs were flagged as plagiarized.
+- **False Negatives (0)**: Zero plagiarized pairs were missed.
 
 ---
 
-## 2. Threshold Sensitivity Analysis
+## 2. Degraded & Edge Case Handling (Scenario 3)
 
-To determine optimal operational decision boundaries for production deployment at Unstop scale, we evaluated performance across varying chunk cosine similarity thresholds:
+Degraded submissions are evaluated separately as file-integrity and status-handling tests. These files are flagged for administrative review and never crash the batch pipeline:
 
-| Cosine Threshold ($\tau$) | Operating Profile | Precision | Recall | F1 Score | Diagnostic Context & Operational Impact |
-| :---: | :--- | :---: | :---: | :---: | :--- |
-| **0.70** | Aggressive | 82.0% | 100.0% | 90.0% | Catches loose thematic parallels; slight risk of false alarms on technical domain jargon. |
-| **0.75** | Balanced High-Recall | 90.0% | 100.0% | 95.0% | Captures aggressive synonym rewrites; negligible false positive rate. |
-| **0.80** | **Production Default** | **100.0%** | **100.0%** | **100.0%** | **Optimal boundary. Zero false alarms; flawless cross-modal and exact matching.** |
-| **0.85** | Conservative | 100.0% | 86.0% | 92.0% | Misses nuanced synonym substitutions in paraphrased content. |
-| **0.90** | Strict Verbatim Only | 100.0% | 60.0% | 75.0% | Detects only direct cut-and-paste copying; misses cross-modal or paraphrased submissions. |
+| Document ID | Ingestion Modality | Detected Status | Assigned Risk | Pipeline Handling |
+| :--- | :---: | :---: | :---: | :--- |
+| `submission_06_corrupt_empty.pdf` | PDF | `SKIPPED_EMPTY` | `⚠️ FLAGGED` | Gracefully skipped 0-byte stream; logged warning |
+| `submission_07_silent_video.mp4` | MP4 | `SKIPPED_SILENT` | `⚠️ FLAGGED` | Detected silent audio stream (<0.005 amp); skipped ASR |
+| `submission_08_corrupted.docx` | DOCX | `SKIPPED_CORRUPT` | `⚠️ FLAGGED` | Caught invalid zip package error; logged warning |
 
 ---
 
-## 3. Honest Failure Analysis & Production Mitigations
+## 3. Dynamic Threshold Sensitivity Sweep
 
-Three concrete failure cases and edge conditions were encountered during system development, diagnosed empirically, and resolved:
+The similarity threshold $\tau$ was dynamically swept in `evaluate.py` across the pairwise similarity matrix generated by `run_integrity_check.py`:
 
-### Failure Case 1: Prompt Boilerplate Leakage via Naive Window Chunking
-- **Observation**: In early testing of Scenario 4, when submissions included both the 150-word case problem prompt and their analytical answer in a single unformatted text block, a sliding-window token chunker merged the prompt and the first paragraph into a single 220-word chunk.
-- **Empirical Impact**: Because each student's unique analytical text was glued to the prompt, pairwise chunk similarities hovered between 0.76 and 0.82. This was below the initial 0.88 boilerplate clustering threshold, causing the system to miss the template and improperly flag four original submissions as `HIGH` risk.
-- **Resolution**:
-  1. Implemented **paragraph-aware semantic chunking** (`_chunk_pdf` and `_chunk_docx`), splitting chunks along structural paragraph boundaries (`\n\n`) and punctuation wraps.
-  2. Tuned the corpus document-frequency filter to flag any chunk with $\ge 0.88$ similarity appearing across $\ge 3$ distinct documents.
-  3. Result: All five Scenario 4 documents had their prompt header isolated into Chunk 0, tagged as boilerplate, discounted from scoring, and classified as `🟢 LOW RISK`.
+| Threshold ($\tau$) | TP | FP | TN | FN | Precision | Recall | F1 Score | Diagnostic Context |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **0.65** | 4 | 0 | 101 | 0 | 100.0% | 100.0% | 100.0% | Permissive boundary; elevated false-positive risk on technical overlap. |
+| **0.70** | 4 | 0 | 101 | 0 | 100.0% | 100.0% | 100.0% | High-recall boundary; captures weak paraphrasing with 0 false alarms. |
+| **0.75** | 4 | 0 | 101 | 0 | 100.0% | 100.0% | 100.0% | High-recall boundary; captures weak paraphrasing with 0 false alarms. |
+| **0.80** | **4** | **0** | **101** | **0** | **100.0%** | **100.0%** | **100.0%** | **Production Default: Optimal operating balance; 100% Precision & 100% Recall.** |
+| **0.85** | 4 | 0 | 101 | 0 | 100.0% | 100.0% | 100.0% | Conservative boundary; borderline for subtle lexical paraphrasing. |
+| **0.90** | 2 | 0 | 101 | 2 | 100.0% | 50.0% | 66.7% | Strict verbatim copy boundary; fails on synonym-replaced paraphrasing. |
+| **0.95** | 2 | 0 | 101 | 2 | 100.0% | 50.0% | 66.7% | Strict verbatim copy boundary; fails on synonym-replaced paraphrasing. |
 
-### Failure Case 2: ASR Homophone and Phonetic Drift on Audio Pitches
-- **Observation**: During Whisper transcription of `submission_02_video_pitch.mp4`, the spoken phrase:
-  > *"boosting borrower conversion rates across high-frequency consumer loan segments"*
-  was transcribed phonetically by Whisper as:
-  > *"boosting borough or conversion rates across high-frequency consumer loan segments"*
-- **Empirical Impact**: Lexical string matching metrics degraded sharply: word-level Jaccard similarity dropped from 1.00 to 0.72, and normalized character Levenshtein dropped from 1.00 to 0.84. A naive keyword-matching engine would have generated an ambiguous match.
-- **Resolution**: Dense vector embeddings generated by `all-MiniLM-L6-v2` mapped the phonetic transcription to nearly the exact same semantic manifold vector as the source PDF passage, maintaining a **0.96 cosine similarity**! The system reported exact video timestamps (`00:00:00 - 00:00:31`) and PDF page citations (Page 2).
-- **Production Roadmap**: For accented or degraded audio in production, implement domain-specific custom vocabulary prompting in Whisper (`prompt="fintech, underwriting, disbursement"`) and fine-tune acoustic beam search parameters.
-
-### Failure Case 3: Supervised AI Detector Distributional Brittleness
-- **Observation**: The open-source `roberta-base-openai-detector` was trained primarily on GPT-2 era text distributions (2019). When evaluated against dense, highly formal academic writing (such as `submission_15_genuine_original.pdf` on neutral-atom quantum computing), older binary classifiers risk false alarms because rigorous academic syntax exhibits low lexical entropy similar to machine generation.
-- **Empirical Impact**: Relying solely on supervised classifier logits would create false positive risks for sophisticated student writing.
-- **Resolution**:
-  1. Built a **tri-signal composite AI estimator** combining calibrated classifier probabilities (50%), GPT-2 token perplexity (25%), and sentence-length burstiness variance (25%).
-  2. Enforced a **strict architectural invariant**: AI probability alone is legally and procedurally prohibited from triggering a `HIGH` risk rating in isolation. Standalone high AI scores cap at `MEDIUM`, requiring human reviewer confirmation and corroborating peer or external similarity evidence before escalation.
+**Observation**: At $\tau \ge 0.90$, recall drops sharply from 100% to 50% because the paraphrased logistics pair (`submission_03` $\leftrightarrow$ `submission_04`, cosine 0.87) falls below the decision boundary. Setting $\tau = 0.80$ provides optimal separation between genuine paraphrasing (0.85–0.87) and topically related independent controls (0.46–0.53).
 
 ---
 
-## 4. Trade-Off Analysis: Embeddings & Vector Indexing vs. Compute Constraints
+## 4. Controlled AI Detector Benchmark
 
-### 4.1 Embedding Model Selection: `all-MiniLM-L6-v2` vs. Larger Foundation Models
+The pipeline includes an auxiliary tri-signal AI content estimator (`roberta-base-openai-detector` + GPT-2 causal language model perplexity + sentence-length burstiness). Below are the empirical scores across all non-degraded submissions:
 
-| Metric | `all-MiniLM-L6-v2` (Current Choice) | `bge-base-en-v1.5` | `bge-large-en-v1.5` |
+| Document ID | Source Category | Raw AI Score | Assigned Risk | Diagnostic Context |
+| :--- | :--- | :---: | :---: | :--- |
+| `submission_01_fintech_report.pdf` | Human Original | 12.8% | 🟡 MEDIUM (Peer=33.3%) | Original human writing; low machine likelihood |
+| `submission_02_video_pitch.mp4` | Spoken Pitch Copy | 26.4% | 🔴 HIGH (Peer=100.0%) | ASR transcript; conversational human speech patterns |
+| `submission_03_logistics_strategy.docx` | Human Original | 28.5% | 🔴 HIGH (Peer=100.0%) | Standard academic technical writing |
+| `submission_04_logistics_rewritten.docx` | Human Paraphrase Rewrite | 72.8% | 🔴 HIGH (Peer=50.0%) | Unnatural synonym transitions elevate perplexity |
+| `submission_05_logistics_exact_copy.pdf` | Exact Duplicate | 26.0% | 🔴 HIGH (Peer=100.0%) | Identical to submission_03 |
+| `submission_09_ev_depot_charging.pdf` | Human Original | 13.2% | 🟢 LOW | Clean original text |
+| `submission_10_ev_battery_degradation.docx` | Human Original | 12.8% | 🟢 LOW | Clean original text |
+| `submission_11_ev_municipal_debt.pdf` | Human Original | 12.6% | 🟢 LOW | Clean original text |
+| `submission_12_ev_route_energy.docx` | Human Original | 12.5% | 🟢 LOW | Clean original text |
+| `submission_13_ev_grid_balancing.pdf` | Human Original | 11.7% | 🟢 LOW | Clean original text |
+| `submission_14_chatgpt_essay.docx` | Genuine ChatGPT (GPT-4o) | 23.0% | 🟢 LOW (Peer=0.0%) | Fluent LLM prose mimics human perplexity |
+| `submission_15_claude_synthesis.pdf` | Genuine Claude 3.5 Sonnet | 19.4% | 🟢 LOW (Peer=0.0%) | Fluent LLM prose mimics human perplexity |
+| `submission_16_quantum_hardware.pdf` | Human Hard Negative | 13.6% | 🟢 LOW | Highly formal domain prose |
+| `submission_17_quantum_algorithms.docx` | Human Hard Negative | 15.1% | 🟢 LOW | Highly formal domain prose |
+| `submission_18_external_plagiarism.pdf` | Wikipedia Excerpt Copy | 14.5% | 🔴 HIGH (External=50.0%) | Public encyclopedia text |
+
+**Critical Architectural Takeaway**: Modern LLMs (ChatGPT and Claude) produce fluent text that frequently registers in the 19–23% range on open statistical classifiers, while dense synonym rewrites can register over 70%. This empirical data proves why our architectural invariant is essential: **AI probability alone must never trigger a HIGH risk rating**.
+
+---
+
+## 5. Real Failure Cases & Production Mitigations
+
+Three failure cases were reproduced, diagnosed, and resolved during system development. Raw logs and tracebacks are preserved in `reports/failure_cases/`.
+
+### Failure Case 1: Plagiarism Misclassified as Boilerplate (Boilerplate Leakage)
+- **Raw Artifact**: [case1_boilerplate_leakage.txt](file:///d:/unstop%20assignment/reports/failure_cases/case1_boilerplate_leakage.txt)
+- **Observed Behavior**: In early testing, when `submission_05` was configured as an exact copy of `submission_01`, and `submission_02` (video) read a paragraph from `submission_01`, that paragraph appeared in 3 submissions. A naive document-frequency filter counted raw document occurrences ($\ge 3$), classified the paragraph as an institutional assignment prompt header, and discounted it.
+- **Empirical Impact**: `submission_02`'s only chunk was excluded from plagiarism search, resulting in `peer_similarity_percentage: 0.0%` (False Negative).
+- **Production Resolution**: Refactored the architecture to ensure multi-copy submissions do not artificially inflate template counts. Chunks are only discounted when they occur across distinct, non-duplicate submissions.
+
+### Failure Case 2: Native Whisper C-Extension DLL Block (AppLocker)
+- **Raw Artifact**: [case2_native_whisper_dll_block.txt](file:///d:/unstop%20assignment/reports/failure_cases/case2_native_whisper_dll_block.txt)
+- **Observed Behavior**: Using upstream `openai-whisper` dynamically imported `numba._internal`, which attempts to load unwhitelisted native C-extension DLLs (`.pyd`) from Python's `site-packages`. On Windows workstations governed by AppLocker / WDAC security policies, execution crashed with `ImportError: DLL load failed while importing _internal`.
+- **Empirical Impact**: The video ingestion pipeline completely halted on startup.
+- **Production Resolution**: Migrated from native `openai-whisper` to Hugging Face `transformers.WhisperForConditionalGeneration` and `WhisperProcessor` with PCM audio extraction via bundled FFmpeg. This executes purely in Python/PyTorch tensors without runtime native DLL compilation, while delivering 4.7x faster-than-real-time throughput on CPU.
+
+### Failure Case 3: Out-of-Distribution Calibration in Statistical AI Detectors
+- **Raw Artifact**: [case3_ai_detector_ood_calibration.txt](file:///d:/unstop%20assignment/reports/failure_cases/case3_ai_detector_ood_calibration.txt)
+- **Observed Behavior**: `submission_04` (human synonym rewrite) registered a **72.8%** AI score, while `submission_14` (ChatGPT) and `submission_15` (Claude) scored **23.0%** and **19.4%**.
+- **Empirical Impact**: If AI detection scores were allowed to dictate candidate disqualification, an original human student using heavy synonym substitution would be penalized while genuine AI submissions could escape notice.
+- **Production Resolution**: Enforced the rule that AI score is an auxiliary signal only. Standalone AI probability cannot trigger `HIGH` risk, protecting candidates from false-positive disqualification.
+
+---
+
+## 6. Hardware Benchmarks: Flat vs. HNSW & Model Throughput
+
+All benchmarks were executed on an x86_64 CPU workstation (10 physical cores, 16 logical cores, 16 GB RAM). Results are saved in `benchmarks/results.json`.
+
+### 6.1 FAISS IndexFlatIP vs. IndexHNSWFlat (200,000 Vectors, Dimension 384)
+
+| Metric | `FAISS IndexFlatIP` (Exact Brute Force) | `FAISS IndexHNSWFlat` ($M=32, efSearch=64$) | Impact / Speedup |
 | :--- | :---: | :---: | :---: |
-| **Parameters** | **22.7 Million** | 109 Million | 335 Million |
-| **Embedding Dimension** | **384** | 768 | 1024 |
-| **Model Size on Disk** | **~90 MB** | ~436 MB | ~1.34 GB |
-| **Inference Throughput (CPU)** | **~1,450 chunks/sec** | ~310 chunks/sec | ~95 chunks/sec |
-| **RAM Footprint (10k docs / 200k chunks)** | **~307 MB** | ~614 MB | ~819 MB |
-| **Semantic Paraphrase Recall** | **96.8%** | 98.1% | 98.9% |
+| **Build Time** | **0.10 seconds** | 16.66 seconds | Flat has instant build; HNSW constructs graph |
+| **RAM Footprint (200k vectors)** | **293.00 MB** | **349.07 MB** | HNSW requires only +56 MB graph overhead |
+| **Query Latency (per vector)** | **12.319 ms** | **0.757 ms** | **16.3x query acceleration with HNSW** |
+| **Query Throughput** | **81.2 queries/sec** | **1,321.0 queries/sec** | Sub-millisecond similarity search |
 
-**Engineering Justification**: `all-MiniLM-L6-v2` delivers the optimal Pareto frontier for commodity hardware and high-throughput evaluation. It runs comfortably on commodity CPUs without requiring dedicated GPU clusters, consumes under 100 MB of disk cache, and achieves 96.8% recall on paraphrased submissions—rendering the $15\times$ computational overhead of 335M-parameter models unjustified for this application.
+### 6.2 Model Throughput Benchmarks (Measured on CPU)
 
-### 4.2 Vector Index Architecture: `FAISS IndexFlatIP` vs. `IndexHNSWFlat` vs. `IndexIVFPQ`
+| Component | Model | Measured Metric | Hardware Context |
+| :--- | :--- | :---: | :--- |
+| **Text Embeddings** | `sentence-transformers/all-MiniLM-L6-v2` | **200.25 chunks/sec** (4.994 ms/chunk) | CPU (PyTorch, Batch Size 32) |
+| **Speech ASR** | `openai/whisper-tiny` | **0.213 RTF** (**4.7x faster than real-time**) | CPU (30.75s audio in 6.54s) |
+| **AI Classifier** | `roberta-base-openai-detector` | **38.5 docs/sec** | CPU (Transformers) |
+| **Perplexity Engine** | `openai-community/gpt2` | **14.2 docs/sec** | CPU (Causal LM loss) |
 
-| Index Type | Search Time Complexity | Memory per 200k Chunks | Search Recall@10 | Build Latency | Best Suited For |
+### 6.3 Embedding Architecture Trade-Offs
+
+| Model | Parameters | Dimension | Disk Cache | Measured/Est. Throughput (CPU) | Rationale for Selection |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **`IndexFlatIP`** (Current) | $O(N \cdot d)$ (Exact Brute Force) | **307 MB** | **100.0% (Exact)** | **0 ms (Instant)** | Small to medium corpora ($\le 25,000$ submissions) |
-| **`IndexHNSWFlat`** | $O(\log N \cdot d)$ (Graph ANN) | **~480 MB** | 99.4% | ~8.2 seconds | Ultra-low latency search on large warm corpora ($10,000 - 500,000$ submissions) |
-| **`IndexIVFPQ`** | $O(\frac{N}{C} \cdot d_{quant})$ | **~38 MB** | 94.1% | ~45 seconds (Requires training) | Massive cold archival storage ($>1,000,000$ submissions) with severe RAM limits |
-
-**Engineering Justification**: For 15 to 2,000 submissions, `IndexFlatIP` offers zero recall degradation, instant index creation without training clustering phases, and minimal RAM footprint. As documented in the Scaling Brief, transitioning to `IndexHNSWFlat` is recommended when corpus size surpasses 10,000 submissions.
+| **`all-MiniLM-L6-v2` (Selected)** | **22.7M** | **384** | **~90 MB** | **200.25 chunks/sec (Measured)** | **Optimal speed/accuracy balance; fits in commodity CPU memory.** |
+| `bge-base-en-v1.5` | 109M | 768 | ~436 MB | ~45 chunks/sec (Estimate) | 4.4x compute overhead; minimal gain on 250-token paragraphs. |
+| `bge-large-en-v1.5` | 335M | 1024 | ~1.34 GB | ~14 chunks/sec (Estimate) | 14x compute overhead; requires dedicated GPU clusters. |
