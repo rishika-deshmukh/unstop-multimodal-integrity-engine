@@ -33,7 +33,7 @@
 
 | Component | Estimated Value | Interpretation |
 | :--- | :---: | :--- |
-| **RoBERTa Classifier (Supervised)** | 0.0% | Supervised synthetic classifier |
+| **RoBERTa Classifier (Supervised)** | 0.1% | Supervised synthetic classifier |
 | **GPT-2 Perplexity (PPL)** | 93.66 | Lower PPL (<35) correlates with LLMs |
 | **Sentence Burstiness (Length Variance)** | 26.82 | Lower burstiness (<35) indicates uniform machine cadence |
 | **Composite AI Probability** | **12.5%** | Confidence: HIGH |

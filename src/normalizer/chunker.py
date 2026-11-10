@@ -25,6 +25,7 @@ class DocumentChunk:
     start_seconds: Optional[float] = None
     end_seconds: Optional[float] = None
     word_count: int = 0
+    chunk_index: int = 0
     is_boilerplate: bool = False
     discount_reason: Optional[str] = None
 
@@ -146,7 +147,8 @@ class DocumentChunker:
                         timestamp_str=ts_str,
                         start_seconds=start_time,
                         end_seconds=end_time,
-                        word_count=curr_words
+                        word_count=curr_words,
+                        chunk_index=chunk_idx
                     )
                 )
                 chunk_idx += 1
@@ -175,7 +177,8 @@ class DocumentChunker:
                     timestamp_str=ts_str,
                     start_seconds=start_time,
                     end_seconds=end_time,
-                    word_count=curr_words
+                    word_count=curr_words,
+                    chunk_index=chunk_idx
                 )
             )
 
@@ -242,7 +245,8 @@ class DocumentChunker:
                         text=chunk_text,
                         sentences=current_sents,
                         page_number=page_number,
-                        word_count=word_count
+                        word_count=word_count,
+                        chunk_index=idx
                     )
                 )
                 idx += 1

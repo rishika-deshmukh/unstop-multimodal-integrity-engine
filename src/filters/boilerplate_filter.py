@@ -50,64 +50,82 @@ class BoilerplateFilter:
                     "doc_count": 1
                 })
 
-        # 2. Second pass: Document frequency clustering using embeddings or fast Jaccard
+        # 2. Second pass: Document frequency clustering for opening prompt headers
         if len(doc_ids) >= self.min_doc_frequency:
             n = len(chunks)
+            min_header_frequency = self.min_doc_frequency
             if embeddings is not None and len(embeddings) == n:
                 # Fast cosine matrix: embeddings are assumed normalized
                 sim_matrix = np.dot(embeddings, embeddings.T)
                 for i in range(n):
                     if chunks[i].is_boilerplate:
                         continue
-                    # Find matching documents
-                    matching_docs: Set[str] = {chunks[i].doc_id}
+                    # Institutional prompt headers appear within opening document header positions (chunk_index in (0, 1)).
+                    # Substantive body paragraphs (chunk_index >= 2) shared among students represent
+                    # peer collusion and must NEVER be excused as boilerplate, regardless of cohort prevalence.
+                    if chunks[i].chunk_index not in (0, 1):
+                        continue
+
+                    # Find other documents whose opening header (chunk_index in (0, 1)) matches
+                    matching_opening_docs: Set[str] = {chunks[i].doc_id}
                     matching_indices = []
                     for j in range(n):
-                        if i != j and sim_matrix[i, j] >= self.similarity_threshold:
-                            matching_docs.add(chunks[j].doc_id)
+                        if i != j and chunks[j].chunk_index in (0, 1) and sim_matrix[i, j] >= self.similarity_threshold:
+                            matching_opening_docs.add(chunks[j].doc_id)
                             matching_indices.append(j)
 
-                    if len(matching_docs) >= self.min_doc_frequency:
+                    if len(matching_opening_docs) >= min_header_frequency:
                         # Mark chunk i and all its matching counterparts as boilerplate
                         chunks[i].is_boilerplate = True
                         chunks[i].discount_reason = (
-                            f"Common case template / problem prompt shared across {len(matching_docs)} documents"
+                            f"Common case template / problem prompt header shared across {len(matching_opening_docs)} documents"
                         )
                         self.discounted_records.append({
                             "chunk_id": chunks[i].chunk_id,
                             "doc_id": chunks[i].doc_id,
                             "reason": chunks[i].discount_reason,
                             "text_snippet": chunks[i].text[:120] + "..." if len(chunks[i].text) > 120 else chunks[i].text,
-                            "doc_count": len(matching_docs)
+                            "doc_count": len(matching_opening_docs)
                         })
                         for idx in matching_indices:
                             chunks[idx].is_boilerplate = True
                             chunks[idx].discount_reason = (
-                                f"Common case template / problem prompt shared across {len(matching_docs)} documents"
+                                f"Common case template / problem prompt header shared across {len(matching_opening_docs)} documents"
                             )
             else:
                 # Fallback to lexical Jaccard clustering
                 for i in range(n):
                     if chunks[i].is_boilerplate:
                         continue
-                    matching_docs = {chunks[i].doc_id}
-                    for j in range(i + 1, n):
-                        if chunks[i].doc_id != chunks[j].doc_id:
-                            if compute_jaccard_similarity(chunks[i].text, chunks[j].text) >= 0.70:
-                                matching_docs.add(chunks[j].doc_id)
+                    if chunks[i].chunk_index not in (0, 1):
+                        continue
 
-                    if len(matching_docs) >= self.min_doc_frequency:
+                    matching_opening_docs = {chunks[i].doc_id}
+                    matching_indices = []
+                    for j in range(n):
+                        if i != j and chunks[j].chunk_index in (0, 1):
+                            if chunks[i].doc_id != chunks[j].doc_id:
+                                if compute_jaccard_similarity(chunks[i].text, chunks[j].text) >= 0.70:
+                                    matching_opening_docs.add(chunks[j].doc_id)
+                                    matching_indices.append(j)
+
+                    if len(matching_opening_docs) >= min_header_frequency:
                         chunks[i].is_boilerplate = True
                         chunks[i].discount_reason = (
-                            f"Common case template / problem prompt shared across {len(matching_docs)} documents"
+                            f"Common case template / problem prompt header shared across {len(matching_opening_docs)} documents"
                         )
                         self.discounted_records.append({
                             "chunk_id": chunks[i].chunk_id,
                             "doc_id": chunks[i].doc_id,
                             "reason": chunks[i].discount_reason,
                             "text_snippet": chunks[i].text[:120] + "..." if len(chunks[i].text) > 120 else chunks[i].text,
-                            "doc_count": len(matching_docs)
+                            "doc_count": len(matching_opening_docs)
                         })
+                        for idx in matching_indices:
+                            chunks[idx].is_boilerplate = True
+                            chunks[idx].discount_reason = (
+                                f"Common case template / problem prompt header shared across {len(matching_opening_docs)} documents"
+                            )
 
         logger.info(f"Boilerplate filtering complete: tagged {len(self.discounted_records)} chunk occurrences.")
         return chunks

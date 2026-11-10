@@ -23,12 +23,14 @@ class PeerDetector:
         vector_indexer: VectorIndexer,
         chunk_threshold: float = 0.80,
         sentence_threshold: float = 0.75,
-        lexical_jaccard_low_threshold: float = 0.35
+        lexical_jaccard_low_threshold: float = 0.35,
+        review_threshold: float = 0.65
     ):
         self.indexer = vector_indexer
         self.chunk_threshold = chunk_threshold
         self.sentence_threshold = sentence_threshold
         self.lexical_jaccard_low_threshold = lexical_jaccard_low_threshold
+        self.review_threshold = review_threshold
 
     def align_best_sentences(
         self,
@@ -72,10 +74,15 @@ class PeerDetector:
             return {
                 "peer_similarity_percentage": 0.0,
                 "peer_matches": [],
-                "multimodal_matches": []
+                "multimodal_matches": [],
+                "has_tier2_matches": False,
+                "max_tier2_sim": 0.0
             }
 
-        matched_chunk_ids = set()
+        tier1_chunk_ids = set()
+        tier2_chunk_ids = set()
+        has_tier2 = False
+        max_tier2_sim = 0.0
         peer_matches: List[Dict[str, Any]] = []
         multimodal_matches: List[Dict[str, Any]] = []
 
@@ -84,24 +91,36 @@ class PeerDetector:
                 continue
 
             q_vec = query_embeddings[i]
-            # Search matches in index
+            # Search matches in index with min_similarity = review_threshold (Tier 2, >=0.65)
             results = self.indexer.search_matches_for_chunk(
                 query_chunk=q_chunk,
                 query_embedding=q_vec,
                 top_k=5,
-                min_similarity=self.chunk_threshold,
+                min_similarity=self.review_threshold,
                 exclude_boilerplate=True
             )
 
             # Filter only internal peer matches (not external kb)
             internal_results = [r for r in results if not r.is_external]
             if internal_results:
-                matched_chunk_ids.add(q_chunk.chunk_id)
-
-                # Take top match for detailed explanation
                 top_match = internal_results[0]
                 t_chunk = top_match.matched_chunk
-                
+                sim = top_match.cosine_similarity
+
+                is_tier1 = sim >= self.chunk_threshold
+                is_tier2 = (sim >= self.review_threshold) and not is_tier1
+
+                if is_tier1:
+                    tier1_chunk_ids.add(q_chunk.chunk_id)
+                    confidence_tier = "High-confidence match (>=0.80)"
+                    attribution_note = "Mutual overlap detected; direction undetermined (reviewer manual verification required)."
+                else:
+                    tier2_chunk_ids.add(q_chunk.chunk_id)
+                    has_tier2 = True
+                    max_tier2_sim = max(max_tier2_sim, sim)
+                    confidence_tier = "Possible paraphrase / review recommended (0.65-0.79)"
+                    attribution_note = f"Possible paraphrase detected (Tier 2 similarity {sim:.2f} in 0.65-0.80 range); manual review recommended."
+
                 # Align exact offending sentences
                 q_sent, t_sent, sent_sim = self.align_best_sentences(q_chunk, t_chunk)
                 
@@ -119,11 +138,12 @@ class PeerDetector:
 
                 match_record = {
                     "matched_file": t_chunk.file_name,
-                    "similarity_score": round(top_match.cosine_similarity, 2),
+                    "similarity_score": round(sim, 2),
+                    "confidence_tier": confidence_tier,
                     "lexical_jaccard": jaccard,
                     "lexical_levenshtein": lev_sim,
-                    "is_paraphrase": bool(top_match.cosine_similarity >= self.chunk_threshold and jaccard < self.lexical_jaccard_low_threshold),
-                    "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
+                    "is_paraphrase": bool(sim >= self.review_threshold and jaccard < self.lexical_jaccard_low_threshold),
+                    "attribution_note": attribution_note,
                     "query_passage": q_sent,
                     "matched_passage": t_sent,
                     "location": location
@@ -134,11 +154,13 @@ class PeerDetector:
                 else:
                     peer_matches.append(match_record)
 
-        # Coverage-based peer similarity percentage
-        coverage_pct = round((len(matched_chunk_ids) / len(active_chunks)) * 100.0, 1)
+        # Coverage-based peer similarity percentage based on Tier 1 matches
+        coverage_pct = round((len(tier1_chunk_ids) / len(active_chunks)) * 100.0, 1)
 
         return {
             "peer_similarity_percentage": coverage_pct,
             "peer_matches": peer_matches,
-            "multimodal_matches": multimodal_matches
+            "multimodal_matches": multimodal_matches,
+            "has_tier2_matches": has_tier2,
+            "max_tier2_sim": round(max_tier2_sim, 2)
         }

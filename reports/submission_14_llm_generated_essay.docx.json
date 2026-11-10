@@ -1,0 +1,132 @@
+{
+  "document_id": "submission_14_llm_generated_essay.docx",
+  "total_integrity_risk": "HIGH",
+  "scores": {
+    "peer_similarity_percentage": 62.5,
+    "external_similarity_percentage": 0.0,
+    "ai_generated_probability": 99.6
+  },
+  "peer_matches": [
+    {
+      "matched_file": "submission_15_llm_generated_synthesis.pdf",
+      "similarity_score": 0.9,
+      "confidence_tier": "High-confidence match (>=0.80)",
+      "lexical_jaccard": 0.575,
+      "lexical_levenshtein": 0.6103,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required). Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying.",
+      "query_passage": "The transition from diesel-powered buses to electric vehicle (EV) buses presents a significant opportunity for public transportation operators to reduce operating costs, improve energy efficiency, and achieve sustainability targets.",
+      "matched_passage": "Business Case Analysis: EV Bus Fleet Charging Costs\nThe transition from diesel-powered buses to electric vehicles (EVs) presents a significant opportunity for public transportation operators to reduce operating expenses, improve environmental sustainability, and modernize fleet operations.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_llm_generated_synthesis.pdf",
+      "similarity_score": 0.9,
+      "confidence_tier": "High-confidence match (>=0.80)",
+      "lexical_jaccard": 0.7895,
+      "lexical_levenshtein": 0.7077,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required). Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying.",
+      "query_passage": "The primary advantage of EV buses is their lower energy cost compared to diesel consumption.",
+      "matched_passage": "Cost Structure and Key Considerations\nThe primary advantage of EV buses is their lower energy cost compared to diesel consumption.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_llm_generated_synthesis.pdf",
+      "similarity_score": 0.71,
+      "confidence_tier": "Possible paraphrase / review recommended (0.65-0.79)",
+      "lexical_jaccard": 0.1724,
+      "lexical_levenshtein": 0.2829,
+      "is_paraphrase": true,
+      "attribution_note": "Possible paraphrase detected (Tier 2 similarity 0.71 in 0.65-0.80 range); manual review recommended. Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying.",
+      "query_passage": "However, electricity costs vary depending on charging schedules, commercial tariffs, demand charges, and peak-hour pricing.",
+      "matched_passage": "The total charging cost depends on battery capacity, distance travelled, energy consumption per kilometre, electricity tariffs, and charging efficiency.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_llm_generated_synthesis.pdf",
+      "similarity_score": 0.8,
+      "confidence_tier": "Possible paraphrase / review recommended (0.65-0.79)",
+      "lexical_jaccard": 0.0714,
+      "lexical_levenshtein": 0.1931,
+      "is_paraphrase": true,
+      "attribution_note": "Possible paraphrase detected (Tier 2 similarity 0.80 in 0.65-0.80 range); manual review recommended. Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying.",
+      "query_passage": "Establishing an EV bus charging network requires substantial initial investment.",
+      "matched_passage": "Business Case Analysis: EV Bus Fleet Charging Costs\nThe transition from diesel-powered buses to electric vehicles (EVs) presents a significant opportunity for public transportation operators to reduce operating expenses, improve environmental sustainability, and modernize fleet operations.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_llm_generated_synthesis.pdf",
+      "similarity_score": 0.85,
+      "confidence_tier": "High-confidence match (>=0.80)",
+      "lexical_jaccard": 0.3889,
+      "lexical_levenshtein": 0.5794,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required). Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying.",
+      "query_passage": "- Renewable energy: Integrate rooftop solar or renewable electricity procurement to reduce grid dependency.",
+      "matched_passage": "- Renewable Integration: Use rooftop solar installations and battery storage to reduce grid dependency.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 2,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_llm_generated_synthesis.pdf",
+      "similarity_score": 0.95,
+      "confidence_tier": "High-confidence match (>=0.80)",
+      "lexical_jaccard": 0.5357,
+      "lexical_levenshtein": 0.4398,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required). Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying.",
+      "query_passage": "Although EV buses involve higher upfront acquisition and infrastructure costs, their lower energy and maintenance expenses can generate substantial long-term savings.",
+      "matched_passage": "4. Business Impact and Recommendations\nAlthough EV buses require higher initial investments, their lower energy and maintenance costs can generate long-term savings.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 2,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_llm_generated_synthesis.pdf",
+      "similarity_score": 0.85,
+      "confidence_tier": "High-confidence match (>=0.80)",
+      "lexical_jaccard": 0.125,
+      "lexical_levenshtein": 0.2517,
+      "is_paraphrase": true,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required). Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying.",
+      "query_passage": "EV bus fleet electrification is a financially promising investment when supported by efficient charging infrastructure and intelligent energy management.",
+      "matched_passage": "Business Case Analysis: EV Bus Fleet Charging Costs\nThe transition from diesel-powered buses to electric vehicles (EVs) presents a significant opportunity for public transportation operators to reduce operating expenses, improve environmental sustainability, and modernize fleet operations.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    }
+  ],
+  "multimodal_matches": [],
+  "explanations": "Critical internal peer similarity detected (62.5% meets or exceeds 50.0% threshold). | Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying."
+}

@@ -10,7 +10,7 @@
 | :--- | :---: | :---: |
 | **Internal Peer-to-Peer Similarity** | **0.0%** | ≥ 50.0% (High), ≥ 20.0% (Medium) |
 | **External / Reference Similarity** | **0.0%** | ≥ 40.0% (High), ≥ 20.0% (Medium) |
-| **AI-Generated Content Likelihood** | **15.1%** | Probabilistic (≥ 80.0% Medium alone) |
+| **AI-Generated Content Likelihood** | **15.0%** | Probabilistic (≥ 80.0% Medium alone) |
 
 
 ## 2. Template & Common Prompt Filtering (Scenario 4)
@@ -33,10 +33,10 @@
 
 | Component | Estimated Value | Interpretation |
 | :--- | :---: | :--- |
-| **RoBERTa Classifier (Supervised)** | 0.2% | Supervised synthetic classifier |
+| **RoBERTa Classifier (Supervised)** | 0.0% | Supervised synthetic classifier |
 | **GPT-2 Perplexity (PPL)** | 118.44 | Lower PPL (<35) correlates with LLMs |
 | **Sentence Burstiness (Length Variance)** | 5.69 | Lower burstiness (<35) indicates uniform machine cadence |
-| **Composite AI Probability** | **15.1%** | Confidence: HIGH |
+| **Composite AI Probability** | **15.0%** | Confidence: HIGH |
 
 > [!NOTE]
 > Probabilistic heuristic indicator. AI confidence alone never elevates risk to HIGH without corroborating external or peer matches.

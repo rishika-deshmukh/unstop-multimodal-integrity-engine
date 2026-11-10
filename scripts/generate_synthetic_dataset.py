@@ -50,6 +50,12 @@ CROSS_MODAL_PARAGRAPH = (
     "down to under ninety seconds, boosting borrower conversion rates across high-frequency consumer loan segments."
 )
 
+PARAPHRASED_CROSS_MODAL_TEXT = (
+    "Digital microfinance providers in emerging economies utilize algorithmic credit scoring trained on "
+    "alternative consumer signals, including telecom payment regularity and point-of-sale transaction records. "
+    "Portfolio risk management improves as automated loan decisions lower default rates among uncollateralized lending segments."
+)
+
 FINTECH_REPORT_P1 = (
     "Digital Banking Infrastructure and Microfinance Expansion. "
     "Modern digital credit infrastructure enables instantaneous risk assessment for underserved consumer segments "
@@ -91,13 +97,13 @@ def create_docx(path: Path, paragraphs: list[str]):
         doc.add_paragraph(text)
     doc.save(str(path))
 
-def create_mp4_with_audio(output_mp4: Path, speech_text: str):
+def create_mp4_with_audio(output_mp4: Path, speech_text: str, speech_rate: int = 185):
     ffmpeg_bin = ensure_ffmpeg_available()
     temp_wav = output_mp4.parent / f"{output_mp4.stem}_temp.wav"
 
-    logger.info(f"Synthesizing audio for {output_mp4.name} via pyttsx3...")
+    logger.info(f"Synthesizing audio for {output_mp4.name} via pyttsx3 (rate={speech_rate})...")
     engine = pyttsx3.init()
-    engine.setProperty("rate", 155)
+    engine.setProperty("rate", speech_rate)
     engine.save_to_file(speech_text, str(temp_wav))
     engine.runAndWait()
 
@@ -296,8 +302,8 @@ def generate_dataset(output_dir: Path):
             "description": "Case study containing the shared 150-word competition prompt with original analysis."
         }
 
-    # 14. submission_14_chatgpt_essay.docx (LLM Sample #1: Real ChatGPT Output)
-    p14 = output_dir / "submission_14_chatgpt_essay.docx"
+    # 14. submission_14_llm_generated_essay.docx (LLM Sample #1: Synthesized by Antigravity)
+    p14 = output_dir / "submission_14_llm_generated_essay.docx"
     create_docx(p14, [
         "Business Case Analysis: EV Bus Fleet Charging Costs",
         "The transition from diesel-powered buses to electric vehicle (EV) buses presents a significant opportunity for public transportation operators to reduce operating costs, improve energy efficiency, and achieve sustainability targets. However, the financial viability of an EV bus fleet depends heavily on charging costs, electricity tariffs, infrastructure investment, and fleet utilisation.",
@@ -314,17 +320,18 @@ def generate_dataset(output_dir: Path):
         "Conclusion",
         "EV bus fleet electrification is a financially promising investment when supported by efficient charging infrastructure and intelligent energy management. Transportation operators should adopt phased electrification, optimise charging schedules, and evaluate electricity tariffs before scaling operations. A data-driven charging strategy can reduce operating expenditure, improve fleet utilisation, and strengthen the long-term economic and environmental sustainability of public transportation."
     ])
-    documents_meta["submission_14_chatgpt_essay.docx"] = {
+    documents_meta["submission_14_llm_generated_essay.docx"] = {
         "modality": "docx",
         "type": "ai_generated_synthetic",
         "is_degraded": False,
         "is_ai": True,
-        "llm_generator": "ChatGPT (GPT-4o)",
-        "description": "Verbatim ChatGPT-generated analysis on EV bus fleet charging costs."
+        "llm_generator": "Antigravity (Gemini)",
+        "provenance": "Synthesized by Antigravity (Gemini assistant) simulating an LLM response to the prompt: 'Write a comprehensive business case analysis for EV bus fleet charging costs'. Genuine ChatGPT outputs were not used. The user can optionally replace this file with a genuine ChatGPT output following the prompt provided in README.md.",
+        "description": "Antigravity (Gemini) generated analysis simulating an LLM response on EV bus fleet charging costs."
     }
 
-    # 15. submission_15_claude_synthesis.pdf (LLM Sample #2: Real Claude Output)
-    p15 = output_dir / "submission_15_claude_synthesis.pdf"
+    # 15. submission_15_llm_generated_synthesis.pdf (LLM Sample #2: Synthesized by Antigravity)
+    p15 = output_dir / "submission_15_llm_generated_synthesis.pdf"
     create_pdf(p15, [
         [
             "Business Case Analysis: EV Bus Fleet Charging Costs",
@@ -345,13 +352,14 @@ def generate_dataset(output_dir: Path):
             "EV fleet charging costs are not determined by electricity consumption alone but by infrastructure planning, tariff structures, and operational efficiency. Implementing smart charging systems, renewable energy integration, and data-driven fleet management can significantly improve financial viability. A phased EV adoption strategy, supported by careful cost modelling, is recommended to achieve sustainable and economically efficient public transportation."
         ]
     ])
-    documents_meta["submission_15_claude_synthesis.pdf"] = {
+    documents_meta["submission_15_llm_generated_synthesis.pdf"] = {
         "modality": "pdf",
         "type": "ai_generated_synthetic",
         "is_degraded": False,
         "is_ai": True,
-        "llm_generator": "Claude 3.5 Sonnet",
-        "description": "Verbatim Claude 3.5 Sonnet generated analysis on EV bus fleet charging costs."
+        "llm_generator": "Antigravity (Gemini)",
+        "provenance": "Synthesized by Antigravity (Gemini assistant) simulating an LLM response to the prompt: 'Write a comprehensive business case analysis for EV bus fleet charging costs'. Genuine Claude outputs were not used. The user can optionally replace this file with a genuine Claude output following the prompt provided in README.md.",
+        "description": "Antigravity (Gemini) generated analysis simulating an LLM response on EV bus fleet charging costs."
     }
 
     # 16. submission_16_quantum_hardware.pdf (Hard Negative Control #1)
@@ -402,6 +410,105 @@ def generate_dataset(output_dir: Path):
         "description": "Direct copy from external knowledge base circular packaging article."
     }
 
+    # 19. submission_19_video_paraphrase_pitch.mp4 (Cross-Modal Paraphrase match with sub_01 Page 1)
+    p19 = output_dir / "submission_19_video_paraphrase_pitch.mp4"
+    create_mp4_with_audio(p19, PARAPHRASED_CROSS_MODAL_TEXT, speech_rate=180)
+    documents_meta["submission_19_video_paraphrase_pitch.mp4"] = {
+        "modality": "mp4",
+        "type": "cross_modal_paraphrase",
+        "is_degraded": False,
+        "is_ai": False,
+        "description": "Candidate video pitch reading aloud a paraphrased version of fintech microfinance from submission_01."
+    }
+
+    # 20. submission_20_partially_copied.docx (Hard case: Partial copy - 1 of 3 paragraphs copied from sub_01 Page 1)
+    p20 = output_dir / "submission_20_partially_copied.docx"
+    create_docx(p20, [
+        "Digital financial inclusion across Southeast Asia has expanded rapidly with the widespread adoption of standardized interoperable QR code payment networks. Central bank regulatory sandboxes have enabled technology platforms to pilot micro-insurance and merchant working capital facilities without bearing legacy commercial banking compliance costs. In metropolitan commerce corridors, consumer payment frequency has surged, providing granular real-time cash flow records that supplement traditional credit bureau inquiries. Mobile network operators and digital retailers have formed joint ventures to leverage distributed distribution networks, deploying field agents to onboard informal rural merchants.",
+        FINTECH_REPORT_P1,
+        "Looking forward, sustainable unit economics will require platforms to diversify revenue away from pure payment transaction interchange fees toward recurring software subscriptions and balance sheet syndication. Providing automated inventory tracking, invoice reconciliation, and tax compliance software embeds digital platforms deeply within merchant workflows, drastically lowering customer churn. Furthermore, partnerships with regulated non-banking financial corporations allow platforms to originate asset-backed SME loans while maintaining capital adequacy discipline and shielding equity investors from severe credit cycle downturns."
+    ])
+    documents_meta["submission_20_partially_copied.docx"] = {
+        "modality": "docx",
+        "type": "partial_copy",
+        "is_degraded": False,
+        "is_ai": False,
+        "description": "Fintech proposal where exactly 1 of 3 paragraphs is copied verbatim from submission_01 Page 1."
+    }
+
+    # 21. submission_21_ev_near_threshold_negative.pdf (Hard case: Near-threshold negative on EV transit)
+    p21 = output_dir / "submission_21_ev_near_threshold_negative.pdf"
+    create_pdf(p21, [
+        [
+            "Evaluating Municipal Hydrogen Fuel Cell Transit Alternatives.",
+            "While battery-electric buses dominate urban transit electrification dialogues, municipal transit authorities facing sub-zero winter temperatures must evaluate hydrogen fuel cell alternatives. Fuel cell buses offer superior operational range exceeding 450 kilometers without mid-day depot recharging cycles, mitigating auxiliary heating battery drain.",
+            "However, green hydrogen supply chains and cryogenic dispensing infrastructure introduce elevated capital expenditures and safety certification hurdles that require dedicated municipal hydrogen distribution hubs."
+        ]
+    ])
+    documents_meta["submission_21_ev_near_threshold_negative.pdf"] = {
+        "modality": "pdf",
+        "type": "near_threshold_negative",
+        "is_degraded": False,
+        "is_ai": False,
+        "description": "Independently written municipal bus transit analysis (hydrogen alternative) testing near-threshold discrimination."
+    }
+
+    # 22. submission_22_wikipedia_urban_transit.pdf (Human public-domain control #1)
+    p22 = output_dir / "submission_22_wikipedia_urban_transit.pdf"
+    create_pdf(p22, [
+        [
+            "Bus Rapid Transit Systems and Metropolitan Urban Mobility.",
+            "Bus rapid transit (BRT), also called a busway or transitway, is a bus-based public transport system designed to have much more capacity and reliability than a conventional bus system. Typically, a BRT system includes roadways that are dedicated to buses, and gives priority to buses at intersections where buses may interact with other traffic; alongside design features to reduce delays caused by passengers boarding or leaving buses, or purchasing fares. BRT aims to combine the capacity and speed of a light rail or metro system with the flexibility, lower cost and simplicity of a bus system."
+        ]
+    ])
+    documents_meta["submission_22_wikipedia_urban_transit.pdf"] = {
+        "modality": "pdf",
+        "type": "human_control_public_domain",
+        "is_degraded": False,
+        "is_ai": False,
+        "source": "Wikipedia - Bus rapid transit",
+        "source_url": "https://en.wikipedia.org/wiki/Bus_rapid_transit",
+        "license": "Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)",
+        "description": "Human-authored public-domain article baseline testing AI detector false positives and similarity negatives."
+    }
+
+    # 23. submission_23_rfc_internet_protocol.docx (Human public-domain control #2)
+    p23 = output_dir / "submission_23_rfc_internet_protocol.docx"
+    create_docx(p23, [
+        "DARPA Internet Program Protocol Specification (RFC 791)",
+        "The Internet Protocol is designed for use in interconnected systems of packet-switched computer communication networks. The internet protocol provides for transmitting blocks of data called datagrams from sources to destinations, where sources and destinations are hosts identified by fixed length addresses.",
+        "The internet protocol also provides for fragmentation and reassembly of long datagrams, if necessary, for transmission through small-packet networks. The internet protocol implements two basic functions: addressing and fragmentation. The internet modules use the addresses carried in the internet header to transmit internet datagrams toward their destinations."
+    ])
+    documents_meta["submission_23_rfc_internet_protocol.docx"] = {
+        "modality": "docx",
+        "type": "human_control_public_domain",
+        "is_degraded": False,
+        "is_ai": False,
+        "source": "IETF RFC 791: Internet Protocol Specification (1981)",
+        "source_url": "https://datatracker.ietf.org/doc/html/rfc791",
+        "license": "Public Domain (IETF RFC Standards Document)",
+        "description": "Human-authored technical specification baseline testing AI detector false positives and similarity negatives."
+    }
+
+    # 24. submission_24_wikipedia_renewable_energy.pdf (Human public-domain control #3)
+    p24 = output_dir / "submission_24_wikipedia_renewable_energy.pdf"
+    create_pdf(p24, [
+        [
+            "Photovoltaic Solar Power and Energy Conversion Principles.",
+            "Photovoltaics (PV) is the conversion of light into electricity using semiconducting materials that exhibit the photovoltaic effect, a phenomenon studied in physics, photochemistry, and electrochemistry. A photovoltaic system employs solar modules, each comprising a number of solar cells, which generate electrical power. PV installations may be ground-mounted, rooftop-mounted, wall-mounted or floating. The mount may be fixed or use a solar tracker to follow the sun across the sky."
+        ]
+    ])
+    documents_meta["submission_24_wikipedia_renewable_energy.pdf"] = {
+        "modality": "pdf",
+        "type": "human_control_public_domain",
+        "is_degraded": False,
+        "is_ai": False,
+        "source": "Wikipedia - Photovoltaics",
+        "source_url": "https://en.wikipedia.org/wiki/Photovoltaics",
+        "license": "Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)",
+        "description": "Human-authored public-domain article baseline testing AI detector false positives and similarity negatives."
+    }
+
     # Clean old files if present
     for old_file in output_dir.glob("submission_*"):
         if old_file.name not in documents_meta:
@@ -431,15 +538,25 @@ def generate_dataset(output_dir: Path):
         elif pair_set == {"submission_01_fintech_report.pdf", "submission_02_video_pitch.mp4"}:
             label = "cross_modal"
             is_plag = True
+        elif pair_set == {"submission_01_fintech_report.pdf", "submission_19_video_paraphrase_pitch.mp4"}:
+            label = "cross_modal"
+            is_plag = True
+        elif pair_set == {"submission_01_fintech_report.pdf", "submission_20_partially_copied.docx"}:
+            label = "exact_copy"
+            is_plag = True
+        elif pair_set == {"submission_19_video_paraphrase_pitch.mp4", "submission_20_partially_copied.docx"}:
+            label = "cross_modal"
+            is_plag = True
         elif pair_set == {"submission_03_logistics_strategy.docx", "submission_04_logistics_rewritten.docx"}:
             label = "paraphrase"
             is_plag = True
         elif pair_set == {"submission_04_logistics_rewritten.docx", "submission_05_logistics_exact_copy.pdf"}:
             label = "paraphrase"
             is_plag = True
-        elif pair_set == {"submission_14_chatgpt_essay.docx", "submission_15_claude_synthesis.pdf"}:
-            label = "paraphrase"
-            is_plag = True
+        elif pair_set == {"submission_14_llm_generated_essay.docx", "submission_15_llm_generated_synthesis.pdf"}:
+            # Two independent LLMs prompted with the same assignment brief are NOT student-to-student copying
+            label = "same_prompt_ai_outputs"
+            is_plag = False
         elif "submission_18_external_plagiarism.pdf" in pair_set:
             # External plagiarism is against KB, not peer
             label = "unrelated"
@@ -463,23 +580,15 @@ def generate_dataset(output_dir: Path):
             "is_external_plagiarism": True,
             "source_kb_file": "circular_packaging.txt",
             "expected_external_pct_min": 40.0
-        },
-        "submission_03_logistics_strategy.docx": {
-            "is_external_plagiarism": False,
-            "note": "Domain vocabulary overlap with cold_chain_logistics.txt (unintended synthetic overlap / edge case)"
-        },
-        "submission_05_logistics_exact_copy.pdf": {
-            "is_external_plagiarism": False,
-            "note": "Exact duplicate of submission_03 (inherits cold_chain_logistics.txt domain overlap)"
         }
     }
 
     full_manifest = {
         "dataset_name": "Unstop Multimodal Integrity Benchmark Dataset (Exhaustive Ground Truth)",
-        "version": "2.1.0",
+        "version": "2.2.0",
         "total_documents": len(documents_meta),
         "total_pairs": len(pairwise_manifest),
-        "valid_pair_labels": ["exact_copy", "paraphrase", "cross_modal", "external", "same_template_only", "unrelated"],
+        "valid_pair_labels": ["exact_copy", "paraphrase", "cross_modal", "external", "same_template_only", "same_prompt_ai_outputs", "unrelated"],
         "documents": documents_meta,
         "external_ground_truth": external_gt,
         "pairwise_ground_truth": pairwise_manifest

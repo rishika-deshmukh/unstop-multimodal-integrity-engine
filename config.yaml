@@ -3,7 +3,7 @@
 models:
   embedding_model: "all-MiniLM-L6-v2"
   whisper_model: "openai/whisper-tiny"
-  ai_detector_model: "roberta-base-openai-detector"
+  ai_detector_model: "Hello-SimpleAI/chatgpt-detector-roberta"
   gpt2_model: "gpt2"
   device: "cpu" # Default to CPU for deterministic, commodity-compatible evaluation
 
@@ -19,8 +19,11 @@ boilerplate_filter:
   short_chunk_word_limit: 15  # Short institutional fragments discounted
 
 similarity:
-  chunk_match_threshold: 0.80 # Cosine similarity threshold for flagging a match
-  sentence_alignment_threshold: 0.75 # Sentence-level re-matching threshold
+  # Two-Tier Plagiarism Thresholding:
+  high_confidence_threshold: 0.80     # Tier 1 (>= 0.80): High-confidence match / plagiarism flag
+  review_recommended_threshold: 0.65  # Tier 2 (0.65 <= sim < 0.80): Possible paraphrase / manual review recommended
+  chunk_match_threshold: 0.80         # Cosine similarity threshold for flagging a match
+  sentence_alignment_threshold: 0.75  # Sentence-level re-matching threshold
   lexical_jaccard_low_threshold: 0.35 # Jaccard cutoff indicating paraphrasing
 
 risk_thresholds:
@@ -36,8 +39,8 @@ risk_thresholds:
     external_min: 20.0
     ai_min_with_peer:
       peer_min: 10.0
-      ai_min: 70.0
-    ai_standalone_min: 80.0
+      ai_min: 50.0
+    ai_standalone_min: 85.0 # Elevated threshold to avoid false-positive medium flags on technical human prose
 
 paths:
   external_kb_dir: "./external_kb"

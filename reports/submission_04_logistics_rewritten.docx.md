@@ -10,7 +10,7 @@
 | :--- | :---: | :---: |
 | **Internal Peer-to-Peer Similarity** | **50.0%** | ≥ 50.0% (High), ≥ 20.0% (Medium) |
 | **External / Reference Similarity** | **0.0%** | ≥ 40.0% (High), ≥ 20.0% (Medium) |
-| **AI-Generated Content Likelihood** | **72.8%** | Probabilistic (≥ 80.0% Medium alone) |
+| **AI-Generated Content Likelihood** | **15.0%** | Probabilistic (≥ 80.0% Medium alone) |
 
 
 ## 2. Template & Common Prompt Filtering (Scenario 4)
@@ -23,7 +23,7 @@
 
 ## 4. Internal Peer Document Overlaps & Paraphrasing (Scenario 2)
 
-### Overlap #1 — Target: `submission_03_logistics_strategy.docx` ⚠️ **[SYNONYM-BASED PARAPHRASE DETECTED]**
+### Overlap #1 — Target: `submission_03_logistics_strategy.docx` ⚠️ **[SYNONYM-BASED PARAPHRASE DETECTED]** | **High-confidence match (>=0.80)**
 | Semantic Cosine Sim | Lexical Jaccard Sim | Levenshtein Sim | Page References |
 | :---: | :---: | :---: | :---: |
 | **0.87** | **0.18** | **0.49** | Query: Pg 1 ↔ Match: Pg 1 |
@@ -41,10 +41,10 @@
 
 | Component | Estimated Value | Interpretation |
 | :--- | :---: | :--- |
-| **RoBERTa Classifier (Supervised)** | 89.0% | Supervised synthetic classifier |
+| **RoBERTa Classifier (Supervised)** | 0.0% | Supervised synthetic classifier |
 | **GPT-2 Perplexity (PPL)** | 319.56 | Lower PPL (<35) correlates with LLMs |
 | **Sentence Burstiness (Length Variance)** | 16.66 | Lower burstiness (<35) indicates uniform machine cadence |
-| **Composite AI Probability** | **72.8%** | Confidence: MODERATE |
+| **Composite AI Probability** | **15.0%** | Confidence: HIGH |
 
 > [!NOTE]
 > Probabilistic heuristic indicator. AI confidence alone never elevates risk to HIGH without corroborating external or peer matches.

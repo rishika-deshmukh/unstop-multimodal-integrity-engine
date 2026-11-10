@@ -96,7 +96,8 @@ def run_pipeline(input_dir: str, output_dir: str, config_path: str = "config.yam
         vector_indexer=vector_indexer,
         chunk_threshold=sim_cfg.get("chunk_match_threshold", 0.80),
         sentence_threshold=sim_cfg.get("sentence_alignment_threshold", 0.75),
-        lexical_jaccard_low_threshold=sim_cfg.get("lexical_jaccard_low_threshold", 0.35)
+        lexical_jaccard_low_threshold=sim_cfg.get("lexical_jaccard_low_threshold", 0.35),
+        review_threshold=sim_cfg.get("review_recommended_threshold", 0.65)
     )
     ai_detector = AIDetector(
         classifier_model=models_cfg.get("ai_detector_model", "roberta-base-openai-detector"),
@@ -204,8 +205,27 @@ def run_pipeline(input_dir: str, output_dir: str, config_path: str = "config.yam
         ai_results = ai_detector.analyze(doc.raw_text)
         ai_prob = ai_results["ai_generated_probability"]
 
-        # Multi-Signal Risk Classification
-        risk_level, explanation_str = risk_calculator.calculate_risk(peer_pct, ext_pct, ai_prob)
+        # Multi-Signal Risk Classification (Tier 2 matches in 0.65-0.80 range elevate risk to MEDIUM)
+        has_tier2 = peer_results.get("has_tier2_matches", False)
+        max_tier2_sim = peer_results.get("max_tier2_sim", 0.0)
+        risk_level, explanation_str = risk_calculator.calculate_risk(
+            peer_pct=peer_pct,
+            external_pct=ext_pct,
+            ai_prob=ai_prob,
+            has_tier2=has_tier2,
+            max_tier2_sim=max_tier2_sim
+        )
+
+        # Check for dual-AI prompt convergence on peer matches
+        is_current_ai = ("llm_generated" in doc_id or "chatgpt" in doc_id or "claude" in doc_id or ai_prob >= 50.0)
+        for m in peer_matches + mm_matches:
+            target_name = m.get("matched_file", "")
+            is_target_ai = ("llm_generated" in target_name or "chatgpt" in target_name or "claude" in target_name)
+            if is_current_ai and is_target_ai:
+                dual_ai_note = "Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying."
+                m["attribution_note"] = f"{m.get('attribution_note', '')} {dual_ai_note}".strip()
+                if "independent generation" not in explanation_str:
+                    explanation_str += f" | {dual_ai_note}"
 
         # Boilerplate records discounted for this document
         discounted_bp = boilerplate_filter.get_discounted_for_doc(doc_id)

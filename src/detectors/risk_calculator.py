@@ -19,11 +19,14 @@ class RiskCalculator:
         self,
         peer_pct: float,
         external_pct: float,
-        ai_prob: float
+        ai_prob: float,
+        has_tier2: bool = False,
+        max_tier2_sim: float = 0.0
     ) -> Tuple[str, str]:
         """
         Determines total integrity risk category and generates concise human explanation.
         Guarantees that AI-generation probability alone never triggers HIGH risk.
+        Tier 2 matches (0.65 <= sim < 0.80) elevate risk to at least MEDIUM for manual review.
         """
         # 1. HIGH RISK EVALUATION
         high_peer_min = self.high_cfg.get("peer_min", 50.0)
@@ -49,7 +52,7 @@ class RiskCalculator:
         comb_med = self.med_cfg.get("ai_min_with_peer", {})
         comb_med_peer_min = comb_med.get("peer_min", 10.0)
         comb_med_ai_min = comb_med.get("ai_min", 70.0)
-        standalone_ai_min = self.med_cfg.get("ai_standalone_min", 80.0)
+        standalone_ai_min = self.med_cfg.get("ai_standalone_min", 85.0)
 
         if peer_pct >= med_peer_min:
             return "MEDIUM", (
@@ -64,9 +67,16 @@ class RiskCalculator:
         if peer_pct >= comb_med_peer_min and ai_prob >= comb_med_ai_min:
             return "MEDIUM", f"Moderate overlap ({peer_pct}%) accompanied by AI-generated probability ({ai_prob}%)."
 
+        if has_tier2:
+            return "MEDIUM", (
+                f"Possible paraphrase detected: Tier 2 similarity ({max_tier2_sim:.2f} in 0.65-0.80 range); "
+                f"manual review recommended before concluding integrity violation."
+            )
+
         if ai_prob >= standalone_ai_min:
             return "MEDIUM", (
-                f"Elevated AI-generated content probability ({ai_prob}%). Categorized as MEDIUM risk pending human review; AI indicator alone does not trigger HIGH."
+                f"Elevated AI-generated content probability ({ai_prob}% meets or exceeds {standalone_ai_min}% threshold). "
+                f"Statistical likelihood of machine-assisted text generation; AI probability alone does not trigger automatic HIGH risk classification."
             )
 
         # 3. LOW RISK

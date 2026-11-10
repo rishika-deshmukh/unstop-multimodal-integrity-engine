@@ -3,13 +3,14 @@
   "total_integrity_risk": "HIGH",
   "scores": {
     "peer_similarity_percentage": 100.0,
-    "external_similarity_percentage": 50.0,
-    "ai_generated_probability": 28.5
+    "external_similarity_percentage": 0.0,
+    "ai_generated_probability": 15.0
   },
   "peer_matches": [
     {
       "matched_file": "submission_05_logistics_exact_copy.pdf",
       "similarity_score": 0.98,
+      "confidence_tier": "High-confidence match (>=0.80)",
       "lexical_jaccard": 1.0,
       "lexical_levenshtein": 1.0,
       "is_paraphrase": false,
@@ -26,6 +27,7 @@
     {
       "matched_file": "submission_05_logistics_exact_copy.pdf",
       "similarity_score": 1.0,
+      "confidence_tier": "High-confidence match (>=0.80)",
       "lexical_jaccard": 1.0,
       "lexical_levenshtein": 1.0,
       "is_paraphrase": false,

@@ -1,5 +1,5 @@
 {
-  "benchmark_timestamp": "2026-11-10T13:52:43Z",
+  "benchmark_timestamp": "2026-11-10T18:36:58Z",
   "hardware_context": {
     "cpu_count_logical": 16,
     "cpu_count_physical": 10,
@@ -10,20 +10,20 @@
     "model_name": "all-MiniLM-L6-v2",
     "device": "cpu",
     "n_chunks": 300,
-    "elapsed_seconds": 1.3574,
-    "chunks_per_second": 221.01,
-    "ms_per_chunk": 4.525,
+    "elapsed_seconds": 1.3647,
+    "chunks_per_second": 219.83,
+    "ms_per_chunk": 4.549,
     "embedding_dimension": 384
   },
   "whisper_benchmark": {
     "model_name": "openai/whisper-tiny",
     "device": "cpu",
     "file_tested": "submission_02_video_pitch.mp4",
-    "audio_duration_seconds": 30.75,
-    "transcription_seconds": 3.003,
-    "real_time_factor_rtf": 0.098,
-    "speedup_vs_realtime": 10.24,
-    "transcribed_word_count": 63
+    "audio_duration_seconds": 26.53,
+    "transcription_seconds": 2.974,
+    "real_time_factor_rtf": 0.112,
+    "speedup_vs_realtime": 8.92,
+    "transcribed_word_count": 62
   },
   "faiss_benchmark": {
     "n_vectors": 200000,
@@ -32,33 +32,33 @@
     "index_flat": {
       "build_time_seconds": 0.1,
       "ram_footprint_mb": 293.0,
-      "query_latency_ms": 14.112,
-      "queries_per_second": 70.9
+      "query_latency_ms": 13.852,
+      "queries_per_second": 72.2
     },
     "index_hnsw": {
       "m_parameter": 32,
       "ef_search": 64,
-      "build_time_seconds": 20.47,
-      "ram_footprint_mb": 350.84,
-      "query_latency_ms": 1.763,
-      "queries_per_second": 567.2
+      "build_time_seconds": 21.86,
+      "ram_footprint_mb": 350.04,
+      "query_latency_ms": 0.915,
+      "queries_per_second": 1092.9
     },
-    "hnsw_speedup_vs_flat": 8.0
+    "hnsw_speedup_vs_flat": 15.1
   },
   "roberta_benchmark": {
     "model_name": "roberta-base-openai-detector",
     "device": "cpu",
     "n_samples": 30,
-    "elapsed_seconds": 1.3723,
-    "docs_per_second": 21.86,
-    "ms_per_doc": 45.74
+    "elapsed_seconds": 1.3309,
+    "docs_per_second": 22.54,
+    "ms_per_doc": 44.36
   },
   "gpt2_benchmark": {
     "model_name": "gpt2",
     "device": "cpu",
     "n_samples": 20,
-    "elapsed_seconds": 1.2587,
-    "docs_per_second": 15.89,
-    "ms_per_doc": 62.94
+    "elapsed_seconds": 1.2734,
+    "docs_per_second": 15.71,
+    "ms_per_doc": 63.67
   }
 }

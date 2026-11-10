@@ -4,12 +4,13 @@
   "scores": {
     "peer_similarity_percentage": 50.0,
     "external_similarity_percentage": 0.0,
-    "ai_generated_probability": 72.8
+    "ai_generated_probability": 15.0
   },
   "peer_matches": [
     {
       "matched_file": "submission_03_logistics_strategy.docx",
       "similarity_score": 0.87,
+      "confidence_tier": "High-confidence match (>=0.80)",
       "lexical_jaccard": 0.18,
       "lexical_levenshtein": 0.4891,
       "is_paraphrase": true,

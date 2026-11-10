@@ -1,0 +1,30 @@
+{
+  "document_id": "submission_20_partially_copied.docx",
+  "total_integrity_risk": "MEDIUM",
+  "scores": {
+    "peer_similarity_percentage": 33.3,
+    "external_similarity_percentage": 0.0,
+    "ai_generated_probability": 15.1
+  },
+  "peer_matches": [
+    {
+      "matched_file": "submission_01_fintech_report.pdf",
+      "similarity_score": 1.0,
+      "confidence_tier": "High-confidence match (>=0.80)",
+      "lexical_jaccard": 1.0,
+      "lexical_levenshtein": 1.0,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
+      "query_passage": "Modern digital credit infrastructure enables instantaneous risk assessment for underserved consumer segments by ingesting alternative transactional data streams including utility bill remittances and mobile airtime top-ups.",
+      "matched_passage": "Modern digital credit infrastructure enables instantaneous risk assessment for underserved consumer segments by ingesting alternative transactional data streams including utility bill remittances and mobile airtime top-ups.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    }
+  ],
+  "multimodal_matches": [],
+  "explanations": "Moderate peer overlap detected (33.3% meets or exceeds 20.0% threshold). Mutual overlap detected (direction undetermined); candidate submission may be the original source copied by another peer rather than the copier. Reviewer manual verification required before penalizing."
+}

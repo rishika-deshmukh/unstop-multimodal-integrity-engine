@@ -74,7 +74,8 @@ def generate_markdown_report(
             q_loc = loc.get("query_timestamp") or f"Page {loc.get('query_page', '?')}"
             m_loc = loc.get("matched_timestamp") or f"Page {loc.get('matched_page', '?')}"
             
-            md.append(f"### Match #{idx} — Target: `{target}` (Similarity: **{sim:.2f}**)")
+            tier = m.get("confidence_tier", "High-confidence match (>=0.80)")
+            md.append(f"### Match #{idx} — Target: `{target}` (Similarity: **{sim:.2f}** | **{tier}**)")
             md.append(f"- **Query Location:** `{q_loc}`")
             md.append(f"- **Matched File Location:** `{m_loc}`")
             md.append(f"- **Offending Query Spoken/Text:**")
@@ -98,7 +99,8 @@ def generate_markdown_report(
             m_page = loc.get("matched_page", 1)
 
             para_note = " ⚠️ **[SYNONYM-BASED PARAPHRASE DETECTED]**" if is_para else ""
-            md.append(f"### Overlap #{idx} — Target: `{target}`{para_note}")
+            tier = m.get("confidence_tier", "High-confidence match (>=0.80)")
+            md.append(f"### Overlap #{idx} — Target: `{target}`{para_note} | **{tier}**")
             md.append("| Semantic Cosine Sim | Lexical Jaccard Sim | Levenshtein Sim | Page References |")
             md.append("| :---: | :---: | :---: | :---: |")
             md.append(f"| **{sim:.2f}** | **{jaccard:.2f}** | **{lev:.2f}** | Query: Pg {q_page} ↔ Match: Pg {m_page} |")
@@ -118,7 +120,8 @@ def generate_markdown_report(
             title = m.get("source_title", "External Article")
             url = m.get("source_url", "#")
             sim = m.get("similarity_score", 0.0)
-            md.append(f"- **Source:** [{title}]({url}) (Cosine Sim: **{sim:.2f}**)")
+            tier = m.get("confidence_tier", "High-confidence match (>=0.80)")
+            md.append(f"- **Source:** [{title}]({url}) (Cosine Sim: **{sim:.2f}** | **{tier}**)")
             md.append(f"  - **Submission Text:** *\"{m.get('query_passage', '')}\"*")
             md.append(f"  - **Reference Text:** *\"{m.get('matched_passage', '')}\"*\n")
     else:

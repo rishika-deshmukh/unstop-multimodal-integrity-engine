@@ -10,7 +10,7 @@
 | :--- | :---: | :---: |
 | **Internal Peer-to-Peer Similarity** | **0.0%** | ≥ 50.0% (High), ≥ 20.0% (Medium) |
 | **External / Reference Similarity** | **0.0%** | ≥ 40.0% (High), ≥ 20.0% (Medium) |
-| **AI-Generated Content Likelihood** | **13.2%** | Probabilistic (≥ 80.0% Medium alone) |
+| **AI-Generated Content Likelihood** | **13.3%** | Probabilistic (≥ 80.0% Medium alone) |
 
 
 ## 2. Template & Common Prompt Filtering (Scenario 4)
@@ -19,7 +19,7 @@ The engine identified and **discounted 1 chunk(s)** from plagiarism scoring to a
 
 | Discounted Snippet | Exclusion Reason | Cross-Doc Frequency |
 | :--- | :--- | :---: |
-| *"Case Study Challenge Brief 2026: Sustainable Urban Mobility Infrastructure. Teams are required to evaluate the capital d..."* | Common case template / problem prompt shared across 5 documents | 5 docs |
+| *"Case Study Challenge Brief 2026: Sustainable Urban Mobility Infrastructure. Teams are required to evaluate the capital d..."* | Common case template / problem prompt header shared across 5 documents | 5 docs |
 
 
 ## 3. Multimodal Audio/Video Cross-Matches (Scenario 1)
@@ -38,10 +38,10 @@ The engine identified and **discounted 1 chunk(s)** from plagiarism scoring to a
 
 | Component | Estimated Value | Interpretation |
 | :--- | :---: | :--- |
-| **RoBERTa Classifier (Supervised)** | 0.0% | Supervised synthetic classifier |
+| **RoBERTa Classifier (Supervised)** | 0.1% | Supervised synthetic classifier |
 | **GPT-2 Perplexity (PPL)** | 139.97 | Lower PPL (<35) correlates with LLMs |
 | **Sentence Burstiness (Length Variance)** | 24.82 | Lower burstiness (<35) indicates uniform machine cadence |
-| **Composite AI Probability** | **13.2%** | Confidence: HIGH |
+| **Composite AI Probability** | **13.3%** | Confidence: HIGH |
 
 > [!NOTE]
 > Probabilistic heuristic indicator. AI confidence alone never elevates risk to HIGH without corroborating external or peer matches.

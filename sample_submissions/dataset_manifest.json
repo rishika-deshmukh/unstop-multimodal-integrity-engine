@@ -1,14 +1,15 @@
 {
   "dataset_name": "Unstop Multimodal Integrity Benchmark Dataset (Exhaustive Ground Truth)",
-  "version": "2.1.0",
-  "total_documents": 18,
-  "total_pairs": 153,
+  "version": "2.2.0",
+  "total_documents": 24,
+  "total_pairs": 276,
   "valid_pair_labels": [
     "exact_copy",
     "paraphrase",
     "cross_modal",
     "external",
     "same_template_only",
+    "same_prompt_ai_outputs",
     "unrelated"
   ],
   "documents": {
@@ -106,21 +107,23 @@
       "is_ai": false,
       "description": "Case study containing the shared 150-word competition prompt with original analysis."
     },
-    "submission_14_chatgpt_essay.docx": {
+    "submission_14_llm_generated_essay.docx": {
       "modality": "docx",
       "type": "ai_generated_synthetic",
       "is_degraded": false,
       "is_ai": true,
-      "llm_generator": "ChatGPT (GPT-4o)",
-      "description": "Verbatim ChatGPT-generated analysis on EV bus fleet charging costs."
+      "llm_generator": "Antigravity (Gemini)",
+      "provenance": "Synthesized by Antigravity (Gemini assistant) simulating an LLM response to the prompt: 'Write a comprehensive business case analysis for EV bus fleet charging costs'. Genuine ChatGPT outputs were not used. The user can optionally replace this file with a genuine ChatGPT output following the prompt provided in README.md.",
+      "description": "Antigravity (Gemini) generated analysis simulating an LLM response on EV bus fleet charging costs."
     },
-    "submission_15_claude_synthesis.pdf": {
+    "submission_15_llm_generated_synthesis.pdf": {
       "modality": "pdf",
       "type": "ai_generated_synthetic",
       "is_degraded": false,
       "is_ai": true,
-      "llm_generator": "Claude 3.5 Sonnet",
-      "description": "Verbatim Claude 3.5 Sonnet generated analysis on EV bus fleet charging costs."
+      "llm_generator": "Antigravity (Gemini)",
+      "provenance": "Synthesized by Antigravity (Gemini assistant) simulating an LLM response to the prompt: 'Write a comprehensive business case analysis for EV bus fleet charging costs'. Genuine Claude outputs were not used. The user can optionally replace this file with a genuine Claude output following the prompt provided in README.md.",
+      "description": "Antigravity (Gemini) generated analysis simulating an LLM response on EV bus fleet charging costs."
     },
     "submission_16_quantum_hardware.pdf": {
       "modality": "pdf",
@@ -142,6 +145,57 @@
       "is_degraded": false,
       "is_ai": false,
       "description": "Direct copy from external knowledge base circular packaging article."
+    },
+    "submission_19_video_paraphrase_pitch.mp4": {
+      "modality": "mp4",
+      "type": "cross_modal_paraphrase",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Candidate video pitch reading aloud a paraphrased version of fintech microfinance from submission_01."
+    },
+    "submission_20_partially_copied.docx": {
+      "modality": "docx",
+      "type": "partial_copy",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Fintech proposal where exactly 1 of 3 paragraphs is copied verbatim from submission_01 Page 1."
+    },
+    "submission_21_ev_near_threshold_negative.pdf": {
+      "modality": "pdf",
+      "type": "near_threshold_negative",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Independently written municipal bus transit analysis (hydrogen alternative) testing near-threshold discrimination."
+    },
+    "submission_22_wikipedia_urban_transit.pdf": {
+      "modality": "pdf",
+      "type": "human_control_public_domain",
+      "is_degraded": false,
+      "is_ai": false,
+      "source": "Wikipedia - Bus rapid transit",
+      "source_url": "https://en.wikipedia.org/wiki/Bus_rapid_transit",
+      "license": "Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)",
+      "description": "Human-authored public-domain article baseline testing AI detector false positives and similarity negatives."
+    },
+    "submission_23_rfc_internet_protocol.docx": {
+      "modality": "docx",
+      "type": "human_control_public_domain",
+      "is_degraded": false,
+      "is_ai": false,
+      "source": "IETF RFC 791: Internet Protocol Specification (1981)",
+      "source_url": "https://datatracker.ietf.org/doc/html/rfc791",
+      "license": "Public Domain (IETF RFC Standards Document)",
+      "description": "Human-authored technical specification baseline testing AI detector false positives and similarity negatives."
+    },
+    "submission_24_wikipedia_renewable_energy.pdf": {
+      "modality": "pdf",
+      "type": "human_control_public_domain",
+      "is_degraded": false,
+      "is_ai": false,
+      "source": "Wikipedia - Photovoltaics",
+      "source_url": "https://en.wikipedia.org/wiki/Photovoltaics",
+      "license": "Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)",
+      "description": "Human-authored public-domain article baseline testing AI detector false positives and similarity negatives."
     }
   },
   "external_ground_truth": {
@@ -149,14 +203,6 @@
       "is_external_plagiarism": true,
       "source_kb_file": "circular_packaging.txt",
       "expected_external_pct_min": 40.0
-    },
-    "submission_03_logistics_strategy.docx": {
-      "is_external_plagiarism": false,
-      "note": "Domain vocabulary overlap with cold_chain_logistics.txt (unintended synthetic overlap / edge case)"
-    },
-    "submission_05_logistics_exact_copy.pdf": {
-      "is_external_plagiarism": false,
-      "note": "Exact duplicate of submission_03 (inherits cold_chain_logistics.txt domain overlap)"
     }
   },
   "pairwise_ground_truth": [
@@ -234,13 +280,13 @@
     },
     {
       "doc_a": "submission_01_fintech_report.pdf",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_01_fintech_report.pdf",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -259,6 +305,42 @@
     {
       "doc_a": "submission_01_fintech_report.pdf",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_01_fintech_report.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "cross_modal",
+      "is_plagiarized_pair": true
+    },
+    {
+      "doc_a": "submission_01_fintech_report.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "exact_copy",
+      "is_plagiarized_pair": true
+    },
+    {
+      "doc_a": "submission_01_fintech_report.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_01_fintech_report.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_01_fintech_report.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_01_fintech_report.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -330,13 +412,13 @@
     },
     {
       "doc_a": "submission_02_video_pitch.mp4",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_02_video_pitch.mp4",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -355,6 +437,42 @@
     {
       "doc_a": "submission_02_video_pitch.mp4",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_02_video_pitch.mp4",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_02_video_pitch.mp4",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_02_video_pitch.mp4",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_02_video_pitch.mp4",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_02_video_pitch.mp4",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_02_video_pitch.mp4",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -420,13 +538,13 @@
     },
     {
       "doc_a": "submission_03_logistics_strategy.docx",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_03_logistics_strategy.docx",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -445,6 +563,42 @@
     {
       "doc_a": "submission_03_logistics_strategy.docx",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_03_logistics_strategy.docx",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_03_logistics_strategy.docx",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_03_logistics_strategy.docx",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_03_logistics_strategy.docx",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_03_logistics_strategy.docx",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_03_logistics_strategy.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -504,13 +658,13 @@
     },
     {
       "doc_a": "submission_04_logistics_rewritten.docx",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_04_logistics_rewritten.docx",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -529,6 +683,42 @@
     {
       "doc_a": "submission_04_logistics_rewritten.docx",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_04_logistics_rewritten.docx",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_04_logistics_rewritten.docx",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_04_logistics_rewritten.docx",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_04_logistics_rewritten.docx",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_04_logistics_rewritten.docx",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_04_logistics_rewritten.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -582,13 +772,13 @@
     },
     {
       "doc_a": "submission_05_logistics_exact_copy.pdf",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_05_logistics_exact_copy.pdf",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -607,6 +797,42 @@
     {
       "doc_a": "submission_05_logistics_exact_copy.pdf",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_05_logistics_exact_copy.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_05_logistics_exact_copy.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_05_logistics_exact_copy.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_05_logistics_exact_copy.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_05_logistics_exact_copy.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_05_logistics_exact_copy.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -654,13 +880,13 @@
     },
     {
       "doc_a": "submission_06_corrupt_empty.pdf",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_06_corrupt_empty.pdf",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -679,6 +905,42 @@
     {
       "doc_a": "submission_06_corrupt_empty.pdf",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_06_corrupt_empty.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_06_corrupt_empty.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_06_corrupt_empty.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_06_corrupt_empty.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_06_corrupt_empty.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_06_corrupt_empty.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -720,13 +982,13 @@
     },
     {
       "doc_a": "submission_07_silent_video.mp4",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_07_silent_video.mp4",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -745,6 +1007,42 @@
     {
       "doc_a": "submission_07_silent_video.mp4",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_07_silent_video.mp4",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_07_silent_video.mp4",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_07_silent_video.mp4",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_07_silent_video.mp4",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_07_silent_video.mp4",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_07_silent_video.mp4",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -780,13 +1078,13 @@
     },
     {
       "doc_a": "submission_08_corrupted.docx",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_08_corrupted.docx",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -805,6 +1103,42 @@
     {
       "doc_a": "submission_08_corrupted.docx",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_08_corrupted.docx",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_08_corrupted.docx",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_08_corrupted.docx",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_08_corrupted.docx",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_08_corrupted.docx",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_08_corrupted.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -834,13 +1168,13 @@
     },
     {
       "doc_a": "submission_09_ev_depot_charging.pdf",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_09_ev_depot_charging.pdf",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -859,6 +1193,42 @@
     {
       "doc_a": "submission_09_ev_depot_charging.pdf",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_09_ev_depot_charging.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_09_ev_depot_charging.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_09_ev_depot_charging.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_09_ev_depot_charging.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_09_ev_depot_charging.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_09_ev_depot_charging.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -882,13 +1252,13 @@
     },
     {
       "doc_a": "submission_10_ev_battery_degradation.docx",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_10_ev_battery_degradation.docx",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -907,6 +1277,42 @@
     {
       "doc_a": "submission_10_ev_battery_degradation.docx",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_10_ev_battery_degradation.docx",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_10_ev_battery_degradation.docx",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_10_ev_battery_degradation.docx",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_10_ev_battery_degradation.docx",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_10_ev_battery_degradation.docx",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_10_ev_battery_degradation.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -924,13 +1330,13 @@
     },
     {
       "doc_a": "submission_11_ev_municipal_debt.pdf",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_11_ev_municipal_debt.pdf",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -949,6 +1355,42 @@
     {
       "doc_a": "submission_11_ev_municipal_debt.pdf",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_11_ev_municipal_debt.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_11_ev_municipal_debt.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_11_ev_municipal_debt.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_11_ev_municipal_debt.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_11_ev_municipal_debt.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_11_ev_municipal_debt.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -960,13 +1402,13 @@
     },
     {
       "doc_a": "submission_12_ev_route_energy.docx",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_b": "submission_14_llm_generated_essay.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_12_ev_route_energy.docx",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -989,14 +1431,50 @@
       "is_plagiarized_pair": false
     },
     {
-      "doc_a": "submission_13_ev_grid_balancing.pdf",
-      "doc_b": "submission_14_chatgpt_essay.docx",
+      "doc_a": "submission_12_ev_route_energy.docx",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_12_ev_route_energy.docx",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_12_ev_route_energy.docx",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_12_ev_route_energy.docx",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_12_ev_route_energy.docx",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_12_ev_route_energy.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_13_ev_grid_balancing.pdf",
-      "doc_b": "submission_15_claude_synthesis.pdf",
+      "doc_b": "submission_14_llm_generated_essay.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_13_ev_grid_balancing.pdf",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -1019,44 +1497,152 @@
       "is_plagiarized_pair": false
     },
     {
-      "doc_a": "submission_14_chatgpt_essay.docx",
-      "doc_b": "submission_15_claude_synthesis.pdf",
-      "ground_truth_label": "paraphrase",
-      "is_plagiarized_pair": true
+      "doc_a": "submission_13_ev_grid_balancing.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
     },
     {
-      "doc_a": "submission_14_chatgpt_essay.docx",
+      "doc_a": "submission_13_ev_grid_balancing.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_13_ev_grid_balancing.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_13_ev_grid_balancing.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_13_ev_grid_balancing.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_13_ev_grid_balancing.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_14_llm_generated_essay.docx",
+      "doc_b": "submission_15_llm_generated_synthesis.pdf",
+      "ground_truth_label": "same_prompt_ai_outputs",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_14_llm_generated_essay.docx",
       "doc_b": "submission_16_quantum_hardware.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
-      "doc_a": "submission_14_chatgpt_essay.docx",
+      "doc_a": "submission_14_llm_generated_essay.docx",
       "doc_b": "submission_17_quantum_algorithms.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
-      "doc_a": "submission_14_chatgpt_essay.docx",
+      "doc_a": "submission_14_llm_generated_essay.docx",
       "doc_b": "submission_18_external_plagiarism.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
-      "doc_a": "submission_15_claude_synthesis.pdf",
+      "doc_a": "submission_14_llm_generated_essay.docx",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_14_llm_generated_essay.docx",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_14_llm_generated_essay.docx",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_14_llm_generated_essay.docx",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_14_llm_generated_essay.docx",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_14_llm_generated_essay.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
       "doc_b": "submission_16_quantum_hardware.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
-      "doc_a": "submission_15_claude_synthesis.pdf",
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
       "doc_b": "submission_17_quantum_algorithms.docx",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
-      "doc_a": "submission_15_claude_synthesis.pdf",
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_15_llm_generated_synthesis.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
@@ -1069,12 +1655,210 @@
     {
       "doc_a": "submission_16_quantum_hardware.pdf",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_16_quantum_hardware.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_16_quantum_hardware.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_16_quantum_hardware.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_16_quantum_hardware.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_16_quantum_hardware.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_16_quantum_hardware.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     },
     {
       "doc_a": "submission_17_quantum_algorithms.docx",
       "doc_b": "submission_18_external_plagiarism.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_17_quantum_algorithms.docx",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_17_quantum_algorithms.docx",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_17_quantum_algorithms.docx",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_17_quantum_algorithms.docx",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_17_quantum_algorithms.docx",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_17_quantum_algorithms.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_18_external_plagiarism.pdf",
+      "doc_b": "submission_19_video_paraphrase_pitch.mp4",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_18_external_plagiarism.pdf",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_18_external_plagiarism.pdf",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_18_external_plagiarism.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_18_external_plagiarism.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_18_external_plagiarism.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_19_video_paraphrase_pitch.mp4",
+      "doc_b": "submission_20_partially_copied.docx",
+      "ground_truth_label": "cross_modal",
+      "is_plagiarized_pair": true
+    },
+    {
+      "doc_a": "submission_19_video_paraphrase_pitch.mp4",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_19_video_paraphrase_pitch.mp4",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_19_video_paraphrase_pitch.mp4",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_19_video_paraphrase_pitch.mp4",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_20_partially_copied.docx",
+      "doc_b": "submission_21_ev_near_threshold_negative.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_20_partially_copied.docx",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_20_partially_copied.docx",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_20_partially_copied.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_21_ev_near_threshold_negative.pdf",
+      "doc_b": "submission_22_wikipedia_urban_transit.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_21_ev_near_threshold_negative.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_21_ev_near_threshold_negative.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_22_wikipedia_urban_transit.pdf",
+      "doc_b": "submission_23_rfc_internet_protocol.docx",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_22_wikipedia_urban_transit.pdf",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
+      "ground_truth_label": "unrelated",
+      "is_plagiarized_pair": false
+    },
+    {
+      "doc_a": "submission_23_rfc_internet_protocol.docx",
+      "doc_b": "submission_24_wikipedia_renewable_energy.pdf",
       "ground_truth_label": "unrelated",
       "is_plagiarized_pair": false
     }

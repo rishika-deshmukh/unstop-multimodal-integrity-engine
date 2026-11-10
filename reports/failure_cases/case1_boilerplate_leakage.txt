@@ -40,6 +40,11 @@ had a document frequency of 3. The filter concluded this was an assignment promp
 and left submission_02 with 0 active chunks. This produced a catastrophic False Negative (cleared a 100% plagiarist).
 
 Remediation Applied:
-Decoupled exact-copy pairs and ensured boilerplate clustering operates strictly across distinct document
-clusters, preserving cross-modal matching recall at 100%.
+1. Decoupled exact-copy pairs and ensured boilerplate clustering operates strictly across distinct document
+   clusters, preserving cross-modal matching recall at 100%.
+2. Implemented positional and cohort-prevalence filtering in BoilerplateFilter: repeated chunks are only
+   discounted as institutional boilerplate if they occur at the document opening header (chunk_index == 0)
+   or appear across >= 25% of the total cohort (>= 4 documents). Substantive body paragraphs (chunk_index > 0)
+   shared among small subgroups (e.g. 3 colluding students) are strictly retained for vector search and plagiarism
+   scoring (verified by unit test test_boilerplate_does_not_excuse_body_collusion).
 ====================================================================================

@@ -1,15 +1,22 @@
 {
   "pairwise_metrics": {
     "threshold": 0.8,
-    "accuracy": 1.0,
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1_score": 1.0,
+    "accuracy": 0.9857,
+    "precision": 0.8333,
+    "recall": 0.7143,
+    "f1_score": 0.7692,
     "confusion_matrix": {
       "tp": 5,
-      "fp": 0,
-      "tn": 100,
-      "fn": 0
+      "fp": 1,
+      "tn": 202,
+      "fn": 2
+    },
+    "score_distribution": {
+      "lowest_tp": 0.67,
+      "lowest_tp_pair": "submission_01_fintech_report.pdf <-> submission_19_video_paraphrase_pitch.mp4",
+      "highest_tn": 0.95,
+      "highest_tn_pair": "submission_14_llm_generated_essay.docx <-> submission_15_llm_generated_synthesis.pdf",
+      "separation_margin": -0.28
     }
   },
   "degraded_file_tests": [
@@ -41,89 +48,89 @@
   "threshold_sensitivity_sweep": [
     {
       "threshold": 0.65,
-      "tp": 5,
-      "fp": 0,
-      "tn": 100,
+      "tp": 7,
+      "fp": 1,
+      "tn": 202,
       "fn": 0,
-      "precision": 1.0,
+      "precision": 0.875,
       "recall": 1.0,
-      "f1": 1.0,
+      "f1": 0.9333,
       "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.7,
       "tp": 5,
-      "fp": 0,
-      "tn": 100,
-      "fn": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
+      "fp": 1,
+      "tn": 202,
+      "fn": 2,
+      "precision": 0.8333,
+      "recall": 0.7143,
+      "f1": 0.7692,
       "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.75,
       "tp": 5,
-      "fp": 0,
-      "tn": 100,
-      "fn": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
+      "fp": 1,
+      "tn": 202,
+      "fn": 2,
+      "precision": 0.8333,
+      "recall": 0.7143,
+      "f1": 0.7692,
       "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.8,
       "tp": 5,
-      "fp": 0,
-      "tn": 100,
-      "fn": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
+      "fp": 1,
+      "tn": 202,
+      "fn": 2,
+      "precision": 0.8333,
+      "recall": 0.7143,
+      "f1": 0.7692,
       "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.85,
       "tp": 5,
-      "fp": 0,
-      "tn": 100,
-      "fn": 0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
+      "fp": 1,
+      "tn": 202,
+      "fn": 2,
+      "precision": 0.8333,
+      "recall": 0.7143,
+      "f1": 0.7692,
       "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.9,
       "tp": 3,
-      "fp": 0,
-      "tn": 100,
-      "fn": 2,
-      "precision": 1.0,
-      "recall": 0.6,
-      "f1": 0.75,
+      "fp": 1,
+      "tn": 202,
+      "fn": 4,
+      "precision": 0.75,
+      "recall": 0.4286,
+      "f1": 0.5455,
       "diagnosis": "Strict verbatim boundary; misses paraphrased and rewritten submissions."
     },
     {
       "threshold": 0.95,
       "tp": 3,
-      "fp": 0,
-      "tn": 100,
-      "fn": 2,
-      "precision": 1.0,
-      "recall": 0.6,
-      "f1": 0.75,
+      "fp": 1,
+      "tn": 202,
+      "fn": 4,
+      "precision": 0.75,
+      "recall": 0.4286,
+      "f1": 0.5455,
       "diagnosis": "Strict verbatim boundary; misses paraphrased and rewritten submissions."
     }
   ],
   "external_detection": {
-    "precision": 0.3333,
+    "precision": 1.0,
     "recall": 1.0,
-    "f1_score": 0.5,
+    "f1_score": 1.0,
     "tp": 1,
-    "fp": 2,
-    "tn": 12,
+    "fp": 0,
+    "tn": 20,
     "fn": 0
   },
   "ai_detector_benchmark": {
@@ -132,17 +139,17 @@
         "doc_id": "submission_01_fintech_report.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 12.8,
+        "openai_roberta": 12.9,
         "chatgpt_roberta": 0.0,
-        "assigned_risk": "MEDIUM",
+        "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
       },
       {
         "doc_id": "submission_02_video_pitch.mp4",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 26.4,
-        "chatgpt_roberta": 1.6,
+        "openai_roberta": 15.7,
+        "chatgpt_roberta": 1.1,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
       },
@@ -150,7 +157,7 @@
         "doc_id": "submission_03_logistics_strategy.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 28.5,
+        "openai_roberta": 15.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -159,7 +166,7 @@
         "doc_id": "submission_04_logistics_rewritten.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 72.8,
+        "openai_roberta": 15.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -168,7 +175,7 @@
         "doc_id": "submission_05_logistics_exact_copy.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 26.0,
+        "openai_roberta": 15.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -177,7 +184,7 @@
         "doc_id": "submission_09_ev_depot_charging.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 13.2,
+        "openai_roberta": 13.3,
         "chatgpt_roberta": 0.1,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -186,7 +193,7 @@
         "doc_id": "submission_10_ev_battery_degradation.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 12.8,
+        "openai_roberta": 12.9,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -195,7 +202,7 @@
         "doc_id": "submission_11_ev_municipal_debt.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 12.6,
+        "openai_roberta": 12.8,
         "chatgpt_roberta": 0.3,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -213,25 +220,25 @@
         "doc_id": "submission_13_ev_grid_balancing.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 11.7,
+        "openai_roberta": 11.8,
         "chatgpt_roberta": 0.1,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
       },
       {
-        "doc_id": "submission_14_chatgpt_essay.docx",
-        "category": "ChatGPT (GPT-4o)",
+        "doc_id": "submission_14_llm_generated_essay.docx",
+        "category": "Antigravity (Gemini)",
         "is_llm": true,
-        "openai_roberta": 35.0,
+        "openai_roberta": 99.6,
         "chatgpt_roberta": 99.4,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
       },
       {
-        "doc_id": "submission_15_claude_synthesis.pdf",
-        "category": "Claude 3.5 Sonnet",
+        "doc_id": "submission_15_llm_generated_synthesis.pdf",
+        "category": "Antigravity (Gemini)",
         "is_llm": true,
-        "openai_roberta": 31.4,
+        "openai_roberta": 44.5,
         "chatgpt_roberta": 19.3,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -249,7 +256,7 @@
         "doc_id": "submission_17_quantum_algorithms.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 15.1,
+        "openai_roberta": 15.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -258,13 +265,67 @@
         "doc_id": "submission_18_external_plagiarism.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 14.5,
+        "openai_roberta": 14.2,
         "chatgpt_roberta": 0.1,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_19_video_paraphrase_pitch.mp4",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 5.0,
+        "chatgpt_roberta": 1.8,
+        "assigned_risk": "MEDIUM",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_20_partially_copied.docx",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 15.1,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "MEDIUM",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_21_ev_near_threshold_negative.pdf",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 14.4,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_22_wikipedia_urban_transit.pdf",
+        "category": "Human Control (Wikipedia - Bus rapid transit)",
+        "is_llm": false,
+        "openai_roberta": 29.9,
+        "chatgpt_roberta": 0.8,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_23_rfc_internet_protocol.docx",
+        "category": "Human Control (IETF RFC 791: Internet Protocol Specification)",
+        "is_llm": false,
+        "openai_roberta": 37.9,
+        "chatgpt_roberta": 15.0,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_24_wikipedia_renewable_energy.pdf",
+        "category": "Human Control (Wikipedia - Photovoltaics)",
+        "is_llm": false,
+        "openai_roberta": 35.2,
+        "chatgpt_roberta": 0.9,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
       }
     ],
     "chatgpt_detector_recall": 50.0,
-    "openai_detector_recall": 0.0
+    "openai_detector_recall": 50.0
   }
 }

@@ -6,7 +6,7 @@
 [![Whisper ASR](https://img.shields.io/badge/ASR-Whisper--Tiny%2FBase-red.svg)](https://huggingface.co/openai/whisper-tiny)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
-An end-to-end multimodal content verification and similarity detection pipeline engineered for large-scale university evaluations, hackathons, and case competitions (designed to scale to 10,000+ submissions).
+An end-to-end prototype multimodal content verification and similarity detection pipeline designed to scale to large-scale university evaluations, hackathons, and case competitions (10,000+ submissions).
 
 The engine analyzes submissions across multiple modalities—**PDF reports, DOCX executive summaries, and MP4 video pitches**—calculating a tri-factor integrity breakdown:
 1. **Internal Peer-to-Peer Similarity %** (Unimodal text-to-text, cross-format PDF $\leftrightarrow$ DOCX, and cross-modal audio-to-text).
@@ -81,7 +81,7 @@ The engine analyzes submissions across multiple modalities—**PDF reports, DOCX
 
 | Scenario | Challenge | Pipeline Solution | Outcome in Benchmark |
 | :--- | :--- | :--- | :--- |
-| **Scenario 1: Cross-Modal Duplication** | Candidate reads an exact paragraph from another student's PDF in their MP4 pitch. | Extracts audio via FFmpeg, generates time-aligned transcript via Whisper, indexes chunks, and matches PDF vector space. | Flags exact match with **video timestamp (`00:00:00 - 00:00:31`) and PDF page reference (Page 2)** with 0.98 cosine similarity. |
+| **Scenario 1: Cross-Modal Duplication** | Candidate reads an exact paragraph from another student's PDF in their MP4 pitch. | Extracts audio via FFmpeg, generates time-aligned transcript via Whisper, indexes chunks, and matches PDF vector space. | Flags exact match with **video timestamp (`00:00:00 - 00:00:27`) and PDF page reference (Page 2)** with 1.00 cosine similarity. |
 | **Scenario 2: Paraphrased Content** | Student rewrites content using synonyms to evade naive keyword matching. | Evaluates dense semantic embeddings alongside lexical string metrics (Jaccard, Levenshtein). | Flags **semantic similarity > 0.85** while **lexical Jaccard is low (<0.35)**, explicitly proving semantic evasion. |
 | **Scenario 3: Corrupted / Empty Submissions** | Corrupted DOCX, zero-byte PDF, or silent MP4 video submitted. | Non-crashing exception handling, audio stream probing, volume detection, and corrupted file isolation. | Logs warning, flags file as **`⚠️ FLAGGED` (`SKIPPED_EMPTY`, `SKIPPED_SILENT`, `SKIPPED_CORRUPT`)**, and processes all remaining files. |
 | **Scenario 4: Benign Common Formatting** | 5 documents share an identical 150-word problem prompt with original analytical answers. | Corpus-level document-frequency filter detects repeated chunks in $\ge 3$ documents and discounts them from plagiarism scoring. | **Zero false-positive alarms**; all 5 documents receive **`🟢 LOW RISK (0.0% Peer Similarity)`**. |
@@ -92,8 +92,11 @@ The engine analyzes submissions across multiple modalities—**PDF reports, DOCX
 ## Quickstart & Reproducibility Guide
 
 ### 1. Prerequisites
-- **Python**: Python 3.10+ (tested on Python 3.10.8).
-- **FFmpeg**: Automatically managed via bundled `imageio-ffmpeg` binary (no manual system installation required).
+- **Python**: Python 3.9+ compatible (tested and verified under Python 3.10.8 via syntax/AST inspection avoiding PEP 604 union types and 3.10 pattern matching).
+- **FFmpeg**: Automatically managed via bundled `imageio-ffmpeg` binary (or system FFmpeg if present).
+- **Linux System Dependencies**: On Debian/Ubuntu environments, audio synthesis via `pyttsx3` requires `espeak` and `libespeak1` (`sudo apt-get install -y ffmpeg espeak libespeak1`).
+- **Acoustic Testing Boundary**: Synthetic test videos (`submission_02`, `submission_19`) use clean TTS audio; real-world noisy, low-bitrate, or accented human speech was not evaluated in this benchmark.
+- **Environment Note**: All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (AMD Ryzen 5 5600H, 16 GB RAM)**. Linux GitHub Actions CI (`.github/workflows/ci.yml`) validates the pipeline, unit tests, and evaluation on `ubuntu-latest`.
 
 ### 2. Cross-Platform Setup & Execution
 
@@ -103,11 +106,15 @@ The engine analyzes submissions across multiple modalities—**PDF reports, DOCX
 git clone https://github.com/rishika-deshmukh/unstop-multimodal-integrity-engine.git
 cd unstop-multimodal-integrity-engine
 
-# Setup environment and install dependencies
+# Option A: One-command setup via script (creates venv, installs requirements, downloads NLTK data)
+chmod +x setup.sh && ./setup.sh
+
+# Option B: One-command setup via Makefile
 make setup
 
 # Run the complete pipeline
 make run
+# Or directly: ./venv/bin/python run_integrity_check.py --input_dir ./sample_submissions --output_dir ./reports
 
 # Run empirical evaluation benchmark
 make evaluate
@@ -141,7 +148,7 @@ python -m venv venv
 .\venv\Scripts\python.exe -m pytest tests/ -v
 ```
 
-*Tip for Windows: You can also simply double-click or run `.\run.bat` to execute setup, pipeline, and evaluation in one step.*
+*Tip for Windows: You can also simply double-click or run `.\run.bat` to execute automated setup, pipeline run, and evaluation in one step.*
 
 ---
 
@@ -157,23 +164,23 @@ Each submission generates a machine-readable `.json` audit report adhering stric
   "scores": {
     "peer_similarity_percentage": 100.0,
     "external_similarity_percentage": 0.0,
-    "ai_generated_probability": 26.4
+    "ai_generated_probability": 15.1
   },
   "peer_matches": [],
   "multimodal_matches": [
     {
       "matched_file": "submission_01_fintech_report.pdf",
-      "similarity_score": 0.98,
-      "lexical_jaccard": 0.9524,
-      "lexical_levenshtein": 0.9433,
+      "similarity_score": 1.0,
+      "lexical_jaccard": 1.0,
+      "lexical_levenshtein": 1.0,
       "is_paraphrase": false,
       "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
-      "query_passage": "Operating margins contracted by 4.2% over the third quarter due to escalated cloud server expenditures and customer verification fees.",
-      "matched_passage": "Operating margins contracted by 4.2% over the third quarter due to escalated cloud server expenditures and customer verification fees.",
+      "query_passage": "The core competitive advantage relies on vertical integration of credit underwriting models with real-time transactional payment gateways.",
+      "matched_passage": "The core competitive advantage relies on vertical integration of credit underwriting models with real-time transactional payment gateways.",
       "location": {
         "query_page": null,
         "matched_page": 2,
-        "query_timestamp": "00:00:00 - 00:00:31",
+        "query_timestamp": "00:00:00 - 00:00:27",
         "matched_timestamp": null
       }
     }
@@ -181,6 +188,22 @@ Each submission generates a machine-readable `.json` audit report adhering stric
   "explanations": "Critical internal peer similarity detected (100.0% meets or exceeds 50.0% threshold)."
 }
 ```
+
+### Multimodal Location Schema (Bidirectional Citations)
+
+The pipeline preserves exact page numbers and time-aligned audio timestamps across both matching directions:
+- **Video Query $\rightarrow$ Text Target (e.g., `submission_02` $\rightarrow$ `submission_01`)**:
+  - `query_timestamp`: The exact timestamp range in the video where the words were spoken (e.g., `"00:00:00 - 00:00:27"`).
+  - `matched_page`: The page number in the source document where the duplicated text originates (e.g., `2`).
+  - `query_page`: `null` (since the query document is a video).
+  - `matched_timestamp`: `null` (since the target document is a PDF).
+- **Text Query $\rightarrow$ Video Target (e.g., `submission_01` $\rightarrow$ `submission_02`)**:
+  - `query_page`: The page number in the query PDF (e.g., `2`).
+  - `matched_timestamp`: The timestamp range in the video where the audio was transcribed (e.g., `"00:00:00 - 00:00:27"`).
+  - `query_timestamp`: `null`.
+  - `matched_page`: `null`.
+
+This bidirectional schema guarantees that regardless of which document is viewed first by an evaluator, the exact cross-modal citation is immediately verifiable in under 30 seconds.
 
 ### Sample Paraphrase Report Snippet (`reports/submission_04_logistics_rewritten.docx.md`)
 > ### Overlap #1 — Target: `submission_03_logistics_strategy.docx` ⚠️ **[SYNONYM-BASED PARAPHRASE DETECTED]**
@@ -200,53 +223,57 @@ Processing 10,000 multi-modal submissions (est. 6,000 PDFs, 3,500 DOCXs, 500 MP4
 
 ### 1. Empirical Hardware Measurements (Benchmarked on x86_64 CPU)
 
-From `benchmarks/results.json` run on this machine (10 physical cores, 16 logical cores, 15.69 GB RAM):
-- **MiniLM-L6-v2 Embedding Throughput (CPU)**: **221.01 chunks/second** (4.525 ms/chunk).
-- **Whisper Speech-to-Text (CPU)**: **0.098 RTF** (**10.24x faster than real-time**; 30.75s audio transcribed in 3.003s).
+From `benchmarks/results.json` run on this machine (10 physical cores, 16 logical cores, 15.69 GB RAM, Python 3.10.8):
+- **MiniLM-L6-v2 Embedding Throughput (CPU)**: **219.83 chunks/second** (4.549 ms/chunk) [Measured].
+- **Whisper Speech-to-Text (CPU)**: **0.112 RTF** (**8.92x faster than real-time**; 26.53s audio transcribed in 2.974s) [Measured].
 - **FAISS Flat vs. HNSW (200,000 Vectors, Dimension 384)**:
-  - `IndexFlatIP`: RAM footprint: **293.0 MB**, Query latency: **14.112 ms/query** (70.9 QPS).
-  - `IndexHNSWFlat` ($M=32, efSearch=64$): RAM footprint: **350.84 MB**, Query latency: **1.763 ms/query** (567.2 QPS).
-  - **HNSW Speedup**: **8.0x faster query latency** with only +57.84 MB RAM overhead!
+  - `IndexFlatIP`: RAM footprint: **293.0 MB**, Query latency: **13.852 ms/query** (72.2 QPS) [Measured].
+  - `IndexHNSWFlat` ($M=32, efSearch=64$): RAM footprint: **350.04 MB**, Query latency: **0.915 ms/query** (1092.9 QPS) [Measured].
+  - **HNSW Speedup**: **15.1x faster query latency** with only +57.04 MB RAM overhead [Measured]!
+- **Environment Notice**: Tested on Python 3.10.8; compatibility with 3.9 checked by inspection only.
 
 ### 2. Workload Sizing & Quantitative Bounds for 10,000 Documents
-- **Average Document Length**: Design assumption: ~16 chunks per document (for comprehensive 10-page reports; the sample benchmark corpus averages 2.6 chunks/doc for concise executive summaries and short transcripts).
-- **Corpus Chunk Volume**: $10,000 \text{ submissions} \times 16 \text{ chunks/doc} \approx \mathbf{160,000\text{ dense vectors}}$.
-- **Vector Index RAM**: $160,000 \text{ vectors} \times 384 \text{ floats} \times 4 \text{ bytes} \approx 245 \text{ MB}$ raw ($< 360 \text{ MB}$ with HNSW graph). Fits effortlessly in RAM on a single standard cloud node.
+- **Average Document Length**: Design assumption: ~16 chunks per document [Estimate] (for comprehensive 10-page reports; the sample benchmark corpus averages 2.6 chunks/doc for concise executive summaries and short transcripts).
+- **Corpus Chunk Volume**: $10,000 \text{ submissions} \times 16 \text{ chunks/doc} \approx \mathbf{160,000\text{ dense vectors}}$ [Estimate].
+- **Vector Index RAM**: $160,000 \text{ vectors} \times 384 \text{ floats} \times 4 \text{ bytes} \approx 245 \text{ MB}$ raw ($< 360 \text{ MB}$ with HNSW graph) [Calculated]. Fits effortlessly in RAM on a single standard cloud node.
 - **Embedding Generation Time**:
-  - $160,000 \text{ chunks} / 221.01 \text{ chunks/sec} \approx 724 \text{ seconds}$ (~12.1 minutes on 1 CPU node).
-  - Distributed across **4 standard CPU nodes** (`c6i.2xlarge`, 8 vCPUs): $\mathbf{\approx 3.0\text{ minutes}}$.
-  - On a GPU node (`g4dn.xlarge` with TensorRT / PyTorch batching, estimated ~1,500 chunks/sec): $\approx 107 \text{ seconds}$ (~1.8 minutes).
+  - $160,000 \text{ chunks} / 219.83 \text{ chunks/sec} \approx 728 \text{ seconds}$ (~12.1 minutes on 1 CPU node) [Calculated from measured baseline].
+  - Distributed across **4 standard CPU nodes** (`c6i.2xlarge`, 8 vCPUs each, running 8 parallel Celery worker processes per node = 32 total worker processes): $\mathbf{\approx 3.0\text{ minutes}}$ [Estimate based on horizontal scaling].
+  - On a GPU node (`g4dn.xlarge` with TensorRT / PyTorch batching, estimated ~1,500 chunks/sec based on published T4 benchmarks): $\approx 107 \text{ seconds}$ (~1.8 minutes) [Estimate].
 
 ### 3. Whisper ASR Bottleneck Resolution (Dedicated GPU Queue)
-- **The Bottleneck**: 500 video pitches $\times$ 30s audio = 15,000 seconds of audio.
-  - On CPU (measured 10.24x speedup, RTF 0.098): sequential time = $15,000 \times 0.098 \approx 1,470 \text{ seconds}$ (~24.5 minutes).
-  - With 8 parallel Celery CPU worker processes: $1,470 / 8 \approx \mathbf{3.1\text{ minutes}}$.
+- **The Workload**: 500 video pitches $\times$ 30s audio = 15,000 seconds of audio [Estimate].
+  - On CPU (measured 8.92x speedup, RTF 0.112): sequential execution = $15,000 \times 0.112 \approx 1,680 \text{ seconds}$ (~28.0 minutes) [Calculated from measured RTF].
+  - Distributed across 8 parallel Celery CPU worker processes: $1,680 / 8 \approx \mathbf{3.5\text{ minutes}}$ [Estimate based on worker parallelism].
 - **Production Solution (Dedicated GPU Queue)**:
   - Route video files to a dedicated Celery GPU queue (`celery -Q gpu_whisper_workers`).
-  - Using 2x `g4dn.xlarge` instances with NVIDIA T4 GPUs running `faster-whisper` (CTranslate2 INT8, estimated ~20x faster than real-time):
-    $15,000 / (2 \times 20) \approx \mathbf{375\text{ seconds}}$ (**~6.2 minutes**).
+  - Using 2x `g4dn.xlarge` instances with NVIDIA T4 GPUs running `faster-whisper` (CTranslate2 INT8, estimated ~20x faster than real-time based on published benchmarks):
+    $15,000 / (2 \times 20) \approx \mathbf{375\text{ seconds}}$ (**~6.2 minutes**) [Estimate].
 
 ### 4. Vector Search Latency: Flat vs. HNSW
 - To match 160,000 query chunks against the 160,000 corpus vectors:
-  - With `IndexFlatIP`: $160,000 \times 14.112 \text{ ms} \approx 2,258 \text{ seconds}$ (~37.6 minutes).
-  - With `IndexHNSWFlat`: $160,000 \times 1.763 \text{ ms} \approx \mathbf{282\text{ seconds}}$ (**~4.7 minutes**).
-  - Production recommendation: Deploy **`FAISS IndexHNSWFlat`** (or managed Qdrant with HNSW). Sub-two-millisecond search ensures real-time query resolution.
+  - With `IndexFlatIP`: $160,000 \times 13.852 \text{ ms} \approx 2,216 \text{ seconds}$ (~36.9 minutes) [Calculated from measured 13.852 ms latency].
+  - With `IndexHNSWFlat`: $160,000 \times 0.915 \text{ ms} \approx \mathbf{146\text{ seconds}}$ (**~2.4 minutes**) [Calculated from measured 0.915 ms latency].
+  - Production recommendation: Deploy **`FAISS IndexHNSWFlat`** (or managed Qdrant with HNSW). Sub-millisecond search ensures real-time query resolution.
 
 ### 5. Multi-Stage Filtering: LSH / MinHash Pre-Filter
 To eliminate redundant dense neural queries for verbatim submissions:
-1. **MinHash Fingerprinting**: Compute 128-bit MinHash signatures during text normalization ($O(1)$ lookup time, < 1 ms).
-2. Document pairs with Jaccard $\ge 0.90$ are flagged immediately as direct duplicates without querying the vector index, shedding **~30% of vector query load** (design assumption).
+1. **MinHash Fingerprinting**: Compute 128-bit MinHash signatures during text normalization ($O(1)$ lookup time, < 1 ms) [Estimate].
+2. Document pairs with Jaccard $\ge 0.90$ are flagged immediately as direct duplicates without querying the vector index, shedding **~30% of vector query load** [Design assumption based on competition submission distributions].
 3. Dense HNSW vector search is reserved for subtle paraphrasing and cross-modal audio alignment.
 
 ### 6. Accurate Cloud Compute Cost Math (AWS Spot Pricing)
-- Compute cluster for processing 10,000 submissions:
-  - **4x `c6i.2xlarge` CPU nodes** (8 vCPU, 16 GB RAM) @ \$0.102/hour spot:
-    Run for 0.5 hours = $4 \times \$0.102 \times 0.5 = \mathbf{\$0.204}$
-  - **2x `g4dn.xlarge` GPU nodes** (4 vCPU, 16 GB RAM, 1 T4 GPU) @ \$0.157/hour spot (dedicated Whisper queue):
-    Run for 0.5 hours = $2 \times \$0.157 \times 0.5 = \mathbf{\$0.157}$
-  - **Object Storage & Queue** (Amazon S3 + Redis Streams): $\approx \mathbf{\$0.02}$
-- **Total Batch Execution Time**: **~10 to 15 minutes**.
-- **Total Cloud Compute Cost**: $\$0.204 + \$0.157 + \$0.02 = \mathbf{\$0.38}$ (less than 40 cents!).
+- Compute cluster for processing 10,000 submissions within a 15-minute SLA:
+  - **4x `c6i.2xlarge` CPU instances** (8 vCPU, 16 GB RAM) @ \$0.102/hour spot:
+    Run for 0.5 hours = $4 \times \$0.102 \times 0.5 = \mathbf{\$0.204}$ [Estimate]
+  - **2x `g4dn.xlarge` GPU instances** (4 vCPU, 16 GB RAM, 1 NVIDIA T4 GPU) @ \$0.157/hour spot (dedicated Whisper queue):
+    Run for 0.5 hours = $2 \times \$0.157 \times 0.5 = \mathbf{\$0.157}$ [Estimate]
+  - **Object Storage & Message Broker** (Amazon S3 for raw files + Redis Streams on AWS ElastiCache): $\approx \mathbf{\$0.02}$ [Estimate]
+- **Worker Allocation**: 4 CPU nodes hosting 8 Celery worker processes each (32 total worker processes) for document ingestion and text normalization; 2 GPU nodes hosting 2 dedicated Whisper ASR workers for video speech transcription.
+- **Total Batch Execution Time**: **~10 to 15 minutes** [Estimate based on pipelined queue simulation].
+- **Total Cloud Compute Cost Arithmetic**:
+  $$\text{Total Cost} = \$0.204\ (\text{CPU}) + \$0.157\ (\text{GPU}) + \$0.020\ (\text{S3/Redis}) = \mathbf{\$0.381}\ (\approx \mathbf{\$0.38})$$
+  *(Estimate based on published AWS EC2 spot pricing for us-east-1).*
 
 ---
 
@@ -304,12 +331,12 @@ unstop-multimodal-integrity-engine/
 │   ├── renewable_microgrids.txt
 │   ├── e_commerce_retention.txt
 │   └── circular_packaging.txt
-├── sample_submissions/            # 18 synthetic multi-modal test files
+├── sample_submissions/            # 24 synthetic and semi-synthetic multi-modal test files
 │   ├── dataset_manifest.json      # Ground truth metadata and pairwise relationships
 │   ├── submission_01_fintech_report.pdf
 │   ├── submission_02_video_pitch.mp4
 │   ├── ...
-│   └── submission_18_external_plagiarism.pdf
+│   └── submission_24_renewable_energy.pdf
 └── reports/                       # Generated audit reports & pairwise summary matrix
     ├── batch_summary_report.md
     ├── summary_matrix.csv
@@ -327,22 +354,69 @@ unstop-multimodal-integrity-engine/
 
 ---
 
+## Dataset Provenance & Public-Domain Attribution
+
+| Submission / Resource | Source / Basis | License / Status | Attribution & Citation |
+| :--- | :--- | :--- | :--- |
+| `submission_22_wikipedia_urban_transit.pdf` | Wikipedia: *Bus rapid transit* | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikipedia Article](https://en.wikipedia.org/wiki/Bus_rapid_transit), Wikimedia Foundation |
+| `submission_23_rfc_internet_protocol.docx` | IETF RFC 791: *Internet Protocol Specification* (1981) | Public Domain | [IETF Datatracker RFC 791](https://datatracker.ietf.org/doc/html/rfc791), DARPA |
+| `submission_24_wikipedia_renewable_energy.pdf` | Wikipedia: *Photovoltaics* | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikipedia Article](https://en.wikipedia.org/wiki/Photovoltaics), Wikimedia Foundation |
+| `external_kb/circular_packaging.txt` | Wikipedia: *Circular economy* | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikipedia Article](https://en.wikipedia.org/wiki/Circular_economy) |
+| `external_kb/cold_chain_logistics.txt` | Wikipedia: *Container port* | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikipedia Article](https://en.wikipedia.org/wiki/Container_port) |
+| `submission_14_llm_generated_essay.docx` | Synthesized by Antigravity (Gemini) | Prototype Test Asset | Simulating ChatGPT response to EV bus charging brief |
+| `submission_15_llm_generated_synthesis.pdf` | Synthesized by Antigravity (Gemini) | Prototype Test Asset | Simulating Claude response to EV bus charging brief |
+| Submissions `01`–`13`, `16`–`21` | Script-Generated Synthetic Texts | MIT License | Programmatically generated by `scripts/generate_synthetic_dataset.py` |
+
+---
+
 ## Assumptions
 
 1. **Submission Metadata**: File names are unique within a competition cohort and act as immutable submission identifiers (`doc_id`).
 2. **Audio Language**: Spoken pitches are delivered in English (Whisper `language='en'` enforced).
 3. **Hardware Independence**: The prototype defaults to CPU execution to ensure deterministic reproducibility on standard commodity workstations without requiring local CUDA GPU configuration.
-4. **AI Generation Policy**: Consistent with emerging academic and testing integrity standards, AI-generation confidence alone is treated as a probabilistic indicator and is strictly prohibited from triggering an administrative `HIGH` risk escalation without corroborating peer or external similarity evidence.
+4. **AI Generation Policy**: AI-generation likelihood alone is treated as a probabilistic indicator and does not trigger an automatic `HIGH` risk escalation without corroborating peer or external similarity evidence.
 5. **Boilerplate Scope**: Reusable institutional text (e.g. competition problem prompts, case background headers) is expected to recur across $\ge 3$ independent candidate submissions.
 
 ---
 
 ## AI Coding Assistants Disclosure
 
-In accordance with Section 10 of the assessment brief:
-- **Assistants Used**: Antigravity (Powered by Google DeepMind Gemini models), Claude (Anthropic), and ChatGPT (OpenAI).
-- **Scope of Usage**:
-  - Antigravity (Gemini) generated the code and the synthetic dataset.
-  - Claude (Anthropic) was used for review and prompt-writing.
-  - ChatGPT and Claude were used by the author to generate the two LLM samples (`submission_14_chatgpt_essay.docx` and `submission_15_claude_synthesis.pdf`).
-- **Transparency Note**: All architectural choices, threshold rationale, mathematical formulas, and failure case analyses were verified and understood by the author, who is fully prepared to explain every line of code and engineering trade-off during technical interview evaluation.
+In line with Section 10 of the brief, I used AI assistants on this project:
+
+- Antigravity (Google Gemini): coding assistant for implementation, tests and synthetic dataset generation.
+- Claude (Anthropic): assistant for planning, reviewing results, debugging guidance and drafting task instructions.
+
+How I worked:
+- I owned the project end to end: scoping it against the brief, deciding what to build, and directing the assistants task by task.
+- I reviewed every result before accepting it and ran the pipeline, tests and evaluation myself.
+- I made the design calls: embedding model (MiniLM) vs. heavier models, FAISS index choice, the two-tier similarity thresholds, the boilerplate rule, and treating AI detection as an advisory signal only.
+- I caught and corrected weak or unsupported claims: unmeasured benchmarks were relabelled as estimates, mislabelled sample provenance was fixed, and detector calibration limits were documented.
+
+I understand the architecture and code and am ready to explain any part of it.
+
+---
+
+## What I Learned / Limitations
+
+What I learned
+- Semantic embeddings catch paraphrases that word-matching misses. A synonym-swapped document scored about 0.87 cosine similarity but only 0.18 Jaccard.
+- Chunk position and prevalence matter for boilerplate. A shared case prompt near the start of documents should be discounted, but the same text in the body of several documents is more likely collusion. My first rule had a loophole, and I tightened it.
+- A perfect score on a small synthetic dataset proves little. Adding harder cases (partial copies, near-threshold negatives, spoken paraphrases) exposed real weaknesses.
+- AI-text detectors are unreliable. An older detector scored a 1981 human-written technical standard as AI-generated, and the better detector missed one LLM-style sample (19.3%). So AI probability is an advisory signal that cannot trigger HIGH risk alone.
+- Similar topic is not the same as copying. External matching initially produced a false positive because texts shared domain vocabulary, which is why lexical corroboration was added.
+
+Limitations
+- The dataset is small (24 files) and synthetic. Thresholds (0.80 high-confidence, 0.65-0.80 manual review) were calibrated on it and may not transfer to real submissions.
+- Spoken-paraphrase matches score about 0.67, so they are only caught at the lower review tier.
+- Two students independently asking an LLM the same prompt can look like copying (sub_14 and sub_15 scored about 0.95), which is an inherent false-positive risk.
+- Speech recognition was tested only on clean text-to-speech audio (about 4.8% word error rate). Accented, noisy or phone-recorded speech was not evaluated.
+- AI detection is weak and out-of-domain; it should never be used alone for decisions.
+- Only some scaling figures were measured locally (FAISS Flat vs HNSW, MiniLM throughput, Whisper speed). The others are labelled as estimates.
+- Tested on Windows 11 with Python 3.10.8. Linux is covered by a CI workflow, and Python 3.9 compatibility was checked by inspection only.
+- The two "LLM-generated" samples were produced by an AI assistant (Gemini), not by ChatGPT or Claude.
+
+Next steps if I continued
+- Evaluate on real student-style submissions and noisy or accented audio.
+- Tune thresholds on a larger labelled set with a proper train/validation split.
+- Use a stronger or ensemble AI detector and add stylometric signals.
+- Add MinHash/LSH pre-filtering and an HNSW index for scale.

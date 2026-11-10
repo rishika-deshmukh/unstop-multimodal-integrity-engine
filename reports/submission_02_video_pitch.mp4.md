@@ -10,7 +10,7 @@
 | :--- | :---: | :---: |
 | **Internal Peer-to-Peer Similarity** | **100.0%** | ≥ 50.0% (High), ≥ 20.0% (Medium) |
 | **External / Reference Similarity** | **0.0%** | ≥ 40.0% (High), ≥ 20.0% (Medium) |
-| **AI-Generated Content Likelihood** | **26.4%** | Probabilistic (≥ 80.0% Medium alone) |
+| **AI-Generated Content Likelihood** | **15.7%** | Probabilistic (≥ 80.0% Medium alone) |
 
 
 ## 2. Template & Common Prompt Filtering (Scenario 4)
@@ -22,8 +22,8 @@
 Identified audio speech matching written submission passages:
 
 
-### Match #1 — Target: `submission_01_fintech_report.pdf` (Similarity: **0.98**)
-- **Query Location:** `00:00:00 - 00:00:31`
+### Match #1 — Target: `submission_01_fintech_report.pdf` (Similarity: **1.00** | **High-confidence match (>=0.80)**)
+- **Query Location:** `00:00:00 - 00:00:27`
 - **Matched File Location:** `Page 2`
 - **Offending Query Spoken/Text:**
   > *"The core competitive advantage relies on vertical integration of credit underwriting models with real-time transactional payment gateways."*
@@ -42,10 +42,10 @@ Identified audio speech matching written submission passages:
 
 | Component | Estimated Value | Interpretation |
 | :--- | :---: | :--- |
-| **RoBERTa Classifier (Supervised)** | 17.5% | Supervised synthetic classifier |
-| **GPT-2 Perplexity (PPL)** | 118.73 | Lower PPL (<35) correlates with LLMs |
-| **Sentence Burstiness (Length Variance)** | 12.34 | Lower burstiness (<35) indicates uniform machine cadence |
-| **Composite AI Probability** | **26.4%** | Confidence: MODERATE |
+| **RoBERTa Classifier (Supervised)** | 1.1% | Supervised synthetic classifier |
+| **GPT-2 Perplexity (PPL)** | 92.35 | Lower PPL (<35) correlates with LLMs |
+| **Sentence Burstiness (Length Variance)** | 11.20 | Lower burstiness (<35) indicates uniform machine cadence |
+| **Composite AI Probability** | **15.7%** | Confidence: HIGH |
 
 > [!NOTE]
 > Probabilistic heuristic indicator. AI confidence alone never elevates risk to HIGH without corroborating external or peer matches.

@@ -9,8 +9,8 @@
 | Signal Metric | Score | Decision Boundary Threshold |
 | :--- | :---: | :---: |
 | **Internal Peer-to-Peer Similarity** | **100.0%** | ≥ 50.0% (High), ≥ 20.0% (Medium) |
-| **External / Reference Similarity** | **50.0%** | ≥ 40.0% (High), ≥ 20.0% (Medium) |
-| **AI-Generated Content Likelihood** | **26.0%** | Probabilistic (≥ 80.0% Medium alone) |
+| **External / Reference Similarity** | **0.0%** | ≥ 40.0% (High), ≥ 20.0% (Medium) |
+| **AI-Generated Content Likelihood** | **15.0%** | Probabilistic (≥ 80.0% Medium alone) |
 
 
 ## 2. Template & Common Prompt Filtering (Scenario 4)
@@ -23,7 +23,7 @@
 
 ## 4. Internal Peer Document Overlaps & Paraphrasing (Scenario 2)
 
-### Overlap #1 — Target: `submission_03_logistics_strategy.docx`
+### Overlap #1 — Target: `submission_03_logistics_strategy.docx` | **High-confidence match (>=0.80)**
 | Semantic Cosine Sim | Lexical Jaccard Sim | Levenshtein Sim | Page References |
 | :---: | :---: | :---: | :---: |
 | **0.98** | **1.00** | **1.00** | Query: Pg 1 ↔ Match: Pg 1 |
@@ -32,7 +32,7 @@
 - **Matched Source Passage:**
   > *"Active refrigeration containers utilizing automated compressor cycles guarantee temperature stability during transcontinental flights, whereas passive thermal shippers rely on vacuum-insulated panels to protect vaccines during domestic road haulage."*
 
-### Overlap #2 — Target: `submission_03_logistics_strategy.docx`
+### Overlap #2 — Target: `submission_03_logistics_strategy.docx` | **High-confidence match (>=0.80)**
 | Semantic Cosine Sim | Lexical Jaccard Sim | Levenshtein Sim | Page References |
 | :---: | :---: | :---: | :---: |
 | **1.00** | **1.00** | **1.00** | Query: Pg 1 ↔ Match: Pg 1 |
@@ -43,19 +43,16 @@
 
 ## 5. External Knowledge Base & Web References
 
-- **Source:** [Temperature-Controlled Pharmaceutical Supply Chain Infrastructure](https://en.wikipedia.org/wiki/Cold_chain) (Cosine Sim: **0.82**)
-  - **Submission Text:** *"Cold Chain Logistics and Temperature Assurance Strategy
-Establishing a resilient pharmaceutical cold chain requires continuous thermal monitoring between two and eight degrees Celsius across all intermediate warehouse hubs."*
-  - **Reference Text:** *"Pharmaceutical cold chain logistics necessitate strict end-to-end temperature preservation ranging from ultra-cold cryopreservation between minus eighty degrees Celsius to standardized refrigerated storage between two and eight degrees Celsius."*
+*No uncredited external reference matches detected.*
 
 ## 6. AI-Generation Signal Breakdown (Requirement 7)
 
 | Component | Estimated Value | Interpretation |
 | :--- | :---: | :--- |
-| **RoBERTa Classifier (Supervised)** | 16.9% | Supervised synthetic classifier |
+| **RoBERTa Classifier (Supervised)** | 0.0% | Supervised synthetic classifier |
 | **GPT-2 Perplexity (PPL)** | 182.15 | Lower PPL (<35) correlates with LLMs |
 | **Sentence Burstiness (Length Variance)** | 15.54 | Lower burstiness (<35) indicates uniform machine cadence |
-| **Composite AI Probability** | **26.0%** | Confidence: MODERATE |
+| **Composite AI Probability** | **15.0%** | Confidence: HIGH |
 
 > [!NOTE]
 > Probabilistic heuristic indicator. AI confidence alone never elevates risk to HIGH without corroborating external or peer matches.

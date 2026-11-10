@@ -98,10 +98,18 @@ class ExternalDetector:
 
             kb_results = [r for r in results if r.is_external]
             if kb_results:
-                matched_chunk_ids.add(q_chunk.chunk_id)
                 top_match = kb_results[0]
                 t_chunk = top_match.matched_chunk
                 
+                # Secondary n-gram / lexical corroboration:
+                # Requires either very high semantic similarity (>= 0.90) or lexical token overlap (Jaccard >= 0.15)
+                # to prevent shared domain jargon in reference texts from triggering false external plagiarism.
+                from src.utils.text_metrics import compute_jaccard_similarity
+                jaccard = compute_jaccard_similarity(q_chunk.text, t_chunk.text)
+                if top_match.cosine_similarity < 0.90 and jaccard < 0.15:
+                    continue
+
+                matched_chunk_ids.add(q_chunk.chunk_id)
                 meta = self.source_metadata.get(t_chunk.doc_id, {})
                 source_url = meta.get("url", f"https://en.wikipedia.org/wiki/{t_chunk.file_name.replace('.txt', '')}")
                 source_title = meta.get("title", t_chunk.file_name)
@@ -110,11 +118,14 @@ class ExternalDetector:
                 q_sent = q_chunk.sentences[0] if q_chunk.sentences else q_chunk.text
                 t_sent = t_chunk.sentences[0] if t_chunk.sentences else t_chunk.text
 
+                confidence_tier = "High-confidence match (>=0.80)" if top_match.cosine_similarity >= 0.80 else "Possible paraphrase / review recommended (0.65-0.79)"
+
                 external_matches.append({
                     "source_title": source_title,
                     "source_url": source_url,
                     "matched_file": t_chunk.file_name,
                     "similarity_score": round(top_match.cosine_similarity, 2),
+                    "confidence_tier": confidence_tier,
                     "query_passage": q_sent,
                     "matched_passage": t_sent,
                     "location": {
