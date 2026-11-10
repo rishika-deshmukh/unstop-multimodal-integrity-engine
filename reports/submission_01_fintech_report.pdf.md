@@ -2,7 +2,7 @@
 
 **Overall Assessment:** **🟡 MEDIUM INTEGRITY RISK**
 
-**System Recommendation:** Moderate peer overlap detected (33.3% exceeds 20.0% threshold). Mutual overlap detected (direction undetermined); candidate submission may be the original source copied by another peer rather than the copier. Reviewer manual verification required before penalizing.
+**System Recommendation:** Moderate peer overlap detected (33.3% meets or exceeds 20.0% threshold). Mutual overlap detected (direction undetermined); candidate submission may be the original source copied by another peer rather than the copier. Reviewer manual verification required before penalizing.
 
 ## 1. Multi-Signal Integrity Scores
 

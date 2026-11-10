@@ -6,9 +6,9 @@
     "recall": 1.0,
     "f1_score": 1.0,
     "confusion_matrix": {
-      "tp": 4,
+      "tp": 5,
       "fp": 0,
-      "tn": 101,
+      "tn": 100,
       "fn": 0
     }
   },
@@ -41,190 +41,230 @@
   "threshold_sensitivity_sweep": [
     {
       "threshold": 0.65,
-      "tp": 4,
+      "tp": 5,
       "fp": 0,
-      "tn": 101,
+      "tn": 100,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0,
       "f1": 1.0,
-      "diagnosis": "Permissive boundary; elevated false-positive risk on technical overlap."
+      "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.7,
-      "tp": 4,
+      "tp": 5,
       "fp": 0,
-      "tn": 101,
+      "tn": 100,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0,
       "f1": 1.0,
-      "diagnosis": "High-recall boundary; captures weak paraphrasing with 0 false alarms."
+      "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.75,
-      "tp": 4,
+      "tp": 5,
       "fp": 0,
-      "tn": 101,
+      "tn": 100,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0,
       "f1": 1.0,
-      "diagnosis": "High-recall boundary; captures weak paraphrasing with 0 false alarms."
+      "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.8,
-      "tp": 4,
+      "tp": 5,
       "fp": 0,
-      "tn": 101,
+      "tn": 100,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0,
       "f1": 1.0,
-      "diagnosis": "Production Default: Optimal operating balance; 100% Precision & 100% Recall."
+      "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.85,
-      "tp": 4,
+      "tp": 5,
       "fp": 0,
-      "tn": 101,
+      "tn": 100,
       "fn": 0,
       "precision": 1.0,
       "recall": 1.0,
       "f1": 1.0,
-      "diagnosis": "Conservative boundary; borderline for subtle lexical paraphrasing."
+      "diagnosis": "Stable plateau 0.65-0.85; small-sample result over positive pairs."
     },
     {
       "threshold": 0.9,
-      "tp": 2,
+      "tp": 3,
       "fp": 0,
-      "tn": 101,
+      "tn": 100,
       "fn": 2,
       "precision": 1.0,
-      "recall": 0.5,
-      "f1": 0.6667,
-      "diagnosis": "Strict verbatim copy boundary; fails on synonym-replaced paraphrasing."
+      "recall": 0.6,
+      "f1": 0.75,
+      "diagnosis": "Strict verbatim boundary; misses paraphrased and rewritten submissions."
     },
     {
       "threshold": 0.95,
-      "tp": 2,
+      "tp": 3,
       "fp": 0,
-      "tn": 101,
+      "tn": 100,
       "fn": 2,
       "precision": 1.0,
-      "recall": 0.5,
-      "f1": 0.6667,
-      "diagnosis": "Strict verbatim copy boundary; fails on synonym-replaced paraphrasing."
+      "recall": 0.6,
+      "f1": 0.75,
+      "diagnosis": "Strict verbatim boundary; misses paraphrased and rewritten submissions."
     }
   ],
-  "ai_detector_scores": [
-    {
-      "doc_id": "submission_01_fintech_report.pdf",
-      "type": "original_target",
-      "is_llm": false,
-      "ai_prob": 12.8
-    },
-    {
-      "doc_id": "submission_02_video_pitch.mp4",
-      "type": "cross_modal_copy",
-      "is_llm": false,
-      "ai_prob": 26.4
-    },
-    {
-      "doc_id": "submission_03_logistics_strategy.docx",
-      "type": "original_target",
-      "is_llm": false,
-      "ai_prob": 28.5
-    },
-    {
-      "doc_id": "submission_04_logistics_rewritten.docx",
-      "type": "paraphrased_copy",
-      "is_llm": false,
-      "ai_prob": 72.8
-    },
-    {
-      "doc_id": "submission_05_logistics_exact_copy.pdf",
-      "type": "exact_copy",
-      "is_llm": false,
-      "ai_prob": 26.0
-    },
-    {
-      "doc_id": "submission_06_corrupt_empty.pdf",
-      "type": "degraded_empty",
-      "is_llm": false,
-      "ai_prob": 0.0
-    },
-    {
-      "doc_id": "submission_07_silent_video.mp4",
-      "type": "degraded_silent",
-      "is_llm": false,
-      "ai_prob": 0.0
-    },
-    {
-      "doc_id": "submission_08_corrupted.docx",
-      "type": "degraded_corrupt",
-      "is_llm": false,
-      "ai_prob": 0.0
-    },
-    {
-      "doc_id": "submission_09_ev_depot_charging.pdf",
-      "type": "template_prompt_sharing",
-      "is_llm": false,
-      "ai_prob": 13.2
-    },
-    {
-      "doc_id": "submission_10_ev_battery_degradation.docx",
-      "type": "template_prompt_sharing",
-      "is_llm": false,
-      "ai_prob": 12.8
-    },
-    {
-      "doc_id": "submission_11_ev_municipal_debt.pdf",
-      "type": "template_prompt_sharing",
-      "is_llm": false,
-      "ai_prob": 12.6
-    },
-    {
-      "doc_id": "submission_12_ev_route_energy.docx",
-      "type": "template_prompt_sharing",
-      "is_llm": false,
-      "ai_prob": 12.5
-    },
-    {
-      "doc_id": "submission_13_ev_grid_balancing.pdf",
-      "type": "template_prompt_sharing",
-      "is_llm": false,
-      "ai_prob": 11.7
-    },
-    {
-      "doc_id": "submission_14_chatgpt_essay.docx",
-      "type": "ai_generated_chatgpt",
-      "is_llm": true,
-      "ai_prob": 23.0
-    },
-    {
-      "doc_id": "submission_15_claude_synthesis.pdf",
-      "type": "ai_generated_claude",
-      "is_llm": true,
-      "ai_prob": 19.4
-    },
-    {
-      "doc_id": "submission_16_quantum_hardware.pdf",
-      "type": "genuine_original",
-      "is_llm": false,
-      "ai_prob": 13.6
-    },
-    {
-      "doc_id": "submission_17_quantum_algorithms.docx",
-      "type": "genuine_original",
-      "is_llm": false,
-      "ai_prob": 15.1
-    },
-    {
-      "doc_id": "submission_18_external_plagiarism.pdf",
-      "type": "external_copy",
-      "is_llm": false,
-      "ai_prob": 14.5
-    }
-  ]
+  "external_detection": {
+    "precision": 0.3333,
+    "recall": 1.0,
+    "f1_score": 0.5,
+    "tp": 1,
+    "fp": 2,
+    "tn": 12,
+    "fn": 0
+  },
+  "ai_detector_benchmark": {
+    "rows": [
+      {
+        "doc_id": "submission_01_fintech_report.pdf",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 12.8,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "MEDIUM",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_02_video_pitch.mp4",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 26.4,
+        "chatgpt_roberta": 1.6,
+        "assigned_risk": "HIGH",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_03_logistics_strategy.docx",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 28.5,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "HIGH",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_04_logistics_rewritten.docx",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 72.8,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "HIGH",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_05_logistics_exact_copy.pdf",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 26.0,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "HIGH",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_09_ev_depot_charging.pdf",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 13.2,
+        "chatgpt_roberta": 0.1,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_10_ev_battery_degradation.docx",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 12.8,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_11_ev_municipal_debt.pdf",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 12.6,
+        "chatgpt_roberta": 0.3,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_12_ev_route_energy.docx",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 12.5,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_13_ev_grid_balancing.pdf",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 11.7,
+        "chatgpt_roberta": 0.1,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_14_chatgpt_essay.docx",
+        "category": "ChatGPT (GPT-4o)",
+        "is_llm": true,
+        "openai_roberta": 35.0,
+        "chatgpt_roberta": 99.4,
+        "assigned_risk": "HIGH",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_15_claude_synthesis.pdf",
+        "category": "Claude 3.5 Sonnet",
+        "is_llm": true,
+        "openai_roberta": 31.4,
+        "chatgpt_roberta": 19.3,
+        "assigned_risk": "HIGH",
+        "risk_driver": "Peer/External match"
+      },
+      {
+        "doc_id": "submission_16_quantum_hardware.pdf",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 13.6,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_17_quantum_algorithms.docx",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 15.1,
+        "chatgpt_roberta": 0.0,
+        "assigned_risk": "LOW",
+        "risk_driver": "Original/Cleared"
+      },
+      {
+        "doc_id": "submission_18_external_plagiarism.pdf",
+        "category": "Synthetic (script-generated)",
+        "is_llm": false,
+        "openai_roberta": 14.5,
+        "chatgpt_roberta": 0.1,
+        "assigned_risk": "HIGH",
+        "risk_driver": "Peer/External match"
+      }
+    ],
+    "chatgpt_detector_recall": 50.0,
+    "openai_detector_recall": 0.0
+  }
 }

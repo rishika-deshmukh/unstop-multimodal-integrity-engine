@@ -178,7 +178,7 @@ Each submission generates a machine-readable `.json` audit report adhering stric
       }
     }
   ],
-  "explanations": "Critical internal peer similarity detected (100.0% exceeds 50.0% threshold)."
+  "explanations": "Critical internal peer similarity detected (100.0% meets or exceeds 50.0% threshold)."
 }
 ```
 
@@ -200,27 +200,27 @@ Processing 10,000 multi-modal submissions (est. 6,000 PDFs, 3,500 DOCXs, 500 MP4
 
 ### 1. Empirical Hardware Measurements (Benchmarked on x86_64 CPU)
 
-From `benchmarks/results.json` run on this machine (10 physical cores, 16 logical cores, 16 GB RAM):
-- **MiniLM-L6-v2 Embedding Throughput (CPU)**: **200.25 chunks/second** (4.994 ms/chunk).
-- **Whisper Speech-to-Text (CPU)**: **0.213 RTF** (**4.7x faster than real-time**; 30.75s audio transcribed in 6.54s).
+From `benchmarks/results.json` run on this machine (10 physical cores, 16 logical cores, 15.69 GB RAM):
+- **MiniLM-L6-v2 Embedding Throughput (CPU)**: **221.01 chunks/second** (4.525 ms/chunk).
+- **Whisper Speech-to-Text (CPU)**: **0.098 RTF** (**10.24x faster than real-time**; 30.75s audio transcribed in 3.003s).
 - **FAISS Flat vs. HNSW (200,000 Vectors, Dimension 384)**:
-  - `IndexFlatIP`: RAM footprint: **293.0 MB**, Query latency: **12.319 ms/query** (81.2 QPS).
-  - `IndexHNSWFlat` ($M=32, efSearch=64$): RAM footprint: **349.07 MB**, Query latency: **0.757 ms/query** (1,321.0 QPS).
-  - **HNSW Speedup**: **16.3x faster query latency** with only +56 MB RAM overhead!
+  - `IndexFlatIP`: RAM footprint: **293.0 MB**, Query latency: **14.112 ms/query** (70.9 QPS).
+  - `IndexHNSWFlat` ($M=32, efSearch=64$): RAM footprint: **350.84 MB**, Query latency: **1.763 ms/query** (567.2 QPS).
+  - **HNSW Speedup**: **8.0x faster query latency** with only +57.84 MB RAM overhead!
 
 ### 2. Workload Sizing & Quantitative Bounds for 10,000 Documents
-- **Average Document Length**: ~16 chunks per document.
+- **Average Document Length**: Design assumption: ~16 chunks per document (for comprehensive 10-page reports; the sample benchmark corpus averages 2.6 chunks/doc for concise executive summaries and short transcripts).
 - **Corpus Chunk Volume**: $10,000 \text{ submissions} \times 16 \text{ chunks/doc} \approx \mathbf{160,000\text{ dense vectors}}$.
-- **Vector Index RAM**: $160,000 \text{ vectors} \times 384 \text{ floats} \times 4 \text{ bytes} \approx 245 \text{ MB}$ raw ($< 350 \text{ MB}$ with HNSW graph). Fits effortlessly in RAM on a single standard cloud node.
+- **Vector Index RAM**: $160,000 \text{ vectors} \times 384 \text{ floats} \times 4 \text{ bytes} \approx 245 \text{ MB}$ raw ($< 360 \text{ MB}$ with HNSW graph). Fits effortlessly in RAM on a single standard cloud node.
 - **Embedding Generation Time**:
-  - $160,000 \text{ chunks} / 200.25 \text{ chunks/sec} \approx 800 \text{ seconds}$ (~13.3 minutes on 1 CPU node).
-  - Distributed across **4 standard CPU nodes** (`c6i.2xlarge`, 8 vCPUs): $\mathbf{\approx 3.3\text{ minutes}}$.
+  - $160,000 \text{ chunks} / 221.01 \text{ chunks/sec} \approx 724 \text{ seconds}$ (~12.1 minutes on 1 CPU node).
+  - Distributed across **4 standard CPU nodes** (`c6i.2xlarge`, 8 vCPUs): $\mathbf{\approx 3.0\text{ minutes}}$.
   - On a GPU node (`g4dn.xlarge` with TensorRT / PyTorch batching, estimated ~1,500 chunks/sec): $\approx 107 \text{ seconds}$ (~1.8 minutes).
 
 ### 3. Whisper ASR Bottleneck Resolution (Dedicated GPU Queue)
 - **The Bottleneck**: 500 video pitches $\times$ 30s audio = 15,000 seconds of audio.
-  - On CPU (measured 4.7x speedup, RTF 0.213): sequential time = $15,000 \times 0.213 \approx 3,195 \text{ seconds}$ (~53.2 minutes).
-  - With 8 parallel Celery CPU worker processes: $3,195 / 8 \approx \mathbf{6.7\text{ minutes}}$.
+  - On CPU (measured 10.24x speedup, RTF 0.098): sequential time = $15,000 \times 0.098 \approx 1,470 \text{ seconds}$ (~24.5 minutes).
+  - With 8 parallel Celery CPU worker processes: $1,470 / 8 \approx \mathbf{3.1\text{ minutes}}$.
 - **Production Solution (Dedicated GPU Queue)**:
   - Route video files to a dedicated Celery GPU queue (`celery -Q gpu_whisper_workers`).
   - Using 2x `g4dn.xlarge` instances with NVIDIA T4 GPUs running `faster-whisper` (CTranslate2 INT8, estimated ~20x faster than real-time):
@@ -228,14 +228,14 @@ From `benchmarks/results.json` run on this machine (10 physical cores, 16 logica
 
 ### 4. Vector Search Latency: Flat vs. HNSW
 - To match 160,000 query chunks against the 160,000 corpus vectors:
-  - With `IndexFlatIP`: $160,000 \times 12.319 \text{ ms} \approx 1,971 \text{ seconds}$ (~32.8 minutes).
-  - With `IndexHNSWFlat`: $160,000 \times 0.757 \text{ ms} \approx \mathbf{121\text{ seconds}}$ (**~2.0 minutes**).
-  - Production recommendation: Deploy **`FAISS IndexHNSWFlat`** (or managed Qdrant with HNSW). Sub-millisecond search ensures real-time query resolution.
+  - With `IndexFlatIP`: $160,000 \times 14.112 \text{ ms} \approx 2,258 \text{ seconds}$ (~37.6 minutes).
+  - With `IndexHNSWFlat`: $160,000 \times 1.763 \text{ ms} \approx \mathbf{282\text{ seconds}}$ (**~4.7 minutes**).
+  - Production recommendation: Deploy **`FAISS IndexHNSWFlat`** (or managed Qdrant with HNSW). Sub-two-millisecond search ensures real-time query resolution.
 
 ### 5. Multi-Stage Filtering: LSH / MinHash Pre-Filter
 To eliminate redundant dense neural queries for verbatim submissions:
 1. **MinHash Fingerprinting**: Compute 128-bit MinHash signatures during text normalization ($O(1)$ lookup time, < 1 ms).
-2. Document pairs with Jaccard $\ge 0.90$ are flagged immediately as direct duplicates without querying the vector index, shedding **~30% of vector query load**.
+2. Document pairs with Jaccard $\ge 0.90$ are flagged immediately as direct duplicates without querying the vector index, shedding **~30% of vector query load** (design assumption).
 3. Dense HNSW vector search is reserved for subtle paraphrasing and cross-modal audio alignment.
 
 ### 6. Accurate Cloud Compute Cost Math (AWS Spot Pricing)
@@ -314,10 +314,12 @@ unstop-multimodal-integrity-engine/
     ├── batch_summary_report.md
     ├── summary_matrix.csv
     ├── evaluation_results.json
+    ├── evaluation_tables.md       # Pre-rendered Markdown tables for reports
     ├── failure_cases/             # Raw logs for documented failure cases
     │   ├── case1_boilerplate_leakage.txt
     │   ├── case2_native_whisper_dll_block.txt
-    │   └── case3_ai_detector_ood_calibration.txt
+    │   ├── case3_ai_detector_ood_calibration.txt
+    │   └── case4_external_kb_leakage.txt
     ├── submission_01_fintech_report.pdf.json
     ├── submission_01_fintech_report.pdf.md
     └── ...
@@ -338,8 +340,9 @@ unstop-multimodal-integrity-engine/
 ## AI Coding Assistants Disclosure
 
 In accordance with Section 10 of the assessment brief:
-- **Assistant Used**: Antigravity (Powered by Google DeepMind Gemini models).
+- **Assistants Used**: Antigravity (Powered by Google DeepMind Gemini models), Claude (Anthropic), and ChatGPT (OpenAI).
 - **Scope of Usage**:
-  - Antigravity generated the majority of the initial boilerplate, modular component implementations, pipeline orchestration code, and benchmarking scripts based on detailed system prompts and architectural requirements.
-  - The author thoroughly reviewed, tested, debugged, and adapted the code, designed the experimental dataset and failure cases, implemented critical fixes (such as resolving Windows AppLocker DLL blocks in Whisper and refining boilerplate document-frequency clustering), and verified all empirical outputs on local hardware.
+  - Antigravity (Gemini) generated the code and the synthetic dataset.
+  - Claude (Anthropic) was used for review and prompt-writing.
+  - ChatGPT and Claude were used by the author to generate the two LLM samples (`submission_14_chatgpt_essay.docx` and `submission_15_claude_synthesis.pdf`).
 - **Transparency Note**: All architectural choices, threshold rationale, mathematical formulas, and failure case analyses were verified and understood by the author, who is fully prepared to explain every line of code and engineering trade-off during technical interview evaluation.

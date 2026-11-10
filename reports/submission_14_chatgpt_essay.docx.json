@@ -1,12 +1,93 @@
 {
   "document_id": "submission_14_chatgpt_essay.docx",
-  "total_integrity_risk": "LOW",
+  "total_integrity_risk": "HIGH",
   "scores": {
-    "peer_similarity_percentage": 0.0,
+    "peer_similarity_percentage": 62.5,
     "external_similarity_percentage": 0.0,
-    "ai_generated_probability": 23.0
+    "ai_generated_probability": 35.0
   },
-  "peer_matches": [],
+  "peer_matches": [
+    {
+      "matched_file": "submission_15_claude_synthesis.pdf",
+      "similarity_score": 0.9,
+      "lexical_jaccard": 0.575,
+      "lexical_levenshtein": 0.6103,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
+      "query_passage": "The transition from diesel-powered buses to electric vehicle (EV) buses presents a significant opportunity for public transportation operators to reduce operating costs, improve energy efficiency, and achieve sustainability targets.",
+      "matched_passage": "Business Case Analysis: EV Bus Fleet Charging Costs\nThe transition from diesel-powered buses to electric vehicles (EVs) presents a significant opportunity for public transportation operators to reduce operating expenses, improve environmental sustainability, and modernize fleet operations.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_claude_synthesis.pdf",
+      "similarity_score": 0.9,
+      "lexical_jaccard": 0.7895,
+      "lexical_levenshtein": 0.7077,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
+      "query_passage": "The primary advantage of EV buses is their lower energy cost compared to diesel consumption.",
+      "matched_passage": "Cost Structure and Key Considerations\nThe primary advantage of EV buses is their lower energy cost compared to diesel consumption.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_claude_synthesis.pdf",
+      "similarity_score": 0.85,
+      "lexical_jaccard": 0.3889,
+      "lexical_levenshtein": 0.5794,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
+      "query_passage": "- Renewable energy: Integrate rooftop solar or renewable electricity procurement to reduce grid dependency.",
+      "matched_passage": "- Renewable Integration: Use rooftop solar installations and battery storage to reduce grid dependency.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 2,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_claude_synthesis.pdf",
+      "similarity_score": 0.95,
+      "lexical_jaccard": 0.5357,
+      "lexical_levenshtein": 0.4398,
+      "is_paraphrase": false,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
+      "query_passage": "Although EV buses involve higher upfront acquisition and infrastructure costs, their lower energy and maintenance expenses can generate substantial long-term savings.",
+      "matched_passage": "4. Business Impact and Recommendations\nAlthough EV buses require higher initial investments, their lower energy and maintenance costs can generate long-term savings.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 2,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    },
+    {
+      "matched_file": "submission_15_claude_synthesis.pdf",
+      "similarity_score": 0.85,
+      "lexical_jaccard": 0.125,
+      "lexical_levenshtein": 0.2517,
+      "is_paraphrase": true,
+      "attribution_note": "Mutual overlap detected; direction undetermined (reviewer manual verification required).",
+      "query_passage": "EV bus fleet electrification is a financially promising investment when supported by efficient charging infrastructure and intelligent energy management.",
+      "matched_passage": "Business Case Analysis: EV Bus Fleet Charging Costs\nThe transition from diesel-powered buses to electric vehicles (EVs) presents a significant opportunity for public transportation operators to reduce operating expenses, improve environmental sustainability, and modernize fleet operations.",
+      "location": {
+        "query_page": 1,
+        "matched_page": 1,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    }
+  ],
   "multimodal_matches": [],
-  "explanations": "Document integrity verified. Minimal similarity overlap and acceptable originality metrics."
+  "explanations": "Critical internal peer similarity detected (62.5% meets or exceeds 50.0% threshold)."
 }

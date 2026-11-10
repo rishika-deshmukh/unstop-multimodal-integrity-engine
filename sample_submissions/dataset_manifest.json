@@ -1,5 +1,5 @@
 {
-  "dataset_name": "Unstop Multimodal Integrity Benchmark Dataset",
+  "dataset_name": "Unstop Multimodal Integrity Benchmark Dataset (Exhaustive Ground Truth)",
   "version": "2.1.0",
   "total_documents": 18,
   "total_pairs": 153,
@@ -7,6 +7,7 @@
     "exact_copy",
     "paraphrase",
     "cross_modal",
+    "external",
     "same_template_only",
     "unrelated"
   ],
@@ -14,92 +15,148 @@
     "submission_01_fintech_report.pdf": {
       "modality": "pdf",
       "type": "original_target",
-      "description": "Original multi-page fintech analysis report (source for submission_02). Expected risk: MEDIUM due to video overlap."
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Synthetic (script-generated) fintech microfinance report containing key operational underwriting section on Page 2."
     },
     "submission_02_video_pitch.mp4": {
       "modality": "mp4",
       "type": "cross_modal_copy",
-      "description": "Spoken video pitch verbatim reading page 2 of submission_01. Expected risk: HIGH."
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Candidate video pitch reading aloud the underwriting paragraph from submission_01."
     },
     "submission_03_logistics_strategy.docx": {
       "modality": "docx",
       "type": "original_target",
-      "description": "Original pharmaceutical cold chain logistics analysis."
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Synthetic (script-generated) logistics strategy describing active and passive cold chain mechanics."
     },
     "submission_04_logistics_rewritten.docx": {
       "modality": "docx",
       "type": "paraphrased_copy",
-      "description": "Semantic rewrite/paraphrase of submission_03 (high cosine >0.85, low Jaccard <0.35). Expected risk: HIGH."
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Synthetic (script-generated) paraphrased copy of submission_03 using synonyms to evade string matching."
     },
     "submission_05_logistics_exact_copy.pdf": {
       "modality": "pdf",
       "type": "exact_copy",
-      "description": "Exact verbatim copy of submission_03 converted to PDF format. Expected risk: HIGH."
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Synthetic (script-generated) cross-format exact copy of submission_03_logistics_strategy.docx in PDF format."
     },
     "submission_06_corrupt_empty.pdf": {
       "modality": "pdf",
       "type": "degraded_empty",
-      "description": "Zero-byte empty PDF submission. Expected status: SKIPPED_EMPTY, FLAGGED."
+      "is_degraded": true,
+      "is_ai": false,
+      "expected_status": "SKIPPED_EMPTY",
+      "description": "Zero-byte empty PDF submission to test non-crashing status handling."
     },
     "submission_07_silent_video.mp4": {
       "modality": "mp4",
       "type": "degraded_silent",
-      "description": "Video file with silent audio track. Expected status: SKIPPED_SILENT, FLAGGED."
+      "is_degraded": true,
+      "is_ai": false,
+      "expected_status": "SKIPPED_SILENT",
+      "description": "Silent MP4 video with no audible audio track."
     },
     "submission_08_corrupted.docx": {
       "modality": "docx",
       "type": "degraded_corrupt",
-      "description": "Corrupted binary DOCX file. Expected status: SKIPPED_CORRUPT, FLAGGED."
+      "is_degraded": true,
+      "is_ai": false,
+      "expected_status": "SKIPPED_CORRUPT",
+      "description": "Malformed corrupt binary file simulating upload corruption."
     },
     "submission_09_ev_depot_charging.pdf": {
       "modality": "pdf",
-      "type": "template_prompt_sharing",
-      "description": "EV fleet depot scheduling report sharing 150-word competition prompt."
+      "type": "benign_common_template",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Case study containing the shared 150-word competition prompt with original analysis."
     },
     "submission_10_ev_battery_degradation.docx": {
       "modality": "docx",
-      "type": "template_prompt_sharing",
-      "description": "EV battery degradation report sharing 150-word competition prompt."
+      "type": "benign_common_template",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Case study containing the shared 150-word competition prompt with original analysis."
     },
     "submission_11_ev_municipal_debt.pdf": {
       "modality": "pdf",
-      "type": "template_prompt_sharing",
-      "description": "EV municipal green financing report sharing 150-word competition prompt."
+      "type": "benign_common_template",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Case study containing the shared 150-word competition prompt with original analysis."
     },
     "submission_12_ev_route_energy.docx": {
       "modality": "docx",
-      "type": "template_prompt_sharing",
-      "description": "EV route topographic energy telemetry report sharing 150-word competition prompt."
+      "type": "benign_common_template",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Case study containing the shared 150-word competition prompt with original analysis."
     },
     "submission_13_ev_grid_balancing.pdf": {
       "modality": "pdf",
-      "type": "template_prompt_sharing",
-      "description": "EV depot grid balancing report sharing 150-word competition prompt."
+      "type": "benign_common_template",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Case study containing the shared 150-word competition prompt with original analysis."
     },
     "submission_14_chatgpt_essay.docx": {
       "modality": "docx",
-      "type": "ai_generated_chatgpt",
-      "description": "Genuine ChatGPT-generated essay on autonomous logistics optimization."
+      "type": "ai_generated_synthetic",
+      "is_degraded": false,
+      "is_ai": true,
+      "llm_generator": "ChatGPT (GPT-4o)",
+      "description": "Verbatim ChatGPT-generated analysis on EV bus fleet charging costs."
     },
     "submission_15_claude_synthesis.pdf": {
       "modality": "pdf",
-      "type": "ai_generated_claude",
-      "description": "Genuine Claude-generated briefing on carbon capture economic feasibility."
+      "type": "ai_generated_synthetic",
+      "is_degraded": false,
+      "is_ai": true,
+      "llm_generator": "Claude 3.5 Sonnet",
+      "description": "Verbatim Claude 3.5 Sonnet generated analysis on EV bus fleet charging costs."
     },
     "submission_16_quantum_hardware.pdf": {
       "modality": "pdf",
-      "type": "genuine_original",
-      "description": "Independent human-authored analysis on superconducting qubit coherence (hard negative control)."
+      "type": "genuine_original_control",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Synthetic (script-generated) technical paper on neutral-atom quantum processors."
     },
     "submission_17_quantum_algorithms.docx": {
       "modality": "docx",
-      "type": "genuine_original",
-      "description": "Independent human-authored analysis on variational quantum eigensolver fault tolerance (hard negative control)."
+      "type": "genuine_original_control",
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Synthetic (script-generated) paper on variational quantum error mitigation (hard negative to sub_16)."
     },
     "submission_18_external_plagiarism.pdf": {
       "modality": "pdf",
       "type": "external_copy",
-      "description": "Submission with verbatim excerpt plagiarized from Wikipedia/reference KB (circular packaging). Expected risk: HIGH."
+      "is_degraded": false,
+      "is_ai": false,
+      "description": "Direct copy from external knowledge base circular packaging article."
+    }
+  },
+  "external_ground_truth": {
+    "submission_18_external_plagiarism.pdf": {
+      "is_external_plagiarism": true,
+      "source_kb_file": "circular_packaging.txt",
+      "expected_external_pct_min": 40.0
+    },
+    "submission_03_logistics_strategy.docx": {
+      "is_external_plagiarism": false,
+      "note": "Domain vocabulary overlap with cold_chain_logistics.txt (unintended synthetic overlap / edge case)"
+    },
+    "submission_05_logistics_exact_copy.pdf": {
+      "is_external_plagiarism": false,
+      "note": "Exact duplicate of submission_03 (inherits cold_chain_logistics.txt domain overlap)"
     }
   },
   "pairwise_ground_truth": [
@@ -964,8 +1021,8 @@
     {
       "doc_a": "submission_14_chatgpt_essay.docx",
       "doc_b": "submission_15_claude_synthesis.pdf",
-      "ground_truth_label": "unrelated",
-      "is_plagiarized_pair": false
+      "ground_truth_label": "paraphrase",
+      "is_plagiarized_pair": true
     },
     {
       "doc_a": "submission_14_chatgpt_essay.docx",

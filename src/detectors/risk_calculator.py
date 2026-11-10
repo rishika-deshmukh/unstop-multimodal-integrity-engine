@@ -33,10 +33,10 @@ class RiskCalculator:
         comb_ai_min = comb_high.get("ai_min", 70.0)
 
         if peer_pct >= high_peer_min:
-            return "HIGH", f"Critical internal peer similarity detected ({peer_pct}% exceeds {high_peer_min}% threshold)."
+            return "HIGH", f"Critical internal peer similarity detected ({peer_pct}% meets or exceeds {high_peer_min}% threshold)."
 
         if external_pct >= high_ext_min:
-            return "HIGH", f"Extensive uncredited external source matching detected ({external_pct}% exceeds {high_ext_min}% threshold)."
+            return "HIGH", f"Extensive uncredited external source matching detected ({external_pct}% meets or exceeds {high_ext_min}% threshold)."
 
         if peer_pct >= comb_peer_min and ai_prob >= comb_ai_min:
             return "HIGH", (
@@ -53,13 +53,13 @@ class RiskCalculator:
 
         if peer_pct >= med_peer_min:
             return "MEDIUM", (
-                f"Moderate peer overlap detected ({peer_pct}% exceeds {med_peer_min}% threshold). "
+                f"Moderate peer overlap detected ({peer_pct}% meets or exceeds {med_peer_min}% threshold). "
                 f"Mutual overlap detected (direction undetermined); candidate submission may be the original source "
                 f"copied by another peer rather than the copier. Reviewer manual verification required before penalizing."
             )
 
         if external_pct >= med_ext_min:
-            return "MEDIUM", f"Moderate external reference match detected ({external_pct}% exceeds {med_ext_min}% threshold)."
+            return "MEDIUM", f"Moderate external reference match detected ({external_pct}% meets or exceeds {med_ext_min}% threshold)."
 
         if peer_pct >= comb_med_peer_min and ai_prob >= comb_med_ai_min:
             return "MEDIUM", f"Moderate overlap ({peer_pct}%) accompanied by AI-generated probability ({ai_prob}%)."

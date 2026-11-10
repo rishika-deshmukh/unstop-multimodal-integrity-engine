@@ -6,6 +6,7 @@ boilerplate filtering, and multi-signal scoring.
 
 import os
 import sys
+import json
 from pathlib import Path
 import pytest
 import numpy as np
@@ -157,3 +158,33 @@ def test_risk_calculator_ai_never_triggers_high_alone():
     # High Peer (65%), low AI (10%)
     risk_high, _ = rc.calculate_risk(peer_pct=65.0, external_pct=0.0, ai_prob=10.0)
     assert risk_high == "HIGH"
+
+def test_cross_modal_match_page_and_timestamp():
+    # Scenario 1: Video speech transcription matching PDF page and timestamp
+    report_path = Path("./reports/submission_02_video_pitch.mp4.json")
+    assert report_path.exists(), f"Report file {report_path} must exist from run_integrity_check.py"
+    with open(report_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    assert data["total_integrity_risk"] == "HIGH"
+    assert data["scores"]["peer_similarity_percentage"] == 100.0
+    assert len(data["multimodal_matches"]) >= 1
+    
+    match = data["multimodal_matches"][0]
+    assert match["matched_file"] == "submission_01_fintech_report.pdf"
+    assert match["location"]["matched_page"] == 2
+    assert match["location"]["query_timestamp"] is not None
+    assert "00:00:" in match["location"]["query_timestamp"]
+    assert match["similarity_score"] >= 0.80
+
+def test_external_match_submission_18():
+    # Scenario 5: External knowledge base plagiarism detection
+    report_path = Path("./reports/submission_18_external_plagiarism.pdf.json")
+    assert report_path.exists(), f"Report file {report_path} must exist from run_integrity_check.py"
+    with open(report_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    
+    assert data["total_integrity_risk"] == "HIGH"
+    assert data["scores"]["external_similarity_percentage"] >= 40.0
+    assert "external source matching" in data["explanations"].lower()
+

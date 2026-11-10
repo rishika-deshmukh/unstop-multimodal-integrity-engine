@@ -8,5 +8,5 @@
   },
   "peer_matches": [],
   "multimodal_matches": [],
-  "explanations": "Extensive uncredited external source matching detected (50.0% exceeds 40.0% threshold)."
+  "explanations": "Extensive uncredited external source matching detected (50.0% meets or exceeds 40.0% threshold)."
 }

@@ -2,7 +2,7 @@
 
 **Overall Assessment:** **🔴 HIGH INTEGRITY RISK**
 
-**System Recommendation:** Critical internal peer similarity detected (100.0% exceeds 50.0% threshold).
+**System Recommendation:** Critical internal peer similarity detected (100.0% meets or exceeds 50.0% threshold).
 
 ## 1. Multi-Signal Integrity Scores
 

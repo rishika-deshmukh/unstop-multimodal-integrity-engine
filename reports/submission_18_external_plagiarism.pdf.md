@@ -2,7 +2,7 @@
 
 **Overall Assessment:** **🔴 HIGH INTEGRITY RISK**
 
-**System Recommendation:** Extensive uncredited external source matching detected (50.0% exceeds 40.0% threshold).
+**System Recommendation:** Extensive uncredited external source matching detected (50.0% meets or exceeds 40.0% threshold).
 
 ## 1. Multi-Signal Integrity Scores
 

@@ -178,6 +178,90 @@ def benchmark_faiss(n_vectors: int = 200_000, dim: int = 384, n_queries: int = 1
         "hnsw_speedup_vs_flat": speedup
     }
 
+def benchmark_roberta(model_name: str = "roberta-base-openai-detector", n_samples: int = 30) -> dict:
+    print(f"\n[4/5] Benchmarking RoBERTa classifier '{model_name}' on CPU ({n_samples} samples)...")
+    from transformers import AutoTokenizer, AutoModelForSequenceClassification
+    import torch
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    model.eval()
+
+    sample_doc = (
+        "The transition towards zero-emission commercial fleets requires systematic restructuring "
+        "of utility charging interconnects, multi-megawatt depot substation capacity, and dynamic tariff "
+        "arbitrage. Fleet telemetry demonstrates that nocturnal charging windows reduce peak coincident demand "
+        "surcharges while extending battery life cycles through thermal regulation and balanced cell equalization."
+    )
+    texts = [f"{sample_doc} [Doc {i}]" for i in range(n_samples)]
+
+    # Warmup
+    inputs = tokenizer(texts[:2], return_tensors="pt", truncation=True, max_length=256, padding=True)
+    with torch.no_grad():
+        _ = model(**inputs)
+
+    start_time = time.perf_counter()
+    with torch.no_grad():
+        for t in texts:
+            inp = tokenizer(t, return_tensors="pt", truncation=True, max_length=256)
+            _ = model(**inp)
+    elapsed = time.perf_counter() - start_time
+
+    docs_per_sec = round(n_samples / elapsed, 2)
+    ms_per_doc = round((elapsed / n_samples) * 1000.0, 2)
+
+    print(f"  -> Processed {n_samples} docs in {elapsed:.2f}s ({docs_per_sec} docs/sec, {ms_per_doc} ms/doc)")
+    return {
+        "model_name": model_name,
+        "device": "cpu",
+        "n_samples": n_samples,
+        "elapsed_seconds": round(elapsed, 4),
+        "docs_per_second": docs_per_sec,
+        "ms_per_doc": ms_per_doc
+    }
+
+def benchmark_gpt2(model_name: str = "gpt2", n_samples: int = 20) -> dict:
+    print(f"\n[5/5] Benchmarking GPT-2 perplexity causal LM '{model_name}' on CPU ({n_samples} samples)...")
+    from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+    import torch
+
+    tokenizer = GPT2TokenizerFast.from_pretrained(model_name)
+    model = GPT2LMHeadModel.from_pretrained(model_name)
+    model.eval()
+
+    sample_doc = (
+        "The transition towards zero-emission commercial fleets requires systematic restructuring "
+        "of utility charging interconnects, multi-megawatt depot substation capacity, and dynamic tariff "
+        "arbitrage. Fleet telemetry demonstrates that nocturnal charging windows reduce peak coincident demand "
+        "surcharges while extending battery life cycles through thermal regulation and balanced cell equalization."
+    )
+    texts = [f"{sample_doc} [Doc {i}]" for i in range(n_samples)]
+
+    # Warmup
+    enc = tokenizer(texts[0], return_tensors="pt")
+    with torch.no_grad():
+        _ = model(enc.input_ids, labels=enc.input_ids)
+
+    start_time = time.perf_counter()
+    with torch.no_grad():
+        for t in texts:
+            enc = tokenizer(t, return_tensors="pt", truncation=True, max_length=256)
+            _ = model(enc.input_ids, labels=enc.input_ids)
+    elapsed = time.perf_counter() - start_time
+
+    docs_per_sec = round(n_samples / elapsed, 2)
+    ms_per_doc = round((elapsed / n_samples) * 1000.0, 2)
+
+    print(f"  -> Processed {n_samples} docs in {elapsed:.2f}s ({docs_per_sec} docs/sec, {ms_per_doc} ms/doc)")
+    return {
+        "model_name": model_name,
+        "device": "cpu",
+        "n_samples": n_samples,
+        "elapsed_seconds": round(elapsed, 4),
+        "docs_per_second": docs_per_sec,
+        "ms_per_doc": ms_per_doc
+    }
+
 def main():
     benchmarks_dir = Path("./benchmarks")
     benchmarks_dir.mkdir(parents=True, exist_ok=True)
@@ -207,6 +291,12 @@ def main():
 
     # (c) FAISS Benchmark (200k vectors)
     results["faiss_benchmark"] = benchmark_faiss(n_vectors=200_000, dim=384, n_queries=100)
+
+    # (d) RoBERTa Classifier Benchmark
+    results["roberta_benchmark"] = benchmark_roberta(model_name="roberta-base-openai-detector", n_samples=30)
+
+    # (e) GPT-2 Perplexity Benchmark
+    results["gpt2_benchmark"] = benchmark_gpt2(model_name="gpt2", n_samples=20)
 
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)

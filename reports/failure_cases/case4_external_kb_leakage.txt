@@ -1,0 +1,65 @@
+====================================================================================
+FAILURE CASE 4: REFERENCE KB DOMAIN LEAKAGE / UNINTENDED EXTERNAL MATCH
+====================================================================================
+Incident:
+During end-to-end evaluation, submission_03 (logistics strategy DOCX) and submission_05
+(exact copy PDF) registered external_similarity_percentage = 50.0%, triggering external
+similarity warnings alongside their peer similarity detections.
+
+Raw Pipeline Output (from reports/submission_03_logistics_strategy.docx.json):
+------------------------------------------------------------------------------------
+{
+  "document_id": "submission_03_logistics_strategy.docx",
+  "total_integrity_risk": "HIGH",
+  "scores": {
+    "peer_similarity_percentage": 100.0,
+    "external_similarity_percentage": 50.0,
+    "ai_generated_probability": 28.5
+  },
+  ...
+}
+
+Root Cause Investigation & Text Comparison:
+The synthetic dataset generator script (scripts/generate_synthetic_dataset.py) authored
+both the candidate submission text for submission_03 and the reference knowledge base file
+external_kb/cold_chain_logistics.txt using overlapping technical descriptions of cold chain
+distribution.
+
+1. Query Passage in submission_03_logistics_strategy.docx (Chunk 0):
+"Establishing a resilient pharmaceutical cold chain requires continuous thermal monitoring
+between two and eight degrees Celsius across all intermediate warehouse hubs. Active
+refrigeration containers utilizing automated compressor cycles guarantee temperature stability
+during transcontinental flights, whereas passive thermal shippers rely on vacuum-insulated
+panels to protect vaccines during domestic road haulage."
+
+2. Matched Passage in external_kb/cold_chain_logistics.txt:
+"Pharmaceutical cold chain logistics necessitate strict end-to-end temperature preservation
+ranging from ultra-cold cryopreservation between minus eighty degrees Celsius to standardized
+refrigerated storage between two and eight degrees Celsius. Active refrigeration containers
+utilizing automated compressor cycles offer reliable thermal control across transcontinental
+transit corridors, whereas passive thermal packaging systems rely upon vacuum-insulated
+panels and phase-change materials to mitigate ambient thermal excursions during multi-modal
+transshipment delays."
+
+Embedding cosine similarity between these two passages reached 0.884 (well above the 0.80
+threshold). Consequently, 1 out of 2 chunks in submission_03 matched the reference KB,
+yielding an external coverage score of 50.0%. Submission_05 (exact copy) inherited the exact
+same 50.0% score.
+
+Empirical Evaluation Impact:
+- Target External Plagiarism: submission_18_external_plagiarism.pdf (Copied circular packaging) -> TP
+- Inadvertent External Matches: submission_03, submission_05 -> FP = 2
+- Clean Submissions without External Match: 12 submissions -> TN = 12
+- Missed External Plagiarism: 0 -> FN = 0
+- External Precision: 1 / (1 + 2) = 33.3%
+- External Recall: 1 / (1 + 0) = 100.0%
+- External F1 Score: 2 * (0.333 * 1.0) / (0.333 + 1.0) = 50.0%
+
+Production Mitigations:
+1. Strict Reference Provenance: External knowledge bases must be compiled from distinct,
+   independently sourced external corpora (e.g. Wikipedia dumps, open web crawl) rather
+   than co-generated domain scripts.
+2. Two-Stage External Validation: Require secondary lexical verification (e.g., minimum
+   3-gram overlap or Jaccard >= 0.25) when an external match occurs on dense technical terminology,
+   preventing shared industry jargon from triggering external plagiarism flags.
+====================================================================================

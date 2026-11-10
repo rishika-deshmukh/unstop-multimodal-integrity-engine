@@ -58,18 +58,29 @@ FINTECH_REPORT_P1 = (
 )
 
 def create_pdf(path: Path, pages: list[list[str]]):
-    doc = SimpleDocTemplate(str(path), pagesize=letter, leftMargin=54, rightMargin=54, topMargin=54, bottomMargin=54)
+    doc = SimpleDocTemplate(str(path.resolve()), pagesize=letter, leftMargin=54, rightMargin=54, topMargin=54, bottomMargin=54)
     styles = getSampleStyleSheet()
     normal = styles["Normal"]
     normal.fontSize = 11
     normal.leading = 16
+
+    try:
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+        import os
+        if os.path.exists("C:/Windows/Fonts/arial.ttf"):
+            pdfmetrics.registerFont(TTFont("Arial", "C:/Windows/Fonts/arial.ttf"))
+            normal.fontName = "Arial"
+    except Exception:
+        pass
 
     story = []
     for p_idx, page_paragraphs in enumerate(pages):
         if p_idx > 0:
             story.append(PageBreak())
         for text in page_paragraphs:
-            story.append(Paragraph(text, normal))
+            formatted_text = text.replace("\n", "<br/>")
+            story.append(Paragraph(formatted_text, normal))
             story.append(Spacer(1, 14))
 
     doc.build(story)
@@ -139,7 +150,7 @@ def generate_dataset(output_dir: Path):
         "type": "original_target",
         "is_degraded": False,
         "is_ai": False,
-        "description": "Original fintech microfinance report containing key operational underwriting section on Page 2."
+        "description": "Synthetic (script-generated) fintech microfinance report containing key operational underwriting section on Page 2."
     }
 
     # 2. submission_02_video_pitch.mp4 (Cross-Modal match with sub_01)
@@ -165,7 +176,7 @@ def generate_dataset(output_dir: Path):
         "type": "original_target",
         "is_degraded": False,
         "is_ai": False,
-        "description": "Original logistics strategy describing active and passive cold chain mechanics."
+        "description": "Synthetic (script-generated) logistics strategy describing active and passive cold chain mechanics."
     }
 
     # 4. submission_04_logistics_rewritten.docx (Paraphrased copy of sub_03)
@@ -180,7 +191,7 @@ def generate_dataset(output_dir: Path):
         "type": "paraphrased_copy",
         "is_degraded": False,
         "is_ai": False,
-        "description": "Paraphrased copy of submission_03 using synonyms to evade string matching."
+        "description": "Synthetic (script-generated) paraphrased copy of submission_03 using synonyms to evade string matching."
     }
 
     # 5. submission_05_logistics_exact_copy.pdf (Exact Copy of sub_03 in PDF format: Requirement 4)
@@ -197,7 +208,7 @@ def generate_dataset(output_dir: Path):
         "type": "exact_copy",
         "is_degraded": False,
         "is_ai": False,
-        "description": "Direct cross-format exact copy of submission_03_logistics_strategy.docx in PDF format."
+        "description": "Synthetic (script-generated) cross-format exact copy of submission_03_logistics_strategy.docx in PDF format."
     }
 
     # 6. submission_06_corrupt_empty.pdf (Degraded empty: Requirement 3)
@@ -285,29 +296,53 @@ def generate_dataset(output_dir: Path):
             "description": "Case study containing the shared 150-word competition prompt with original analysis."
         }
 
-    # 14. submission_14_chatgpt_essay.docx (LLM Sample #1: ChatGPT)
+    # 14. submission_14_chatgpt_essay.docx (LLM Sample #1: Real ChatGPT Output)
     p14 = output_dir / "submission_14_chatgpt_essay.docx"
     create_docx(p14, [
-        "Synthesizing Paradigms of Sustainable Organizational Leadership in the Modern Era",
-        "In the contemporary landscape of global commerce, the imperative to foster synergistic organizational frameworks has emerged as a cornerstone of sustainable enterprise growth. Delving into the multifaceted dimensions of strategic alignment, one observes that visionary leaders must cultivate holistic ecosystems that effortlessly bridge disparate stakeholder expectations.",
-        "Furthermore, by championing agile methodologies and navigating dynamic market complexities with resilience, modern enterprises empower cross-functional cohorts to achieve unprecedented efficiencies. In conclusion, the harmonized integration of proactive innovation and disciplined governance creates an enduring foundation for long-term value creation."
+        "Business Case Analysis: EV Bus Fleet Charging Costs",
+        "The transition from diesel-powered buses to electric vehicle (EV) buses presents a significant opportunity for public transportation operators to reduce operating costs, improve energy efficiency, and achieve sustainability targets. However, the financial viability of an EV bus fleet depends heavily on charging costs, electricity tariffs, infrastructure investment, and fleet utilisation.",
+        "1. Cost Structure and Financial Considerations",
+        "The primary advantage of EV buses is their lower energy cost compared to diesel consumption. While diesel buses incur recurring fuel expenses, EV buses rely on electricity, which is generally cheaper per kilometre. For example, assuming an EV bus consumes 1.2 kWh per kilometre and electricity costs ₹8 per kWh, the energy cost is approximately ₹9.60 per kilometre. In comparison, a diesel bus consuming 0.35 litres per kilometre at ₹90 per litre incurs a fuel cost of ₹31.50 per kilometre.",
+        "However, electricity costs vary depending on charging schedules, commercial tariffs, demand charges, and peak-hour pricing. Therefore, operators must evaluate the total cost of electricity rather than relying solely on the per-unit tariff.",
+        "2. Charging Infrastructure Investment",
+        "Establishing an EV bus charging network requires substantial initial investment. Costs include installing charging stations, upgrading electrical connections, transformers, power distribution systems, and battery management infrastructure. Depot-based charging is generally more economical for fleets with predictable operating schedules, while opportunity charging may be necessary for longer routes.",
+        "Operators must balance infrastructure investment against expected long-term savings. Poorly planned charging infrastructure can increase operational expenses and reduce fleet availability.",
+        "3. Strategies to Optimise Charging Costs",
+        "Several strategies can improve financial efficiency:\n- Off-peak charging: Schedule charging during low-tariff periods to reduce electricity expenses.\n- Smart charging: Use software to distribute charging loads and avoid unnecessary peak-demand charges.\n- Renewable energy: Integrate rooftop solar or renewable electricity procurement to reduce grid dependency.\n- Battery optimisation: Monitor battery health and charging cycles to minimise degradation and replacement costs.\n- Fleet scheduling: Align charging schedules with bus routes, operational hours, and battery requirements.",
+        "4. Financial Viability and Business Impact",
+        "Although EV buses involve higher upfront acquisition and infrastructure costs, their lower energy and maintenance expenses can generate substantial long-term savings. A detailed Total Cost of Ownership (TCO) analysis should consider vehicle purchase price, electricity, charging infrastructure, maintenance, battery replacement, financing, and government incentives.",
+        "Conclusion",
+        "EV bus fleet electrification is a financially promising investment when supported by efficient charging infrastructure and intelligent energy management. Transportation operators should adopt phased electrification, optimise charging schedules, and evaluate electricity tariffs before scaling operations. A data-driven charging strategy can reduce operating expenditure, improve fleet utilisation, and strengthen the long-term economic and environmental sustainability of public transportation."
     ])
     documents_meta["submission_14_chatgpt_essay.docx"] = {
         "modality": "docx",
         "type": "ai_generated_synthetic",
         "is_degraded": False,
         "is_ai": True,
-        "llm_generator": "ChatGPT (GPT-4)",
-        "description": "Synthesized essay exhibiting uniform LLM sentence cadence, low perplexity, and formulaic phrasing."
+        "llm_generator": "ChatGPT (GPT-4o)",
+        "description": "Verbatim ChatGPT-generated analysis on EV bus fleet charging costs."
     }
 
-    # 15. submission_15_claude_synthesis.pdf (LLM Sample #2: Claude)
+    # 15. submission_15_claude_synthesis.pdf (LLM Sample #2: Real Claude Output)
     p15 = output_dir / "submission_15_claude_synthesis.pdf"
     create_pdf(p15, [
         [
-            "A Comprehensive Synthesis of Decentralized Systems and Multi-Agent Orchestration.",
-            "As we examine the intersection of distributed consensus protocols and autonomous agentic workflows, it becomes readily apparent that cryptographic immutability serves as a foundational substrate. The nuanced interplay between asynchronous state transitions and Byzantine fault tolerance necessitates a deliberate re-examination of canonical architectural assumptions.",
-            "Moreover, one must carefully consider how decentralized governance mechanisms interface with algorithmic execution. Ultimately, fostering robust interoperability while preserving sovereign data privacy constitutes an essential prerequisite for resilient decentralized infrastructure across heterogeneous networks."
+            "Business Case Analysis: EV Bus Fleet Charging Costs",
+            "The transition from diesel-powered buses to electric vehicles (EVs) presents a significant opportunity for public transportation operators to reduce operating expenses, improve environmental sustainability, and modernize fleet operations. However, charging infrastructure, electricity tariffs, and energy management introduce new financial considerations that must be evaluated before large-scale implementation.",
+            "1. Cost Structure and Key Considerations",
+            "The primary advantage of EV buses is their lower energy cost compared to diesel consumption. While diesel buses incur recurring fuel expenses, EV buses require electricity for daily operations. The total charging cost depends on battery capacity, distance travelled, energy consumption per kilometre, electricity tariffs, and charging efficiency.",
+            "For example, consider a fleet of 100 electric buses, each travelling approximately 200 km daily with an average energy consumption of 1.2 kWh per kilometre. The fleet would require approximately 24,000 kWh of electricity per day. At an assumed electricity tariff of ₹8 per kWh, the daily charging expense would be ₹1.92 lakh, translating to approximately ₹5.76 crore annually, assuming 300 operating days."
+        ],
+        [
+            "2. Infrastructure and Operational Costs",
+            "Beyond electricity expenses, operators must invest in charging stations, transformers, grid connections, battery management systems, and maintenance. Depot-based charging offers relatively lower costs because buses can be charged overnight during off-peak hours. However, high-power opportunity charging may be necessary for routes with longer operating hours or limited downtime.",
+            "Demand charges and peak-hour electricity tariffs can significantly increase operating costs. Therefore, charging schedules must be designed around electricity pricing and fleet availability.",
+            "3. Cost Optimisation Strategies",
+            "Operators can reduce charging expenses through several strategies:\n- Smart Charging: Schedule charging during off-peak electricity tariff periods.\n- Load Management: Distribute charging demand to avoid excessive peak electricity consumption.\n- Route Optimisation: Allocate buses efficiently based on battery range and energy requirements.\n- Renewable Integration: Use rooftop solar installations and battery storage to reduce grid dependency.\n- Fleet Monitoring: Track energy consumption, charging efficiency, and battery health to identify operational inefficiencies.",
+            "4. Business Impact and Recommendations",
+            "Although EV buses require higher initial investments, their lower energy and maintenance costs can generate long-term savings. A detailed Total Cost of Ownership (TCO) analysis should compare electricity, infrastructure, maintenance, battery replacement, financing, and residual value against conventional diesel buses.",
+            "Conclusion",
+            "EV fleet charging costs are not determined by electricity consumption alone but by infrastructure planning, tariff structures, and operational efficiency. Implementing smart charging systems, renewable energy integration, and data-driven fleet management can significantly improve financial viability. A phased EV adoption strategy, supported by careful cost modelling, is recommended to achieve sustainable and economically efficient public transportation."
         ]
     ])
     documents_meta["submission_15_claude_synthesis.pdf"] = {
@@ -316,7 +351,7 @@ def generate_dataset(output_dir: Path):
         "is_degraded": False,
         "is_ai": True,
         "llm_generator": "Claude 3.5 Sonnet",
-        "description": "Synthesized paper exhibiting typical Claude analytical vocabulary ('readily apparent', 'nuanced interplay', 'foundational substrate')."
+        "description": "Verbatim Claude 3.5 Sonnet generated analysis on EV bus fleet charging costs."
     }
 
     # 16. submission_16_quantum_hardware.pdf (Hard Negative Control #1)
@@ -333,7 +368,7 @@ def generate_dataset(output_dir: Path):
         "type": "genuine_original_control",
         "is_degraded": False,
         "is_ai": False,
-        "description": "Human-authored technical paper on neutral-atom quantum processors."
+        "description": "Synthetic (script-generated) technical paper on neutral-atom quantum processors."
     }
 
     # 17. submission_17_quantum_algorithms.docx (Hard Negative Control #2 - Same domain as sub_16, no copy!)
@@ -348,7 +383,7 @@ def generate_dataset(output_dir: Path):
         "type": "genuine_original_control",
         "is_degraded": False,
         "is_ai": False,
-        "description": "Human-authored paper on variational quantum error mitigation (hard negative to sub_16)."
+        "description": "Synthetic (script-generated) paper on variational quantum error mitigation (hard negative to sub_16)."
     }
 
     # 18. submission_18_external_plagiarism.pdf (Plagiarized from External KB)
@@ -402,6 +437,9 @@ def generate_dataset(output_dir: Path):
         elif pair_set == {"submission_04_logistics_rewritten.docx", "submission_05_logistics_exact_copy.pdf"}:
             label = "paraphrase"
             is_plag = True
+        elif pair_set == {"submission_14_chatgpt_essay.docx", "submission_15_claude_synthesis.pdf"}:
+            label = "paraphrase"
+            is_plag = True
         elif "submission_18_external_plagiarism.pdf" in pair_set:
             # External plagiarism is against KB, not peer
             label = "unrelated"
@@ -420,13 +458,30 @@ def generate_dataset(output_dir: Path):
             "is_plagiarized_pair": is_plag
         })
 
+    external_gt = {
+        "submission_18_external_plagiarism.pdf": {
+            "is_external_plagiarism": True,
+            "source_kb_file": "circular_packaging.txt",
+            "expected_external_pct_min": 40.0
+        },
+        "submission_03_logistics_strategy.docx": {
+            "is_external_plagiarism": False,
+            "note": "Domain vocabulary overlap with cold_chain_logistics.txt (unintended synthetic overlap / edge case)"
+        },
+        "submission_05_logistics_exact_copy.pdf": {
+            "is_external_plagiarism": False,
+            "note": "Exact duplicate of submission_03 (inherits cold_chain_logistics.txt domain overlap)"
+        }
+    }
+
     full_manifest = {
         "dataset_name": "Unstop Multimodal Integrity Benchmark Dataset (Exhaustive Ground Truth)",
-        "version": "2.0",
+        "version": "2.1.0",
         "total_documents": len(documents_meta),
         "total_pairs": len(pairwise_manifest),
         "valid_pair_labels": ["exact_copy", "paraphrase", "cross_modal", "external", "same_template_only", "unrelated"],
         "documents": documents_meta,
+        "external_ground_truth": external_gt,
         "pairwise_ground_truth": pairwise_manifest
     }
 
