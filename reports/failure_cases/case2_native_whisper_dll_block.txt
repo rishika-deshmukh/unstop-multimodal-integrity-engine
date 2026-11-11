@@ -1,6 +1,8 @@
 ====================================================================================
 FAILURE CASE 2: WINDOWS OS APPLOCKER / C-EXTENSION DLL BLOCK ON NATIVE WHISPER
 ====================================================================================
+[Note: Local workspace directory and Python virtualenv paths in this traceback were sanitized to relative paths for privacy.]
+
 Incident:
 Executing the video ingestion pipeline using the upstream 'openai-whisper' package
 crashed during initialization on Windows with an OS security DLL block.

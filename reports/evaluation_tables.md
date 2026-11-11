@@ -22,9 +22,12 @@ Actual Positive (Plagiarized Pairs)       2     (FN)  |                 5    (TP
 | :--- | :---: | :--- | :--- |
 | **Lowest True Positive (TP at $\tau \ge 0.80$)** | **0.8500** | `submission_04_logistics_rewritten.docx <-> submission_05_logistics_exact_copy.pdf` | `paraphrase` |
 | **Lowest True Positive (TP at $\tau \ge 0.65$)** | **0.6700** | `submission_01_fintech_report.pdf <-> submission_19_video_paraphrase_pitch.mp4` | `cross_modal` |
-| **Highest True Negative (TN)** | **0.6200** | `submission_02_video_pitch.mp4 <-> submission_19_video_paraphrase_pitch.mp4` | `unrelated` |
-| **Separation Margin at $\tau = 0.80$** | **+0.2300** | *Lowest TP (0.8500) - Highest TN (0.6200)* | Clear decision boundary |
-| **Separation Margin at $\tau = 0.65$** | **+0.0500** | *Lowest TP (0.6700) - Highest TN (0.6200)* | Tier 2 review boundary |
+| **Highest Labeled Negative (Overall)** | **0.9500** | `submission_14_llm_generated_essay.docx <-> submission_15_llm_generated_synthesis.pdf` | `same_prompt_ai_outputs` |
+| **Highest True Negative (Clean Controls)** | **0.6200** | `submission_02_video_pitch.mp4 <-> submission_19_video_paraphrase_pitch.mp4` | `unrelated` |
+| **Separation Margin across ALL Labeled Negatives** | **-0.1000** | *Lowest TP (0.8500) - Highest Negative (0.9500)* | Overlap due to same-prompt AI pair |
+| **Separation Margin at $\tau = 0.65$ (excl. same-prompt AI)** | **+0.0500** | *Lowest TP (0.6700) - Highest TN (0.6200)* | Tier 2 review boundary |
+
+*Note: Semantic similarity cannot distinguish independent same-prompt LLM outputs from copying (the single FP: `submission_14 <-> submission_15` at 0.9500), producing an overlap of -0.1000 across all ground-truth negatives.*
 
 ### Table 3: Degraded & Edge Case Handling (Scenario 3)
 

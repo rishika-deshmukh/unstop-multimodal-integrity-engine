@@ -71,11 +71,11 @@ Actual Positive (Plagiarized Pairs)       2     (FN)  |                 5    (TP
 | :--- | :---: | :--- | :--- |
 | **Lowest True Positive (TP at $\tau \ge 0.80$)** | **0.8500** | `submission_04_logistics_rewritten.docx` $\leftrightarrow$ `submission_05_logistics_exact_copy.pdf` | `paraphrase` (Paraphrased vs Exact Copy) |
 | **Lowest True Positive (TP at $\tau \ge 0.65$)** | **0.6700** | `submission_01_fintech_report.pdf` $\leftrightarrow$ `submission_19_video_paraphrase_pitch.mp4` | `cross_modal` (Spoken Paraphrase) |
-| **Highest Benign Negative (TN)** | **0.6200** | `submission_02_video_pitch.mp4` $\leftrightarrow$ `submission_19_video_paraphrase_pitch.mp4` | `unrelated` (Both video pitches in fintech domain) |
-| **False Positive (FP at $\tau \ge 0.80$)** | **0.9500** | `submission_14_llm_generated_essay.docx` $\leftrightarrow$ `submission_15_llm_generated_synthesis.pdf` | `same_prompt_ai_outputs` (Two independent LLMs) |
+| **Highest Labeled Negative (Overall)** | **0.9500** | `submission_14_llm_generated_essay.docx` $\leftrightarrow$ `submission_15_llm_generated_synthesis.pdf` | `same_prompt_ai_outputs` (The single False Positive) |
+| **Highest True Negative (Clean Controls)** | **0.6200** | `submission_02_video_pitch.mp4` $\leftrightarrow$ `submission_19_video_paraphrase_pitch.mp4` | `unrelated` (Both video pitches in fintech domain) |
 
-- **Separation Margin at $\tau = 0.80$**: Lowest TP ($0.8500$) $-$ Highest TN ($0.6200$) = **$+0.2300$** margin.
-- **Separation Margin at $\tau = 0.65$**: Lowest TP ($0.6700$) $-$ Highest TN ($0.6200$) = **$+0.0500$** margin.
+- **Separation Margin across ALL Labeled Negatives**: Lowest TP ($0.8500$) $-$ Highest Labeled Negative ($0.9500$) = **$-0.1000$** margin. Semantic similarity alone cannot distinguish independent same-prompt LLM outputs from copying (the single False Positive `sub_14` $\leftrightarrow$ `sub_15` at 0.9500), creating an overlapping margin across all ground-truth negatives.
+- **Separation Margin at $\tau = 0.65$ (excluding the same-prompt AI pair)**: Lowest TP ($0.6700$) $-$ Highest TN ($0.6200$) = **$+0.0500$** margin.
 
 - **True Positives (5 pairs at $\tau = 0.80$)**:
   1. `submission_01_fintech_report.pdf` $\leftrightarrow$ `submission_02_video_pitch.mp4` (Cross-modal speech duplicate; cosine: **1.00**)
@@ -90,11 +90,12 @@ Actual Positive (Plagiarized Pairs)       2     (FN)  |                 5    (TP
 - **False Positive (1 pair)**:
   - `submission_14_llm_generated_essay.docx` $\leftrightarrow$ `submission_15_llm_generated_synthesis.pdf` (cosine: **0.95**). Because both LLMs were prompted with the exact same business case brief ("Business Case Analysis: EV Bus Fleet Charging Costs"), both generated identical sectional outlines and financial calculations, triggering a false-positive peer match between two students who never communicated. This is documented in Section 7 as a key limitation of peer similarity when LLMs are used independently. In reports, a reviewer note is automatically attached stating that mutual similarity between AI-generated texts may stem from identical prompt conditioning rather than student-to-student copying.
 - **True Negatives (202 pairs)**:
+  - Pair `submission_02_video_pitch.mp4` $\leftrightarrow$ `submission_19_video_paraphrase_pitch.mp4` (cosine: **0.6200**, correctly cleared as independent work). Although both video pitches derive from `submission_01`, `sub_02` transcribes Page 2 (credit underwriting) while `sub_19` paraphrases Page 1 (microfinance inclusion); because they share zero mutual passages, their relationship is correctly labeled negative, with their 0.6200 score representing topical domain vocabulary rather than direct copying.
   - 10 pairwise combinations among the 5 EV case submissions (`submission_09` to `submission_13`) sharing the 150-word prompt header (max similarity: **0.46**, safely below 0.80 cutoff).
   - Hard negative pair `submission_16_quantum_hardware.pdf` $\leftrightarrow$ `submission_17_quantum_algorithms.docx` (cosine: **0.53**, correctly cleared as independent work).
   - Near-threshold negative `submission_21_ev_near_threshold_negative.pdf` against EV prompt submissions (cosine: **0.61**, correctly cleared as independent work).
   - Human control pairs (`submission_22`, `submission_23`, `submission_24`) against all submissions (max similarity $\le 0.44$).
-  - 188 other pairwise comparisons between independent submissions (all similarities $\le 0.35$).
+  - 187 other pairwise comparisons between independent submissions (all similarities $\le 0.35$).
 - **False Positives (1)**: 1 pair (`sub_14` $\leftrightarrow$ `sub_15`) due to independent LLM convergence. Zero human pairs triggered false positives.
 
 ---
@@ -226,7 +227,7 @@ To evaluate cross-modal transcription fidelity under realistic acoustic conditio
   Despite numeric formatting normalization, the `all-MiniLM-L6-v2` dense embedding space achieved a cosine similarity of **1.00** against Page 2 of `submission_01_fintech_report.pdf`. This proves that dense semantic vector search is intrinsically resilient to ASR formatting shifts.
 
 > [!NOTE]
-> **Acoustic Rate & ASR Variance**: When re-transcribing audio at accelerated conversational speeds (e.g., faster speech rate or slight acoustic variations), ASR tokenization and boundary differences can shift semantic chunk similarity between **0.83 and 1.00**. Importantly, because the Tier 1 threshold is 0.80, cross-modal detection robustly remains at Tier 1 (High-Confidence Match) regardless of these minor ASR transcription variations.
+> **Cross-Modal Ground Truth**: `submission_01` $\leftrightarrow$ `submission_02` achieved an empirical cosine similarity of **1.00**, and the measured ASR Word Error Rate (WER) on the clean synthesized audio was **4.76%** across 63 words. Because the Tier 1 threshold is 0.80, this cross-modal match is detected with high confidence.
 
 ---
 

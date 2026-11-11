@@ -139,18 +139,28 @@ def run_evaluation(
     fp_pairs = [dp for dp in detailed_pairs if not dp["is_plag_gt"] and dp["pred_plag"]]
     fn_pairs = [dp for dp in detailed_pairs if dp["is_plag_gt"] and not dp["pred_plag"]]
 
+    # All labeled negatives in ground truth (including false positives like sub_14 <-> sub_15)
+    all_neg_pairs = [dp for dp in detailed_pairs if not dp["is_plag_gt"]]
+
     min_tp_pair = min(tp_pairs, key=lambda x: x["sim"]) if tp_pairs else None
+    max_all_neg_pair = max(all_neg_pairs, key=lambda x: x["sim"]) if all_neg_pairs else None
     max_tn_pair = max(tn_pairs, key=lambda x: x["sim"]) if tn_pairs else None
 
     lowest_tp_score = min_tp_pair["sim"] if min_tp_pair else 0.0
+    highest_all_neg_score = max_all_neg_pair["sim"] if max_all_neg_pair else 0.0
     highest_tn_score = max_tn_pair["sim"] if max_tn_pair else 0.0
-    separation_margin = round(lowest_tp_score - highest_tn_score, 4)
+
+    # Margin against ALL labeled negatives (reflecting the same-prompt AI FP)
+    separation_margin_all_neg = round(lowest_tp_score - highest_all_neg_score, 4)
 
     # Tier 2 threshold (0.65) breakdown
     y_pred_065 = [1 if dp["sim"] >= 0.65 else 0 for dp in detailed_pairs]
     tp_065, fp_065, tn_065, fn_065, prec_065, rec_065, f1_065, acc_065 = calc_metrics(y_true, y_pred_065)
     tp_065_pairs = [dp for dp in detailed_pairs if dp["is_plag_gt"] and dp["sim"] >= 0.65]
     min_tp_065_pair = min(tp_065_pairs, key=lambda x: x["sim"]) if tp_065_pairs else None
+
+    # Margin at 0.65 excluding the same-prompt AI pair (against true negatives)
+    margin_065_excl_ai = round(min_tp_065_pair['sim'] - highest_tn_score, 4) if min_tp_065_pair else 0.0
 
     # =========================================================================
     # 3. THRESHOLD SENSITIVITY SWEEP (Dynamically Computed from Matrix)
@@ -314,11 +324,13 @@ def run_evaluation(
             tf.write(f"| **Lowest True Positive (TP at $\\tau \\ge 0.80$)** | **{lowest_tp_score:.4f}** | `{min_tp_pair['pair']}` | `{min_tp_pair['gt_label']}` |\n")
         if min_tp_065_pair:
             tf.write(f"| **Lowest True Positive (TP at $\\tau \\ge 0.65$)** | **{min_tp_065_pair['sim']:.4f}** | `{min_tp_065_pair['pair']}` | `{min_tp_065_pair['gt_label']}` |\n")
+        if max_all_neg_pair:
+            tf.write(f"| **Highest Labeled Negative (Overall)** | **{highest_all_neg_score:.4f}** | `{max_all_neg_pair['pair']}` | `{max_all_neg_pair['gt_label']}` |\n")
         if max_tn_pair:
-            tf.write(f"| **Highest True Negative (TN)** | **{highest_tn_score:.4f}** | `{max_tn_pair['pair']}` | `{max_tn_pair['gt_label']}` |\n")
-        tf.write(f"| **Separation Margin at $\\tau = 0.80$** | **+{separation_margin:.4f}** | *Lowest TP ({lowest_tp_score:.4f}) - Highest TN ({highest_tn_score:.4f})* | Clear decision boundary |\n")
-        margin_065 = round(min_tp_065_pair['sim'] - highest_tn_score, 4) if min_tp_065_pair else 0.0
-        tf.write(f"| **Separation Margin at $\\tau = 0.65$** | **+{margin_065:.4f}** | *Lowest TP ({min_tp_065_pair['sim']:.4f}) - Highest TN ({highest_tn_score:.4f})* | Tier 2 review boundary |\n\n")
+            tf.write(f"| **Highest True Negative (Clean Controls)** | **{highest_tn_score:.4f}** | `{max_tn_pair['pair']}` | `{max_tn_pair['gt_label']}` |\n")
+        tf.write(f"| **Separation Margin across ALL Labeled Negatives** | **{separation_margin_all_neg:+.4f}** | *Lowest TP ({lowest_tp_score:.4f}) - Highest Negative ({highest_all_neg_score:.4f})* | Overlap due to same-prompt AI pair |\n")
+        tf.write(f"| **Separation Margin at $\\tau = 0.65$ (excl. same-prompt AI)** | **+{margin_065_excl_ai:.4f}** | *Lowest TP ({min_tp_065_pair['sim']:.4f}) - Highest TN ({highest_tn_score:.4f})* | Tier 2 review boundary |\n\n")
+        tf.write("*Note: Semantic similarity cannot distinguish independent same-prompt LLM outputs from copying (the single FP: `submission_14 <-> submission_15` at 0.9500), producing an overlap of -0.1000 across all ground-truth negatives.*\n\n")
 
         tf.write("### Table 3: Degraded & Edge Case Handling (Scenario 3)\n\n")
         tf.write("| Document ID | Ingestion Modality | Detected Status | Assigned Risk | Pipeline Handling |\n")
@@ -379,9 +391,11 @@ def run_evaluation(
     print(f"  True Negatives  (TN) : {tn}")
     print(f"  False Negatives (FN) : {fn} -> {[p['pair'] for p in fn_pairs]}")
     print(f"\nScore Distribution & Margin (at tau = {default_threshold:.2f}):")
-    print(f"  Lowest True Positive (TP)  : {lowest_tp_score:.4f} ({min_tp_pair['pair'] if min_tp_pair else 'None'})")
-    print(f"  Highest True Negative (TN) : {highest_tn_score:.4f} ({max_tn_pair['pair'] if max_tn_pair else 'None'})")
-    print(f"  Separation Margin          : +{separation_margin:.4f}")
+    print(f"  Lowest True Positive (TP)          : {lowest_tp_score:.4f} ({min_tp_pair['pair'] if min_tp_pair else 'None'})")
+    print(f"  Highest Labeled Negative (Overall) : {highest_all_neg_score:.4f} ({max_all_neg_pair['pair'] if max_all_neg_pair else 'None'})")
+    print(f"  Highest True Negative (Clean)      : {highest_tn_score:.4f} ({max_tn_pair['pair'] if max_tn_pair else 'None'})")
+    print(f"  Separation Margin (All Negatives)  : {separation_margin_all_neg:+.4f} (Semantic similarity cannot distinguish independent same-prompt LLM outputs from copying)")
+    print(f"  Separation Margin (0.65, Excl. AI) : +{margin_065_excl_ai:.4f}")
 
     print(f"\n--- Tier 2 Review Boundary Comparison (Threshold = 0.65) ---")
     print(f"Precision : {prec_065 * 100:.2f}%")
@@ -391,8 +405,7 @@ def run_evaluation(
     print(f"FP ({fp_065}) -> {[p['pair'] for p in fp_pairs]}")
     print(f"FN ({fn_065}) -> []")
     print(f"TN ({tn_065})")
-    margin_065 = round(min_tp_065_pair['sim'] - highest_tn_score, 4) if min_tp_065_pair else 0.0
-    print(f"Separation Margin (0.65)   : +{margin_065:.4f}")
+    print(f"Separation Margin (0.65, Excl. AI) : +{margin_065_excl_ai:.4f}")
 
     print("\n--- 2. Degraded & Edge Case Handling (Scenario 3) ---")
     for sr in status_results:
@@ -436,9 +449,12 @@ def run_evaluation(
             "score_distribution": {
                 "lowest_tp": lowest_tp_score,
                 "lowest_tp_pair": min_tp_pair["pair"] if min_tp_pair else None,
+                "highest_all_neg": highest_all_neg_score,
+                "highest_all_neg_pair": max_all_neg_pair["pair"] if max_all_neg_pair else None,
                 "highest_tn": highest_tn_score,
                 "highest_tn_pair": max_tn_pair["pair"] if max_tn_pair else None,
-                "separation_margin": separation_margin
+                "separation_margin_all_neg": separation_margin_all_neg,
+                "separation_margin_excl_ai": round(lowest_tp_score - highest_tn_score, 4)
             },
             "tier2_review_metrics_at_065": {
                 "threshold": 0.65,
@@ -449,7 +465,7 @@ def run_evaluation(
                 "confusion_matrix": {"tp": tp_065, "fp": fp_065, "tn": tn_065, "fn": fn_065},
                 "lowest_tp": min_tp_065_pair["sim"] if min_tp_065_pair else None,
                 "lowest_tp_pair": min_tp_065_pair["pair"] if min_tp_065_pair else None,
-                "separation_margin": margin_065
+                "separation_margin_excl_ai": margin_065_excl_ai
             }
         },
         "degraded_file_tests": status_results,
