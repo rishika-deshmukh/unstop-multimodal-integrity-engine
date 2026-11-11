@@ -12,16 +12,16 @@
       "matched_file": "submission_20_partially_copied.docx",
       "similarity_score": 0.67,
       "confidence_tier": "Possible paraphrase / review recommended (0.65-0.79)",
-      "lexical_jaccard": 0.1304,
-      "lexical_levenshtein": 0.3139,
+      "lexical_jaccard": 0.1429,
+      "lexical_levenshtein": 0.2644,
       "is_paraphrase": true,
       "attribution_note": "Possible paraphrase detected (Tier 2 similarity 0.67 in 0.65-0.80 range); manual review recommended.",
-      "query_passage": "Digital Microfinance providers in emerging economies utilize algorithmic credit scoring trained on alternative consumer signals, including telecom payment regularity and point of sale transaction records.",
-      "matched_passage": "Modern digital credit infrastructure enables instantaneous risk assessment for underserved consumer segments by ingesting alternative transactional data streams including utility bill remittances and mobile airtime top-ups.",
+      "query_passage": "Digital Microfinance providers in emerging economies utilize algorithmic credit scoring",
+      "matched_passage": "Digital Banking Infrastructure and Microfinance Expansion.",
       "location": {
         "query_page": null,
         "matched_page": 1,
-        "query_timestamp": "00:00:00 - 00:00:18",
+        "query_timestamp": "00:00:00 - 00:00:17",
         "matched_timestamp": null
       }
     }

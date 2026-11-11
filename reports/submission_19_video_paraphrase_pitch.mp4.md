@@ -23,12 +23,12 @@ Identified audio speech matching written submission passages:
 
 
 ### Match #1 — Target: `submission_20_partially_copied.docx` (Similarity: **0.67** | **Possible paraphrase / review recommended (0.65-0.79)**)
-- **Query Location:** `00:00:00 - 00:00:18`
+- **Query Location:** `00:00:00 - 00:00:17`
 - **Matched File Location:** `Page 1`
 - **Offending Query Spoken/Text:**
-  > *"Digital Microfinance providers in emerging economies utilize algorithmic credit scoring trained on alternative consumer signals, including telecom payment regularity and point of sale transaction records."*
+  > *"Digital Microfinance providers in emerging economies utilize algorithmic credit scoring"*
 - **Matched Counterpart:**
-  > *"Modern digital credit infrastructure enables instantaneous risk assessment for underserved consumer segments by ingesting alternative transactional data streams including utility bill remittances and mobile airtime top-ups."*
+  > *"Digital Banking Infrastructure and Microfinance Expansion."*
 
 ## 4. Internal Peer Document Overlaps & Paraphrasing (Scenario 2)
 

@@ -294,7 +294,7 @@
         "category": "Synthetic (script-generated)",
         "is_llm": false,
         "openai_roberta": 5.0,
-        "chatgpt_roberta": 1.8,
+        "chatgpt_roberta": 1.4,
         "assigned_risk": "MEDIUM",
         "risk_driver": "Peer/External match"
       },

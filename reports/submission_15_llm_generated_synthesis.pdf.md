@@ -2,7 +2,7 @@
 
 **Overall Assessment:** **🔴 HIGH INTEGRITY RISK**
 
-**System Recommendation:** Critical internal peer similarity detected (62.5% meets or exceeds 50.0% threshold). | Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying.
+**System Recommendation:** Critical internal peer similarity detected (62.5% meets or exceeds 50.0% threshold).
 
 ## 1. Multi-Signal Integrity Scores
 

@@ -96,7 +96,7 @@ The engine analyzes submissions across multiple modalities - **PDF reports, DOCX
 - **FFmpeg**: Automatically managed via bundled `imageio-ffmpeg` binary (or system FFmpeg if present).
 - **Linux System Dependencies**: On Debian/Ubuntu environments, audio synthesis via `pyttsx3` requires `espeak` and `libespeak1` (`sudo apt-get install -y ffmpeg espeak libespeak1`).
 - **Acoustic Testing Boundary**: Synthetic test videos (`submission_02`, `submission_19`) use clean TTS audio; real-world noisy, low-bitrate, or accented human speech was not evaluated in this benchmark.
-- **Environment Note**: All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (AMD Ryzen 5 5600H, 16 GB RAM)**. Linux GitHub Actions CI (`.github/workflows/ci.yml`) validates the pipeline, unit tests, and evaluation on `ubuntu-latest`.
+- **Environment Note**: All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (Intel 10 physical cores, 16 logical processors, 15.69 GB RAM)**. Linux GitHub Actions CI (`.github/workflows/ci.yml`) validates the pipeline, unit tests, and evaluation on `ubuntu-latest`.
 
 ### 2. Cross-Platform Setup & Execution
 

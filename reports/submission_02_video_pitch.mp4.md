@@ -43,8 +43,8 @@ Identified audio speech matching written submission passages:
 | Component | Estimated Value | Interpretation |
 | :--- | :---: | :--- |
 | **RoBERTa Classifier (Supervised)** | 1.1% | Supervised synthetic classifier |
-| **GPT-2 Perplexity (PPL)** | 92.35 | Lower PPL (<35) correlates with LLMs |
-| **Sentence Burstiness (Length Variance)** | 11.20 | Lower burstiness (<35) indicates uniform machine cadence |
+| **GPT-2 Perplexity (PPL)** | 98.87 | Lower PPL (<35) correlates with LLMs |
+| **Sentence Burstiness (Length Variance)** | 12.34 | Lower burstiness (<35) indicates uniform machine cadence |
 | **Composite AI Probability** | **15.7%** | Confidence: HIGH |
 
 > [!NOTE]

@@ -30,13 +30,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Test Suite
-        run: |
-          pytest tests/ -v
-
       - name: Run Multimodal Pipeline on Sample Submissions
         run: |
           python run_integrity_check.py --input_dir ./sample_submissions --output_dir ./reports
+
+      - name: Run Test Suite
+        run: |
+          pytest tests/ -v
 
       - name: Run Evaluation Benchmark Validation
         run: |

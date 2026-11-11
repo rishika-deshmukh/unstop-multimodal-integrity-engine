@@ -1,6 +1,6 @@
 # Empirical Benchmark Evaluation & Technical Analysis
 
-This evaluation report provides empirical validation of the **Multimodal Submission Integrity & Plagiarism Detection Engine**. All metrics, confusion matrices, hardware benchmarks, and sensitivity tables were computed directly by running `evaluate.py` and `scripts/benchmark.py` against the ground-truth dataset (`sample_submissions/dataset_manifest.json`) across all 24 multi-modal submission files on commodity x86_64 CPU hardware (AMD Ryzen 5, Windows 11).
+This evaluation report provides empirical validation of the **Multimodal Submission Integrity & Plagiarism Detection Engine**. All metrics, confusion matrices, hardware benchmarks, and sensitivity tables were computed directly by running `evaluate.py` and `scripts/benchmark.py` against the ground-truth dataset (`sample_submissions/dataset_manifest.json`) across all 24 multi-modal submission files on commodity x86_64 CPU hardware (Intel 10 physical cores, 16 logical processors, 15.69 GB RAM, Windows 11).
 
 > [!IMPORTANT]
 > **Synthetic Benchmark Generalization Disclaimer**:
@@ -8,7 +8,7 @@ This evaluation report provides empirical validation of the **Multimodal Submiss
 
 > [!NOTE]
 > **Operating Environment & OS Validation**:
-> All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (AMD Ryzen 5 5600H, 16 GB RAM, Python 3.10.8)**. Linux commands (`setup.sh`, `Makefile`) are provided for POSIX environments and verified for syntax/dependency compatibility, but have not been validated on a native Linux kernel in this test cycle due to local WSL absence.
+> All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (Intel 10 physical cores, 16 logical processors, 15.69 GB RAM, Python 3.10.8)**. Linux commands (`setup.sh`, `Makefile`) are provided for POSIX environments and verified for syntax/dependency compatibility, but have not been validated on a native Linux kernel in this test cycle due to local WSL absence.
 
 ---
 
@@ -248,7 +248,7 @@ Four authentic failure cases were reproduced, diagnosed, and resolved during sys
 - **Raw Artifact**: [case2_native_whisper_dll_block.txt](reports/failure_cases/case2_native_whisper_dll_block.txt)
 - **Observed Behavior**: Using upstream `openai-whisper` dynamically imported `numba._internal`, which attempts to load unwhitelisted native C-extension DLLs (`.pyd`) from Python's `site-packages`. On Windows workstations governed by AppLocker / WDAC security policies, execution crashed with `ImportError: DLL load failed while importing _internal`.
 - **Empirical Impact**: The video ingestion pipeline completely halted on startup.
-- **Production Resolution**: Migrated from native `openai-whisper` to Hugging Face `transformers.WhisperForConditionalGeneration` and `WhisperProcessor` with PCM audio extraction via bundled FFmpeg. This executes purely in Python/PyTorch tensors without runtime native DLL compilation, while delivering 10.24x faster-than-real-time throughput on CPU.
+- **Production Resolution**: Migrated from native `openai-whisper` to Hugging Face `transformers.WhisperForConditionalGeneration` and `WhisperProcessor` with PCM audio extraction via bundled FFmpeg. This executes purely in Python/PyTorch tensors without runtime native DLL compilation, while delivering 8.92x faster-than-real-time throughput on CPU.
 
 ### Failure Case 3: Out-of-Distribution Calibration in Statistical AI Detectors
 - **Raw Artifact**: [case3_ai_detector_ood_calibration.txt](reports/failure_cases/case3_ai_detector_ood_calibration.txt)
@@ -273,7 +273,7 @@ Four authentic failure cases were reproduced, diagnosed, and resolved during sys
 
 ## 8. Hardware Benchmarks: Flat vs. HNSW & Model Throughput
 
-All benchmarks were executed on an x86_64 CPU workstation (AMD Ryzen 5 5600H, 6 physical cores, 12 logical processors, 15.69 GB RAM, Windows 11). Results are saved in `benchmarks/results.json`.
+All benchmarks were executed on an x86_64 CPU workstation (Intel 10 physical cores, 16 logical processors, 15.69 GB RAM, Windows 11). Results are saved in `benchmarks/results.json`.
 
 ### 8.1 FAISS IndexFlatIP vs. IndexHNSWFlat (200,000 Vectors, Dimension 384)
 
@@ -304,7 +304,7 @@ All benchmarks were executed on an x86_64 CPU workstation (AMD Ryzen 5 5600H, 6 
 ### 8.4 Empirical Audit & Testing Boundaries
 
 1. **FAISS Flat vs. HNSW 200k Measurement**:
-   - The 200k vector benchmark was an authentic local execution on this workstation (AMD Ryzen 5 5600H CPU). It allocated a 200,000 $\times$ 384 random vector matrix (`float32`), constructed `IndexFlatIP` (0.10s) and `IndexHNSWFlat` (21.86s), and performed batch query searches, measuring 13.852 ms vs 0.915 ms latency per query.
+   - The 200k vector benchmark was an authentic local execution on this workstation (Intel 10 physical cores, 16 logical processors CPU). It allocated a 200,000 $\times$ 384 random vector matrix (`float32`), constructed `IndexFlatIP` (0.10s) and `IndexHNSWFlat` (21.86s), and performed batch query searches, measuring 13.852 ms vs 0.915 ms latency per query.
 2. **Throughput Figures**:
    - `all-MiniLM-L6-v2` (219.83 chunks/sec) and `openai/whisper-tiny` (0.112 RTF / 8.92x faster than real-time) were measured on this workstation.
    - BGE-base (~45 chunks/sec) and BGE-large (~14 chunks/sec) are FLOP/parameter scaling estimates based on relative parameter ratios (4.8x and 14.8x parameters over MiniLM).

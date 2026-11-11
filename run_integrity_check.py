@@ -216,17 +216,6 @@ def run_pipeline(input_dir: str, output_dir: str, config_path: str = "config.yam
             max_tier2_sim=max_tier2_sim
         )
 
-        # Check for dual-AI prompt convergence on peer matches
-        is_current_ai = ("llm_generated" in doc_id or "chatgpt" in doc_id or "claude" in doc_id or ai_prob >= 50.0)
-        for m in peer_matches + mm_matches:
-            target_name = m.get("matched_file", "")
-            is_target_ai = ("llm_generated" in target_name or "chatgpt" in target_name or "claude" in target_name)
-            if is_current_ai and is_target_ai:
-                dual_ai_note = "Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying."
-                m["attribution_note"] = f"{m.get('attribution_note', '')} {dual_ai_note}".strip()
-                if "independent generation" not in explanation_str:
-                    explanation_str += f" | {dual_ai_note}"
-
         # Boilerplate records discounted for this document
         discounted_bp = boilerplate_filter.get_discounted_for_doc(doc_id)
 

@@ -26,12 +26,12 @@ def warm_up():
     except Exception as e:
         logger.error(f"Failed to cache SentenceTransformer: {e}")
 
-    # 2. Whisper
+    # 2. Whisper (Transformers pipeline using openai/whisper-tiny)
     try:
-        import whisper
-        logger.info("Downloading Whisper 'base'...")
-        _ = whisper.load_model("base")
-        logger.info("Whisper 'base' cached successfully.")
+        from transformers import pipeline
+        logger.info("Downloading Whisper 'openai/whisper-tiny'...")
+        _ = pipeline("automatic-speech-recognition", model="openai/whisper-tiny", chunk_length_s=30)
+        logger.info("Whisper 'openai/whisper-tiny' cached successfully.")
     except Exception as e:
         logger.error(f"Failed to cache Whisper: {e}")
 
@@ -45,23 +45,27 @@ def warm_up():
     except Exception as e:
         logger.error(f"Failed to cache GPT-2: {e}")
 
-    # 4. RoBERTa AI Detector
+    # 4. RoBERTa AI Detector (Primary model from config.yaml: Hello-SimpleAI/chatgpt-detector-roberta)
     try:
         from transformers import AutoTokenizer, AutoModelForSequenceClassification
-        logger.info("Downloading RoBERTa AI detector ('roberta-base-openai-detector')...")
-        model_name = "roberta-base-openai-detector"
+        model_name = "Hello-SimpleAI/chatgpt-detector-roberta"
+        logger.info(f"Downloading primary AI detector ('{model_name}')...")
         _ = AutoTokenizer.from_pretrained(model_name)
         _ = AutoModelForSequenceClassification.from_pretrained(model_name)
-        logger.info("RoBERTa AI detector cached successfully.")
+        logger.info(f"Primary AI detector '{model_name}' cached successfully.")
     except Exception as e:
-        logger.warning(f"Could not download primary detector ({e}). Trying fallback...")
-        try:
-            fallback = "Hello-SimpleAI/chatgpt-detector-roberta"
-            _ = AutoTokenizer.from_pretrained(fallback)
-            _ = AutoModelForSequenceClassification.from_pretrained(fallback)
-            logger.info("Fallback AI detector cached successfully.")
-        except Exception as e2:
-            logger.error(f"Fallback detector download failed: {e2}")
+        logger.error(f"Failed to cache primary AI detector: {e}")
+
+    # Optional benchmark detector (roberta-base-openai-detector)
+    try:
+        from transformers import AutoTokenizer, AutoModelForSequenceClassification
+        bm_name = "roberta-base-openai-detector"
+        logger.info(f"Downloading benchmark AI detector ('{bm_name}')...")
+        _ = AutoTokenizer.from_pretrained(bm_name)
+        _ = AutoModelForSequenceClassification.from_pretrained(bm_name)
+        logger.info(f"Benchmark AI detector '{bm_name}' cached successfully.")
+    except Exception as e:
+        logger.warning(f"Could not cache secondary benchmark detector: {e}")
 
     logger.info("Model download and cache warm-up process complete.")
 

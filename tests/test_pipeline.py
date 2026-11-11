@@ -368,8 +368,9 @@ def test_external_detector_rejects_unrelated_domain_text():
     ext_detector = ExternalDetector(vector_indexer=indexer, kb_dir="./external_kb", chunk_threshold=0.80)
     chunker = DocumentChunker(250, 50, 15)
     ext_detector.load_and_index_kb(chunker)
+    indexer.index_chunks(ext_detector.kb_chunks)
 
-    # Test an original clean submission chunk (EV bus depot charging)
+    # 1. Test that an original clean submission chunk is correctly rejected with 0 matches
     clean_chunk = DocumentChunk(
         chunk_id="test_clean#c0",
         doc_id="test_clean",
@@ -378,7 +379,21 @@ def test_external_detector_rejects_unrelated_domain_text():
         text="Deploying megawatt charging infrastructure at municipal bus depots requires dedicated high-voltage substation interconnects."
     )
     clean_emb = indexer.embed_texts([clean_chunk.text])
-    results = ext_detector.analyze_document_external_matches("test_clean", [clean_chunk], clean_emb)
-    assert results["external_similarity_percentage"] == 0.0
-    assert len(results["external_matches"]) == 0
+    results_clean = ext_detector.analyze_document_external_matches("test_clean", [clean_chunk], clean_emb)
+    assert results_clean["external_similarity_percentage"] == 0.0
+    assert len(results_clean["external_matches"]) == 0
+
+    # 2. Test that an exact copy of a knowledge base passage is correctly detected
+    copied_chunk = DocumentChunk(
+        chunk_id="test_copied#c0",
+        doc_id="test_copied",
+        file_name="test_copied.pdf",
+        modality="pdf",
+        text=ext_detector.kb_chunks[0].text
+    )
+    copied_emb = indexer.embed_texts([copied_chunk.text])
+    results_copied = ext_detector.analyze_document_external_matches("test_copied", [copied_chunk], copied_emb)
+    assert results_copied["external_similarity_percentage"] == 100.0
+    assert len(results_copied["external_matches"]) == 1
+    assert results_copied["external_matches"][0]["similarity_score"] >= 0.95
 

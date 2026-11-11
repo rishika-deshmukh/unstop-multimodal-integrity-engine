@@ -76,7 +76,7 @@ Actual Positive (Plagiarized Pairs)       2     (FN)  |                 5    (TP
 | `submission_16_quantum_hardware.pdf` | Synthetic (script-generated) | 13.6% | 0.0% | LOW | Original/Cleared |
 | `submission_17_quantum_algorithms.docx` | Synthetic (script-generated) | 15.0% | 0.0% | LOW | Original/Cleared |
 | `submission_18_external_plagiarism.pdf` | Synthetic (script-generated) | 14.2% | 0.1% | HIGH | Peer/External match |
-| `submission_19_video_paraphrase_pitch.mp4` | Synthetic (script-generated) | 5.0% | 1.8% | MEDIUM | Peer/External match |
+| `submission_19_video_paraphrase_pitch.mp4` | Synthetic (script-generated) | 5.0% | 1.4% | MEDIUM | Peer/External match |
 | `submission_20_partially_copied.docx` | Synthetic (script-generated) | 15.1% | 0.0% | MEDIUM | Peer/External match |
 | `submission_21_ev_near_threshold_negative.pdf` | Synthetic (script-generated) | 14.4% | 0.0% | LOW | Original/Cleared |
 | `submission_22_wikipedia_urban_transit.pdf` | Human Control (Wikipedia - Bus rapid transit) | 29.9% | 0.8% | LOW | Original/Cleared |
