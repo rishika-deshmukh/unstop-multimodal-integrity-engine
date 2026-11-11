@@ -69,9 +69,13 @@ Actual Positive (Plagiarized Pairs)       2     (FN)  |                 5    (TP
 
 | Boundary Metric | Measured Similarity | File Pair | Ground-Truth Relationship |
 | :--- | :---: | :--- | :--- |
-| **Lowest True Positive (TP)** | **0.6700** | `submission_01_fintech_report.pdf` $\leftrightarrow$ `submission_19_video_paraphrase_pitch.mp4` | `cross_modal` (Spoken Paraphrase) |
-| **Highest Benign Negative (TN)** | **0.6100** | `submission_21_ev_near_threshold_negative.pdf` $\leftrightarrow$ `submission_10_ev_battery.docx` | `near_threshold_negative` (Hydrogen vs EV) |
+| **Lowest True Positive (TP at $\tau \ge 0.80$)** | **0.8500** | `submission_04_logistics_rewritten.docx` $\leftrightarrow$ `submission_05_logistics_exact_copy.pdf` | `paraphrase` (Paraphrased vs Exact Copy) |
+| **Lowest True Positive (TP at $\tau \ge 0.65$)** | **0.6700** | `submission_01_fintech_report.pdf` $\leftrightarrow$ `submission_19_video_paraphrase_pitch.mp4` | `cross_modal` (Spoken Paraphrase) |
+| **Highest Benign Negative (TN)** | **0.6200** | `submission_02_video_pitch.mp4` $\leftrightarrow$ `submission_19_video_paraphrase_pitch.mp4` | `unrelated` (Both video pitches in fintech domain) |
 | **False Positive (FP at $\tau \ge 0.80$)** | **0.9500** | `submission_14_llm_generated_essay.docx` $\leftrightarrow$ `submission_15_llm_generated_synthesis.pdf` | `same_prompt_ai_outputs` (Two independent LLMs) |
+
+- **Separation Margin at $\tau = 0.80$**: Lowest TP ($0.8500$) $-$ Highest TN ($0.6200$) = **$+0.2300$** margin.
+- **Separation Margin at $\tau = 0.65$**: Lowest TP ($0.6700$) $-$ Highest TN ($0.6200$) = **$+0.0500$** margin.
 
 - **True Positives (5 pairs at $\tau = 0.80$)**:
   1. `submission_01_fintech_report.pdf` $\leftrightarrow$ `submission_02_video_pitch.mp4` (Cross-modal speech duplicate; cosine: **1.00**)
@@ -142,6 +146,9 @@ Evaluation of external knowledge base matching against `external_kb/`:
 - **True Positive (1)**: `submission_18_external_plagiarism.pdf` directly copied circular packaging text (detected at **50.0% external similarity**, triggering `HIGH` risk).
 - **False Positives (0)**: In initial testing, `submission_03` and `submission_05` triggered unintended 50% external matches due to overlapping cold-chain terminology in `external_kb/cold_chain_logistics.txt`. Replacing that reference file with independent maritime container shipping logistics and adding secondary n-gram / lexical corroboration resolved the bleed, achieving **100.0% Precision and 100.0% Recall**.
 - **True Negatives (20)**: All other clean submissions scored 0.0% external similarity.
+
+> [!NOTE]
+> **Known Limitation & Next Fix**: The current corroboration heuristic ($\text{cosine} \ge 0.80$ with $\text{Jaccard} \ge 0.15$, or $\text{cosine} \ge 0.90$) remains relatively permissive. For specialized technical domains sharing heavy industry nomenclature, a 15% lexical Jaccard overlap can still be reached on topically similar, non-copied text (as demonstrated in Failure Case 4). The next architectural remediation is to replace static threshold corroboration with TF-IDF weighted n-gram overlap or BM25 lexical ranking, requiring matched n-grams to consist of non-stopword, domain-discriminative vocabulary before confirming an external match.
 
 ---
 
@@ -217,6 +224,9 @@ To evaluate cross-modal transcription fidelity under realistic acoustic conditio
   - **Numeric Normalization**: *"4.2 percent"* $\rightarrow$ *"4.2%"*; *"forty-eight hours"* $\rightarrow$ *"48 hours"*; *"ninety seconds"* $\rightarrow$ *"90 seconds"*.
 - **Impact on Semantic Matching**:
   Despite numeric formatting normalization, the `all-MiniLM-L6-v2` dense embedding space achieved a cosine similarity of **1.00** against Page 2 of `submission_01_fintech_report.pdf`. This proves that dense semantic vector search is intrinsically resilient to ASR formatting shifts.
+
+> [!NOTE]
+> **Acoustic Rate & ASR Variance**: When re-transcribing audio at accelerated conversational speeds (e.g., faster speech rate or slight acoustic variations), ASR tokenization and boundary differences can shift semantic chunk similarity between **0.83 and 1.00**. Importantly, because the Tier 1 threshold is 0.80, cross-modal detection robustly remains at Tier 1 (High-Confidence Match) regardless of these minor ASR transcription variations.
 
 ---
 

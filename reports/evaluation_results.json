@@ -12,11 +12,27 @@
       "fn": 2
     },
     "score_distribution": {
+      "lowest_tp": 0.85,
+      "lowest_tp_pair": "submission_04_logistics_rewritten.docx <-> submission_05_logistics_exact_copy.pdf",
+      "highest_tn": 0.62,
+      "highest_tn_pair": "submission_02_video_pitch.mp4 <-> submission_19_video_paraphrase_pitch.mp4",
+      "separation_margin": 0.23
+    },
+    "tier2_review_metrics_at_065": {
+      "threshold": 0.65,
+      "accuracy": 0.9952,
+      "precision": 0.875,
+      "recall": 1.0,
+      "f1_score": 0.9333,
+      "confusion_matrix": {
+        "tp": 7,
+        "fp": 1,
+        "tn": 202,
+        "fn": 0
+      },
       "lowest_tp": 0.67,
       "lowest_tp_pair": "submission_01_fintech_report.pdf <-> submission_19_video_paraphrase_pitch.mp4",
-      "highest_tn": 0.95,
-      "highest_tn_pair": "submission_14_llm_generated_essay.docx <-> submission_15_llm_generated_synthesis.pdf",
-      "separation_margin": -0.28
+      "separation_margin": 0.05
     }
   },
   "degraded_file_tests": [

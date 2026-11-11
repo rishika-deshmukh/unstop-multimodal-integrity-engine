@@ -10,19 +10,19 @@ Raw Exception Traceback:
 Traceback (most recent call last):
   File "run_integrity_check.py", line 119, in <module>
     doc = doc_parser.parse(fpath)
-  File "D:\unstop assignment\src\extractors\dispatcher.py", line 42, in parse
+  File "src/extractors/dispatcher.py", line 42, in parse
     return self.video_extractor.extract(file_path)
-  File "D:\unstop assignment\src\extractors\video_extractor.py", line 48, in extract
+  File "src/extractors/video_extractor.py", line 48, in extract
     import whisper
-  File "D:\unstop assignment\venv\lib\site-packages\whisper\__init__.py", line 8, in <module>
+  File "venv/lib/site-packages/whisper/__init__.py", line 8, in <module>
     import numba
-  File "D:\unstop assignment\venv\lib\site-packages\numba\__init__.py", line 43, in <module>
+  File "venv/lib/site-packages/numba/__init__.py", line 43, in <module>
     from numba.core import config
-  File "D:\unstop assignment\venv\lib\site-packages\numba\core\config.py", line 16, in <module>
+  File "venv/lib/site-packages/numba/core/config.py", line 16, in <module>
     from numba.core import utils
-  File "D:\unstop assignment\venv\lib\site-packages\numba\core\utils.py", line 22, in <module>
+  File "venv/lib/site-packages/numba/core/utils.py", line 22, in <module>
     from numba.core.types import Type
-  File "D:\unstop assignment\venv\lib\site-packages\numba\core\types\__init__.py", line 37, in <module>
+  File "venv/lib/site-packages/numba/core/types/__init__.py", line 37, in <module>
     from numba._internal import *
 ImportError: DLL load failed while importing _internal: The specified module could not be found.
 [System Event Log: AppLocker Event ID 8004: %LOCALAPPDATA%\...\numba\_internal.cp310-win_amd64.pyd was prevented from running.]

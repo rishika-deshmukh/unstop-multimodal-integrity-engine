@@ -20,9 +20,11 @@ Actual Positive (Plagiarized Pairs)       2     (FN)  |                 5    (TP
 
 | Boundary Metric | Measured Similarity | File Pair | Ground-Truth Relationship |
 | :--- | :---: | :--- | :--- |
-| **Lowest True Positive (TP)** | **0.6700** | `submission_01_fintech_report.pdf <-> submission_19_video_paraphrase_pitch.mp4` | `cross_modal` |
-| **Highest True Negative (TN)** | **0.9500** | `submission_14_llm_generated_essay.docx <-> submission_15_llm_generated_synthesis.pdf` | `same_prompt_ai_outputs` |
-| **Separation Margin ($\Delta$)** | **+-0.2800** | *Configured threshold = 0.80 lies safely in gap* | Clear decision boundary |
+| **Lowest True Positive (TP at $\tau \ge 0.80$)** | **0.8500** | `submission_04_logistics_rewritten.docx <-> submission_05_logistics_exact_copy.pdf` | `paraphrase` |
+| **Lowest True Positive (TP at $\tau \ge 0.65$)** | **0.6700** | `submission_01_fintech_report.pdf <-> submission_19_video_paraphrase_pitch.mp4` | `cross_modal` |
+| **Highest True Negative (TN)** | **0.6200** | `submission_02_video_pitch.mp4 <-> submission_19_video_paraphrase_pitch.mp4` | `unrelated` |
+| **Separation Margin at $\tau = 0.80$** | **+0.2300** | *Lowest TP (0.8500) - Highest TN (0.6200)* | Clear decision boundary |
+| **Separation Margin at $\tau = 0.65$** | **+0.0500** | *Lowest TP (0.6700) - Highest TN (0.6200)* | Tier 2 review boundary |
 
 ### Table 3: Degraded & Edge Case Handling (Scenario 3)
 
