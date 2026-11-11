@@ -387,10 +387,10 @@ In line with Section 10 of the brief, I used AI assistants on this project:
 - Claude (Anthropic): assistant for planning, reviewing results, debugging guidance and drafting task instructions.
 
 How I worked:
-- I owned the project end to end: scoping it against the brief, deciding what to build, and directing the assistants task by task.
-- I reviewed every result before accepting it and ran the pipeline, tests and evaluation myself.
-- I made the design calls: embedding model (MiniLM) vs. heavier models, FAISS index choice, the two-tier similarity thresholds, the boilerplate rule, and treating AI detection as an advisory signal only.
-- I caught and corrected weak or unsupported claims: unmeasured benchmarks were relabelled as estimates, mislabelled sample provenance was fixed, and detector calibration limits were documented.
+- I scoped the project against the brief, decided what to build, and directed the assistants task by task.
+- I ran multiple review-and-fix cycles: I took the review findings, had them implemented, and checked the results (tests, evaluation metrics, CI status, and the public repository) before accepting them.
+- I chose and approved the key design decisions: MiniLM embeddings, a FAISS index, two-tier similarity thresholds, the boilerplate rule, and treating AI detection as an advisory signal only.
+- The review loop caught unsupported claims, such as unmeasured benchmarks, mislabelled sample provenance and inconsistent metrics, and I had them corrected and relabelled.
 
 I understand the architecture and code and am ready to explain any part of it.
 
