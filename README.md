@@ -6,7 +6,7 @@
 [![Whisper ASR](https://img.shields.io/badge/ASR-Whisper--Tiny%2FBase-red.svg)](https://huggingface.co/openai/whisper-tiny)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
-An end-to-end prototype multimodal content verification and similarity detection pipeline designed to scale to large-scale university evaluations, hackathons, and case competitions (10,000+ submissions).
+An end-to-end prototype multimodal content verification and similarity detection pipeline designed to scale to large-scale university evaluations, hackathons, and case competitions.
 
 The engine analyzes submissions across multiple modalities - **PDF reports, DOCX executive summaries, and MP4 video pitches** - calculating a tri-factor integrity breakdown:
 1. **Internal Peer-to-Peer Similarity %** (Unimodal text-to-text, cross-format PDF $\leftrightarrow$ DOCX, and cross-modal audio-to-text).
