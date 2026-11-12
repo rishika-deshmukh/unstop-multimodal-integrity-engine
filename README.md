@@ -8,7 +8,7 @@
 
 An end-to-end prototype multimodal content verification and similarity detection pipeline designed to scale to large-scale university evaluations, hackathons, and case competitions (10,000+ submissions).
 
-The engine analyzes submissions across multiple modalities—**PDF reports, DOCX executive summaries, and MP4 video pitches**—calculating a tri-factor integrity breakdown:
+The engine analyzes submissions across multiple modalities-**PDF reports, DOCX executive summaries, and MP4 video pitches**-calculating a tri-factor integrity breakdown:
 1. **Internal Peer-to-Peer Similarity %** (Unimodal text-to-text, cross-format PDF $\leftrightarrow$ DOCX, and cross-modal audio-to-text).
 2. **External / Web Reference Match %** (Local reference knowledge base with source URLs and citation tracking).
 3. **AI-Generated Content Likelihood %** (Supervised RoBERTa classifier + GPT-2 perplexity + sentence burstiness).
