@@ -43,5 +43,6 @@
     }
   ],
   "multimodal_matches": [],
+  "external_matches": [],
   "explanations": "Critical internal peer similarity detected (100.0% meets or exceeds 50.0% threshold)."
 }

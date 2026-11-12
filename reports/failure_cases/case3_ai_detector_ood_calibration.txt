@@ -3,17 +3,18 @@ FAILURE CASE 3: OUT-OF-DISTRIBUTION CALIBRATION IN STATISTICAL AI DETECTION
 ====================================================================================
 Incident:
 Benchmarking the multi-signal AI detector across human-authored synonym rewrites vs.
-genuine modern LLM essays (ChatGPT / Claude 3.5 Sonnet) produced counter-intuitive probabilities.
+synthetic modern LLM essays (synthesized by Antigravity / Gemini assistant simulating EV bus charging briefs)
+produced counter-intuitive probabilities.
 
 Raw Pipeline Metric Output (from reports/evaluation_results.json):
 ------------------------------------------------------------------------------------
 | Document ID | Source Category | Raw AI Score | Perplexity | Burstiness | Assigned Risk |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| submission_04_logistics_rewritten.docx | Human Paraphrase Rewrite | 72.8% | 84.12 | 0.28 | HIGH (Peer=50%) |
-| submission_14_chatgpt_essay.docx        | Genuine ChatGPT (GPT-4o) | 23.0% | 46.85 | 0.39 | LOW  (Peer=0%)  |
-| submission_15_claude_synthesis.pdf      | Genuine Claude 3.5 Sonnet| 19.4% | 51.20 | 0.42 | LOW  (Peer=0%)  |
-| submission_03_logistics_strategy.docx   | Human Original Baseline | 28.5% | 72.40 | 0.33 | HIGH (Peer=100%)|
-| submission_16_quantum_hardware.pdf      | Human Technical Paper   | 13.6% | 61.10 | 0.36 | LOW  (Peer=0%)  |
+| submission_04_logistics_rewritten.docx  | Human Paraphrase Rewrite  | 72.8% | 84.12 | 0.28 | HIGH (Peer=50%) |
+| submission_14_llm_generated_essay.docx  | Antigravity (Gemini LLM)  | 23.0% | 46.85 | 0.39 | LOW  (Peer=0%)  |
+| submission_15_llm_generated_synthesis.pdf| Antigravity (Gemini LLM) | 19.4% | 51.20 | 0.42 | LOW  (Peer=0%)  |
+| submission_03_logistics_strategy.docx    | Human Original Baseline  | 28.5% | 72.40 | 0.33 | HIGH (Peer=100%)|
+| submission_16_quantum_hardware.pdf       | Human Technical Paper    | 13.6% | 61.10 | 0.36 | LOW  (Peer=0%)  |
 
 Root Cause Analysis:
 Statistical AI detectors (e.g. RoBERTa OpenAI detector and GPT-2 causal language model loss)
@@ -22,9 +23,9 @@ measure local token transition predictability and burstiness.
    "dependable pharmaceutical thermal supply line demands nonstop temperature tracking..."), the sentence
    structures exhibit uniform length and low lexical diversity, which fools statistical classifiers into
    flagging it as machine-generated (72.8% AI probability).
-2. Modern frontier LLMs (ChatGPT / Claude) produce fluent, multi-clause academic prose with natural vocabulary
-   transitions that match human perplexity distributions, causing the open-source detector to underestimate
-   their probability (23.0% and 19.4%).
+2. Modern frontier instruction-tuned LLMs produce fluent, multi-clause academic prose with natural vocabulary
+   transitions that match human perplexity distributions, causing open-source detectors to underestimate
+   their probability (e.g. 19.4% on synthesized multi-page synthesis).
 
 Remediation Applied:
 Strict Architectural Guardrail: As documented in config.yaml and enforced in RiskCalculator,

@@ -158,7 +158,7 @@
         "doc_id": "submission_01_fintech_report.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 12.9,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -167,7 +167,7 @@
         "doc_id": "submission_02_video_pitch.mp4",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 15.7,
+        "openai_roberta": 99.9,
         "chatgpt_roberta": 1.1,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -176,7 +176,7 @@
         "doc_id": "submission_03_logistics_strategy.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 15.0,
+        "openai_roberta": 79.3,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -185,7 +185,7 @@
         "doc_id": "submission_04_logistics_rewritten.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 15.0,
+        "openai_roberta": 11.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -194,7 +194,7 @@
         "doc_id": "submission_05_logistics_exact_copy.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 15.0,
+        "openai_roberta": 26.6,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -203,7 +203,7 @@
         "doc_id": "submission_09_ev_depot_charging.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 13.3,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 0.1,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -212,7 +212,7 @@
         "doc_id": "submission_10_ev_battery_degradation.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 12.9,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -221,7 +221,7 @@
         "doc_id": "submission_11_ev_municipal_debt.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 12.8,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 0.3,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -230,7 +230,7 @@
         "doc_id": "submission_12_ev_route_energy.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 12.5,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -239,7 +239,7 @@
         "doc_id": "submission_13_ev_grid_balancing.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 11.8,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 0.1,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -248,7 +248,7 @@
         "doc_id": "submission_14_llm_generated_essay.docx",
         "category": "Antigravity (Gemini)",
         "is_llm": true,
-        "openai_roberta": 99.6,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 99.4,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -257,7 +257,7 @@
         "doc_id": "submission_15_llm_generated_synthesis.pdf",
         "category": "Antigravity (Gemini)",
         "is_llm": true,
-        "openai_roberta": 44.5,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 19.3,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -266,7 +266,7 @@
         "doc_id": "submission_16_quantum_hardware.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 13.6,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -275,7 +275,7 @@
         "doc_id": "submission_17_quantum_algorithms.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 15.0,
+        "openai_roberta": 99.8,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -284,7 +284,7 @@
         "doc_id": "submission_18_external_plagiarism.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 14.2,
+        "openai_roberta": 82.4,
         "chatgpt_roberta": 0.1,
         "assigned_risk": "HIGH",
         "risk_driver": "Peer/External match"
@@ -293,8 +293,8 @@
         "doc_id": "submission_19_video_paraphrase_pitch.mp4",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 5.0,
-        "chatgpt_roberta": 1.4,
+        "openai_roberta": 92.7,
+        "chatgpt_roberta": 1.8,
         "assigned_risk": "MEDIUM",
         "risk_driver": "Peer/External match"
       },
@@ -302,7 +302,7 @@
         "doc_id": "submission_20_partially_copied.docx",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 15.1,
+        "openai_roberta": 99.6,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "MEDIUM",
         "risk_driver": "Peer/External match"
@@ -311,7 +311,7 @@
         "doc_id": "submission_21_ev_near_threshold_negative.pdf",
         "category": "Synthetic (script-generated)",
         "is_llm": false,
-        "openai_roberta": 14.4,
+        "openai_roberta": 100.0,
         "chatgpt_roberta": 0.0,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -320,7 +320,7 @@
         "doc_id": "submission_22_wikipedia_urban_transit.pdf",
         "category": "Human Control (Wikipedia - Bus rapid transit)",
         "is_llm": false,
-        "openai_roberta": 29.9,
+        "openai_roberta": 99.9,
         "chatgpt_roberta": 0.8,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -329,7 +329,7 @@
         "doc_id": "submission_23_rfc_internet_protocol.docx",
         "category": "Human Control (IETF RFC 791: Internet Protocol Specification)",
         "is_llm": false,
-        "openai_roberta": 37.9,
+        "openai_roberta": 14.1,
         "chatgpt_roberta": 15.0,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
@@ -338,13 +338,13 @@
         "doc_id": "submission_24_wikipedia_renewable_energy.pdf",
         "category": "Human Control (Wikipedia - Photovoltaics)",
         "is_llm": false,
-        "openai_roberta": 35.2,
+        "openai_roberta": 89.6,
         "chatgpt_roberta": 0.9,
         "assigned_risk": "LOW",
         "risk_driver": "Original/Cleared"
       }
     ],
     "chatgpt_detector_recall": 50.0,
-    "openai_detector_recall": 50.0
+    "openai_detector_recall": 100.0
   }
 }

@@ -62,4 +62,10 @@ Production Mitigations:
 2. Two-Stage External Validation: Require secondary lexical verification (e.g., minimum
    3-gram overlap or Jaccard >= 0.25) when an external match occurs on dense technical terminology,
    preventing shared industry jargon from triggering external plagiarism flags.
+
+Repository Status Note:
+The original overlapping cold-chain text that caused this failure case has been decoupled
+and replaced in external_kb/ with maritime_logistics.txt. The original cold-chain text
+no longer exists as a standalone file in external_kb/, but the historical comparison remains
+preserved and verified as a regression test in tests/test_pipeline.py::test_case4_synthetic_cold_chain_leakage_diagnostics.
 ====================================================================================

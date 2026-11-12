@@ -9,11 +9,12 @@ import os
 import wave
 import subprocess
 import logging
+import re
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 import numpy as np
 import torch
-from transformers import pipeline
+from transformers import WhisperProcessor, WhisperForConditionalGeneration
 
 from src.extractors.base_extractor import BaseExtractor, ExtractedDocument, AudioSegment
 from src.utils.ffmpeg_setup import ensure_ffmpeg_available
@@ -29,18 +30,40 @@ class VideoExtractor(BaseExtractor):
             model_name = f"openai/whisper-{model_name.replace('whisper-', '')}"
         self.model_name = model_name
         self.device = device
-        self._pipeline = None
+        self._processor = None
+        self._model = None
         ensure_ffmpeg_available()
 
+    @staticmethod
+    def _parse_whisper_timestamps(decoded_str: str, offset_seconds: float = 0.0) -> List[Tuple[float, float, str]]:
+        """Parses Whisper timestamp tokens (<|0.00|> ... <|7.00|>) and applies window offset."""
+        parts = re.split(r'<\|(\d+\.\d+)\|>', decoded_str)
+        segments: List[Tuple[float, float, str]] = []
+        i = 1
+        while i < len(parts):
+            try:
+                start_t = float(parts[i]) + offset_seconds
+                txt = parts[i+1].strip() if i+1 < len(parts) else ""
+                end_t = float(parts[i+2]) + offset_seconds if (i+2 < len(parts) and re.match(r'^\d+\.\d+$', parts[i+2])) else start_t + 2.0
+                if txt and not txt.startswith("<|"):
+                    clean_txt = re.sub(r'<\|.*?\|>', '', txt).strip()
+                    if clean_txt:
+                        segments.append((start_t, end_t, clean_txt))
+                next_i = i + 2
+                while next_i < len(parts) and not re.match(r'^\d+\.\d+$', parts[next_i]):
+                    next_i += 1
+                i = next_i
+            except Exception:
+                i += 1
+        return segments
+
     def _load_model(self):
-        if self._pipeline is None:
-            logger.info(f"Loading Transformers Whisper pipeline '{self.model_name}' on {self.device}...")
-            self._pipeline = pipeline(
-                "automatic-speech-recognition",
-                model=self.model_name,
-                chunk_length_s=30,
-                device=self.device
-            )
+        if self._model is None:
+            logger.info(f"Loading Transformers Whisper model '{self.model_name}' on {self.device}...")
+            self._processor = WhisperProcessor.from_pretrained(self.model_name)
+            self._model = WhisperForConditionalGeneration.from_pretrained(self.model_name)
+            self._model.to(self.device)
+            self._model.eval()
 
     def _has_audio_stream(self, file_path: Path) -> bool:
         """Uses ffmpeg to verify if the file contains an active, audible audio stream."""
@@ -152,15 +175,66 @@ class VideoExtractor(BaseExtractor):
                     warning_message=f"Silent audio track detected in video: {file_name}"
                 )
 
-            # Run Transformers Whisper ASR pipeline (handles arbitrary duration via 30s chunking & native timestamps)
+            # Run Transformers Whisper ASR over full audio using 30s sliding windows
             self._load_model()
-            asr_res = self._pipeline(
-                audio_data,
-                generate_kwargs={"language": "en", "task": "transcribe"},
-                return_timestamps=True
-            )
+            sample_rate = 16000
+            window_size_samples = 30 * sample_rate
+            total_samples = len(audio_data)
 
-            full_transcript = (asr_res.get("text") or "").strip()
+            valid_segments: List[AudioSegment] = []
+
+            # Slide in 30-second windows across full audio duration (supporting clips > 30s)
+            for start_sample in range(0, total_samples, window_size_samples):
+                end_sample = min(total_samples, start_sample + window_size_samples)
+                window_audio = audio_data[start_sample:end_sample]
+                window_offset_s = float(start_sample) / float(sample_rate)
+
+                # Skip windows shorter than 0.5s or silent
+                if len(window_audio) < int(0.5 * sample_rate) or np.max(np.abs(window_audio)) < 0.005:
+                    continue
+
+                inputs = self._processor(window_audio, sampling_rate=sample_rate, return_tensors="pt").to(self.device)
+
+                with torch.no_grad():
+                    pred_ids = self._model.generate(
+                        inputs.input_features,
+                        language="en",
+                        task="transcribe",
+                        return_timestamps=True
+                    )
+
+                decoded_str = self._processor.tokenizer.decode(pred_ids[0], decode_with_timestamps=True)
+                window_segments = self._parse_whisper_timestamps(decoded_str, offset_seconds=window_offset_s)
+
+                if window_segments:
+                    for s_start, s_end, s_text in window_segments:
+                        ts_str = f"{format_timestamp(s_start)} - {format_timestamp(s_end)}"
+                        valid_segments.append(
+                            AudioSegment(
+                                start_seconds=round(s_start, 2),
+                                end_seconds=round(s_end, 2),
+                                timestamp_str=ts_str,
+                                text=s_text,
+                                no_speech_prob=0.0
+                            )
+                        )
+                else:
+                    # Fallback to plain batch decode if timestamp tokens were absent
+                    plain_text = self._processor.batch_decode(pred_ids, skip_special_tokens=True)[0].strip()
+                    if plain_text:
+                        w_end_s = min(duration, float(end_sample) / float(sample_rate))
+                        ts_str = f"{format_timestamp(window_offset_s)} - {format_timestamp(w_end_s)}"
+                        valid_segments.append(
+                            AudioSegment(
+                                start_seconds=round(window_offset_s, 2),
+                                end_seconds=round(w_end_s, 2),
+                                timestamp_str=ts_str,
+                                text=plain_text,
+                                no_speech_prob=0.0
+                            )
+                        )
+
+            full_transcript = " ".join(seg.text for seg in valid_segments).strip()
 
             if not full_transcript:
                 logger.warning(f"[MP4] Whisper transcription yielded empty text for: {file_name}")
@@ -171,40 +245,6 @@ class VideoExtractor(BaseExtractor):
                     modality="mp4",
                     status="SKIPPED_SILENT",
                     warning_message=f"No intelligible speech transcribed from: {file_name}"
-                )
-
-            # Extract Whisper's own native chunk timestamps
-            raw_chunks = asr_res.get("chunks", [])
-            valid_segments: List[AudioSegment] = []
-
-            for c in raw_chunks:
-                c_text = (c.get("text") or "").strip()
-                if not c_text:
-                    continue
-                ts = c.get("timestamp", (0.0, duration))
-                start_t = float(ts[0]) if ts[0] is not None else 0.0
-                end_t = float(ts[1]) if ts[1] is not None else min(duration, start_t + 10.0)
-                ts_str = f"{format_timestamp(start_t)} - {format_timestamp(end_t)}"
-                valid_segments.append(
-                    AudioSegment(
-                        start_seconds=round(start_t, 2),
-                        end_seconds=round(end_t, 2),
-                        timestamp_str=ts_str,
-                        text=c_text,
-                        no_speech_prob=0.0
-                    )
-                )
-
-            if not valid_segments and full_transcript:
-                ts_str = f"{format_timestamp(0.0)} - {format_timestamp(duration)}"
-                valid_segments.append(
-                    AudioSegment(
-                        start_seconds=0.0,
-                        end_seconds=round(duration, 2),
-                        timestamp_str=ts_str,
-                        text=full_transcript,
-                        no_speech_prob=0.0
-                    )
                 )
 
             return ExtractedDocument(

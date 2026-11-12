@@ -2,26 +2,31 @@
   "kb_fintech_market_entry": {
     "title": "Neobank Unit Economics and Customer Acquisition in Emerging Markets",
     "url": "https://en.wikipedia.org/wiki/Neobank",
-    "domain": "Financial Technology"
+    "domain": "Financial Technology",
+    "provenance": "Short synthetic / adapted prototype domain summary (Wikipedia concept reference)"
   },
-  "kb_cold_chain_logistics": {
+  "kb_maritime_logistics": {
     "title": "Maritime Container Terminal Automation and Deep-Water Berth Operations",
     "url": "https://en.wikipedia.org/wiki/Container_port",
-    "domain": "Maritime Logistics"
+    "domain": "Maritime Logistics",
+    "provenance": "Short synthetic / adapted prototype domain summary (Wikipedia concept reference)"
   },
   "kb_renewable_microgrids": {
     "title": "Decentralized Solar Microgrid Architecture and Battery Energy Storage",
     "url": "https://en.wikipedia.org/wiki/Microgrid",
-    "domain": "Renewable Energy"
+    "domain": "Renewable Energy",
+    "provenance": "Short synthetic / adapted prototype domain summary (Wikipedia concept reference)"
   },
   "kb_e_commerce_retention": {
     "title": "Quick-Commerce Customer Cohort Retention and Hyperlocal Dark Stores",
     "url": "https://en.wikipedia.org/wiki/Quick_commerce",
-    "domain": "E-Commerce"
+    "domain": "E-Commerce",
+    "provenance": "Short synthetic / adapted prototype domain summary (Wikipedia concept reference)"
   },
   "kb_circular_packaging": {
     "title": "Circular Economy and Biodegradable Polymers in FMCG Packaging",
     "url": "https://en.wikipedia.org/wiki/Circular_economy",
-    "domain": "Sustainability"
+    "domain": "Sustainability",
+    "provenance": "Short synthetic / adapted prototype domain summary (Wikipedia concept reference)"
   }
 }

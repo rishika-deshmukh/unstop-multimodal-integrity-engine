@@ -16,6 +16,7 @@ def format_json_report(
     peer_matches: List[Dict[str, Any]],
     multimodal_matches: List[Dict[str, Any]],
     explanations: str,
+    external_matches: List[Dict[str, Any]] = None,
     status: str = "SUCCESS",
     warning_message: str = None
 ) -> Dict[str, Any]:
@@ -30,6 +31,7 @@ def format_json_report(
         },
         "peer_matches": peer_matches,
         "multimodal_matches": multimodal_matches,
+        "external_matches": external_matches or [],
         "explanations": explanations
     }
 

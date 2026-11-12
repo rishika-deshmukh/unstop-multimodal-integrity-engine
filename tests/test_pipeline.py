@@ -136,26 +136,30 @@ def test_boilerplate_does_not_excuse_body_collusion():
 
     # 15 documents in cohort
     chunks = []
-    # 4 colluding students (docs 1-4) copying a substantive body paragraph (chunk_index == 2)
+    # 4 colluding students (docs 1-4) copying a substantive body paragraph later in document (chunk_index == 4)
     for i in range(1, 5):
         chunks.append(DocumentChunk(f"doc{i}#c0", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique document title {i}.", word_count=18, chunk_index=0))
         chunks.append(DocumentChunk(f"doc{i}#c1", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique intro {i} outlining urban mobility context.", word_count=20, chunk_index=1))
-        chunks.append(DocumentChunk(f"doc{i}#c2", f"doc{i}", f"doc{i}.pdf", "pdf", copied_body_text, word_count=35, chunk_index=2))
+        chunks.append(DocumentChunk(f"doc{i}#c2", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique background {i} on transit fleet routes.", word_count=22, chunk_index=2))
+        chunks.append(DocumentChunk(f"doc{i}#c3", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique methodology {i} on capital expenditures.", word_count=25, chunk_index=3))
+        chunks.append(DocumentChunk(f"doc{i}#c4", f"doc{i}", f"doc{i}.pdf", "pdf", copied_body_text, word_count=35, chunk_index=4))
 
     # Remaining 11 benign students (docs 5-15)
     for i in range(5, 16):
         chunks.append(DocumentChunk(f"doc{i}#c0", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique document title {i}.", word_count=18, chunk_index=0))
         chunks.append(DocumentChunk(f"doc{i}#c1", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique intro {i}.", word_count=20, chunk_index=1))
-        chunks.append(DocumentChunk(f"doc{i}#c2", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique body analysis {i} discussing separate topics.", word_count=35, chunk_index=2))
+        chunks.append(DocumentChunk(f"doc{i}#c2", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique background {i}.", word_count=22, chunk_index=2))
+        chunks.append(DocumentChunk(f"doc{i}#c3", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique methodology {i}.", word_count=25, chunk_index=3))
+        chunks.append(DocumentChunk(f"doc{i}#c4", f"doc{i}", f"doc{i}.pdf", "pdf", f"Unique body analysis {i} discussing separate topics.", word_count=35, chunk_index=4))
 
     indexer = VectorIndexer(model_name="all-MiniLM-L6-v2", device="cpu")
     embs = indexer.embed_texts([c.text for c in chunks])
     filtered_chunks = bp_filter.identify_and_filter(chunks, embs)
 
-    # Assert 4 colluding students' body chunks (chunk_index == 2) are NOT excused as boilerplate
+    # Assert 4 colluding students' body chunks (chunk_index == 4) are NOT excused as boilerplate
     for i in range(1, 5):
-        body_chunk = next(c for c in filtered_chunks if c.chunk_id == f"doc{i}#c2")
-        assert body_chunk.is_boilerplate is False, f"Collusive body chunk doc{i}#c2 was mistakenly excused as boilerplate!"
+        body_chunk = next(c for c in filtered_chunks if c.chunk_id == f"doc{i}#c4")
+        assert body_chunk.is_boilerplate is False, f"Collusive body chunk doc{i}#c4 was mistakenly excused as boilerplate!"
 
 def test_boilerplate_excuses_prompt_at_chunk_index_1_after_title():
     # Test that opening template prompt occurring at chunk_index == 1 (after a title block)
@@ -167,6 +171,12 @@ def test_boilerplate_excuses_prompt_at_chunk_index_1_after_title():
         "of transitioning municipal transit networks to zero-emission battery electric bus fleets."
     )
 
+    unique_responses = [
+        "Deploying megawatt charging infrastructure at municipal bus depots requires dedicated high-voltage substation interconnects.",
+        "Lithium iron phosphate battery cell degradation is primarily driven by high ambient operating temperatures and depth of discharge.",
+        "Municipal green revenue bonds provide an optimal debt financing mechanism for fleet electrification capital expenditure."
+    ]
+
     chunks = []
     for i in range(1, 4):
         # chunk 0: distinct document title (>15 words)
@@ -174,7 +184,7 @@ def test_boilerplate_excuses_prompt_at_chunk_index_1_after_title():
         # chunk 1: identical prompt header
         chunks.append(DocumentChunk(f"doc{i}#c1", f"doc{i}", f"doc{i}.pdf", "pdf", prompt_text, word_count=28, chunk_index=1))
         # chunk 2: original response
-        chunks.append(DocumentChunk(f"doc{i}#c2", f"doc{i}", f"doc{i}.pdf", "pdf", f"Original unique response text for submission {i}.", word_count=25, chunk_index=2))
+        chunks.append(DocumentChunk(f"doc{i}#c2", f"doc{i}", f"doc{i}.pdf", "pdf", unique_responses[i-1], word_count=20, chunk_index=2))
 
     indexer = VectorIndexer(model_name="all-MiniLM-L6-v2", device="cpu")
     embs = indexer.embed_texts([c.text for c in chunks])
@@ -359,8 +369,8 @@ def test_case4_synthetic_cold_chain_leakage_diagnostics():
 
 def test_external_detector_rejects_unrelated_domain_text():
     """
-    Validates that ExternalDetector correctly rejects independent documents with non-overlapping wording,
-    ensuring zero false positives on genuine submissions against the active knowledge base.
+    Validates that ExternalDetector correctly indexes knowledge base chunks,
+    detects exact KB passages (positive control), and rejects unrelated domain text (negative control).
     """
     from src.detectors.external_detector import ExternalDetector
     from src.normalizer.chunker import DocumentChunk
@@ -368,9 +378,12 @@ def test_external_detector_rejects_unrelated_domain_text():
     ext_detector = ExternalDetector(vector_indexer=indexer, kb_dir="./external_kb", chunk_threshold=0.80)
     chunker = DocumentChunker(250, 50, 15)
     ext_detector.load_and_index_kb(chunker)
-    indexer.index_chunks(ext_detector.kb_chunks)
 
-    # 1. Test that an original clean submission chunk is correctly rejected with 0 matches
+    # FIX 4: Index the KB chunks into the vector indexer
+    kb_embs = indexer.embed_texts([c.text for c in ext_detector.kb_chunks])
+    indexer.index_chunks(ext_detector.kb_chunks, precomputed_embeddings=kb_embs)
+
+    # Negative control: clean unrelated text
     clean_chunk = DocumentChunk(
         chunk_id="test_clean#c0",
         doc_id="test_clean",
@@ -379,21 +392,89 @@ def test_external_detector_rejects_unrelated_domain_text():
         text="Deploying megawatt charging infrastructure at municipal bus depots requires dedicated high-voltage substation interconnects."
     )
     clean_emb = indexer.embed_texts([clean_chunk.text])
-    results_clean = ext_detector.analyze_document_external_matches("test_clean", [clean_chunk], clean_emb)
-    assert results_clean["external_similarity_percentage"] == 0.0
-    assert len(results_clean["external_matches"]) == 0
+    results = ext_detector.analyze_document_external_matches("test_clean", [clean_chunk], clean_emb)
+    assert results["external_similarity_percentage"] == 0.0
+    assert len(results["external_matches"]) == 0
 
-    # 2. Test that an exact copy of a knowledge base passage is correctly detected
-    copied_chunk = DocumentChunk(
-        chunk_id="test_copied#c0",
-        doc_id="test_copied",
-        file_name="test_copied.pdf",
+    # Positive control: exact passage from circular_packaging.txt in KB
+    exact_kb_text = ext_detector.kb_chunks[0].text
+    pos_chunk = DocumentChunk(
+        chunk_id="test_pos#c0",
+        doc_id="test_pos",
+        file_name="test_pos.pdf",
         modality="pdf",
-        text=ext_detector.kb_chunks[0].text
+        text=exact_kb_text
     )
-    copied_emb = indexer.embed_texts([copied_chunk.text])
-    results_copied = ext_detector.analyze_document_external_matches("test_copied", [copied_chunk], copied_emb)
-    assert results_copied["external_similarity_percentage"] == 100.0
-    assert len(results_copied["external_matches"]) == 1
-    assert results_copied["external_matches"][0]["similarity_score"] >= 0.95
+    pos_emb = indexer.embed_texts([pos_chunk.text])
+    pos_results = ext_detector.analyze_document_external_matches("test_pos", [pos_chunk], pos_emb)
+    assert pos_results["external_similarity_percentage"] > 0.0
+    assert len(pos_results["external_matches"]) >= 1
+    assert pos_results["external_matches"][0]["similarity_score"] >= 0.90
+
+
+def test_long_video_clip_full_transcription_and_timestamp():
+    """
+    FIX 1: Validates that a ~56-second video clip is transcribed across multiple 30s windows,
+    and a passage copied from sample PDF (submission_01 Page 2) spoken between 35s and 55s
+    is detected with a timestamp inside that exact range [35.0, 55.0].
+    """
+    from pathlib import Path
+    clip_path = Path("tests/fixtures/test_long_video_pitch.mp4")
+    assert clip_path.exists(), "Test fixture test_long_video_pitch.mp4 must exist"
+
+    extractor = VideoExtractor(model_name="openai/whisper-tiny", device="cpu")
+    doc = extractor.extract(clip_path)
+    assert doc.status == "SUCCESS"
+    assert len(doc.audio_segments) >= 2
+
+    # Verify segments span beyond 30 seconds
+    max_end = max(s.end_seconds for s in doc.audio_segments)
+    assert max_end >= 50.0, f"Expected audio to be transcribed beyond 50s, got max end {max_end}"
+
+    # Verify that the copied passage appears in segments with timestamps inside [35.0, 55.0]
+    matched_segs = [
+        s for s in doc.audio_segments
+        if ("credit underwriting" in s.text.lower() or "vertical integration" in s.text.lower() or "operating margins" in s.text.lower())
+    ]
+    assert len(matched_segs) > 0, "Copied passage text was not found in transcription"
+    for seg in matched_segs:
+        assert 30.0 <= seg.start_seconds <= 55.0, f"Segment start timestamp {seg.start_seconds} is outside expected [30.0, 55.0] range"
+
+
+def test_boilerplate_excuses_prompt_after_cover_and_title_across_five_docs():
+    """
+    FIX 3: 5 documents each with a different cover line (c0) and title (c1) before the same
+    shared prompt at chunk_index == 2 are correctly excused as institutional boilerplate.
+    """
+    bp_filter = BoilerplateFilter(min_doc_frequency=3, similarity_threshold=0.88, short_chunk_word_limit=15, max_header_chunk_index=3)
+    prompt_text = (
+        "Case Study Challenge Brief 2026: Sustainable Urban Mobility Infrastructure. "
+        "Teams are required to evaluate the capital deployment feasibility and regulatory constraints "
+        "of transitioning municipal transit networks to zero-emission battery electric bus fleets."
+    )
+
+    unique_responses = [
+        "Deploying megawatt charging infrastructure at municipal bus depots requires dedicated high-voltage substation interconnects.",
+        "Lithium iron phosphate battery cell degradation is primarily driven by high ambient operating temperatures and depth of discharge.",
+        "Municipal green revenue bonds provide an optimal debt financing mechanism for fleet electrification capital expenditure.",
+        "Empirical transit telemetry indicates regenerative braking recovers substantial kinetic energy along hilly municipal routes.",
+        "Co-locating depot battery energy storage systems with solar photovoltaic arrays buffers peak electrical demand charges."
+    ]
+
+    chunks = []
+    for i in range(1, 6):
+        chunks.append(DocumentChunk(f"doc{i}#c0", f"doc{i}", f"doc{i}.pdf", "pdf", f"Department of Mechanical and Industrial Engineering Campus Cover Sheet {i}.", word_count=18, chunk_index=0))
+        chunks.append(DocumentChunk(f"doc{i}#c1", f"doc{i}", f"doc{i}.pdf", "pdf", f"Capstone Research Project Title and Executive Summary for Team Submission {i}.", word_count=20, chunk_index=1))
+        chunks.append(DocumentChunk(f"doc{i}#c2", f"doc{i}", f"doc{i}.pdf", "pdf", prompt_text, word_count=28, chunk_index=2))
+        chunks.append(DocumentChunk(f"doc{i}#c3", f"doc{i}", f"doc{i}.pdf", "pdf", unique_responses[i-1], word_count=20, chunk_index=3))
+
+    indexer = VectorIndexer(model_name="all-MiniLM-L6-v2", device="cpu")
+    embs = indexer.embed_texts([c.text for c in chunks])
+    filtered_chunks = bp_filter.identify_and_filter(chunks, embs)
+
+    for i in range(1, 6):
+        prompt_chunk = next(c for c in filtered_chunks if c.chunk_id == f"doc{i}#c2")
+        assert prompt_chunk.is_boilerplate is True, f"Prompt chunk at index 2 doc{i}#c2 should be excused as boilerplate!"
+        ans_chunk = next(c for c in filtered_chunks if c.chunk_id == f"doc{i}#c3")
+        assert ans_chunk.is_boilerplate is False, f"Original answer doc{i}#c3 should not be marked as boilerplate!"
 

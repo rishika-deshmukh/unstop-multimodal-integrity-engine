@@ -1,6 +1,6 @@
 # Empirical Benchmark Evaluation & Technical Analysis
 
-This evaluation report provides empirical validation of the **Multimodal Submission Integrity & Plagiarism Detection Engine**. All metrics, confusion matrices, hardware benchmarks, and sensitivity tables were computed directly by running `evaluate.py` and `scripts/benchmark.py` against the ground-truth dataset (`sample_submissions/dataset_manifest.json`) across all 24 multi-modal submission files on commodity x86_64 CPU hardware (Intel 10 physical cores, 16 logical processors, 15.69 GB RAM, Windows 11).
+This evaluation report provides empirical validation of the **Multimodal Submission Integrity & Plagiarism Detection Engine**. All metrics, confusion matrices, hardware benchmarks, and sensitivity tables were computed directly by running `evaluate.py` and `scripts/benchmark.py` against the ground-truth dataset (`sample_submissions/dataset_manifest.json`) across all 24 multi-modal submission files on commodity x86_64 CPU hardware (13th Gen Intel Core i5-13450HX, Windows 11).
 
 > [!IMPORTANT]
 > **Synthetic Benchmark Generalization Disclaimer**:
@@ -8,7 +8,7 @@ This evaluation report provides empirical validation of the **Multimodal Submiss
 
 > [!NOTE]
 > **Operating Environment & OS Validation**:
-> All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (Intel 10 physical cores, 16 logical processors, 15.69 GB RAM, Python 3.10.8)**. Linux commands (`setup.sh`, `Makefile`) are provided for POSIX environments and verified for syntax/dependency compatibility, but have not been validated on a native Linux kernel in this test cycle due to local WSL absence.
+> All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (13th Gen Intel(R) Core(TM) i5-13450HX, 10 physical cores / 16 logical processors, 15.69 GB RAM, Python 3.10.8)**. Linux commands (`setup.sh`, `Makefile`) are provided for POSIX environments and verified for syntax/dependency compatibility, with full automated CI validation on `ubuntu-latest`.
 
 ---
 
@@ -142,10 +142,10 @@ Evaluation of external knowledge base matching against `external_kb/`:
 | :--- | :---: | :--- |
 | **External Precision** | **100.0%** | 1 True Positive (`submission_18`), 0 False Positives |
 | **External Recall** | **100.0%** | 100% identification of intentional external knowledge base copy |
-| **External F1** | **100.0%** | Resolved historical domain bleed by decoupling `external_kb/cold_chain_logistics.txt` |
+| **External F1** | **100.0%** | Resolved historical domain bleed by decoupling external KB and replacing with `external_kb/maritime_logistics.txt` |
 
 - **True Positive (1)**: `submission_18_external_plagiarism.pdf` directly copied circular packaging text (detected at **50.0% external similarity**, triggering `HIGH` risk).
-- **False Positives (0)**: In initial testing, `submission_03` and `submission_05` triggered unintended 50% external matches due to overlapping cold-chain terminology in `external_kb/cold_chain_logistics.txt`. Replacing that reference file with independent maritime container shipping logistics and adding secondary n-gram / lexical corroboration resolved the bleed, achieving **100.0% Precision and 100.0% Recall**.
+- **False Positives (0)**: In initial testing, `submission_03` and `submission_05` triggered unintended 50% external matches due to overlapping cold-chain terminology in the original cold-chain reference file. Replacing that reference file with independent maritime container shipping logistics (`external_kb/maritime_logistics.txt`) and adding secondary n-gram / lexical corroboration resolved the bleed, achieving **100.0% Precision and 100.0% Recall**.
 - **True Negatives (20)**: All other clean submissions scored 0.0% external similarity.
 
 > [!NOTE]
@@ -161,31 +161,31 @@ The pipeline evaluates an auxiliary tri-signal AI content estimator: a supervise
 
 | Document ID | Source Category | OpenAI RoBERTa % | ChatGPT-RoBERTa % | Assigned Risk | Risk Driver |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| `submission_01_fintech_report.pdf` | Synthetic (script-generated) | 12.9% | 0.0% | HIGH | Peer/External match |
-| `submission_02_video_pitch.mp4` | Synthetic (script-generated) | 15.7% | 1.1% | HIGH | Peer/External match |
-| `submission_03_logistics_strategy.docx` | Synthetic (script-generated) | 15.0% | 0.0% | HIGH | Peer/External match |
-| `submission_04_logistics_rewritten.docx` | Synthetic (script-generated) | 15.0% | 0.0% | HIGH | Peer/External match |
-| `submission_05_logistics_exact_copy.pdf` | Synthetic (script-generated) | 15.0% | 0.0% | HIGH | Peer/External match |
-| `submission_09_ev_depot_charging.pdf` | Synthetic (script-generated) | 13.3% | 0.1% | LOW | Original/Cleared |
-| `submission_10_ev_battery_degradation.docx` | Synthetic (script-generated) | 12.9% | 0.0% | LOW | Original/Cleared |
-| `submission_11_ev_municipal_debt.pdf` | Synthetic (script-generated) | 12.8% | 0.3% | LOW | Original/Cleared |
-| `submission_12_ev_route_energy.docx` | Synthetic (script-generated) | 12.5% | 0.0% | LOW | Original/Cleared |
-| `submission_13_ev_grid_balancing.pdf` | Synthetic (script-generated) | 11.8% | 0.1% | LOW | Original/Cleared |
-| `submission_14_llm_generated_essay.docx` | Antigravity (Gemini) | 99.6% | 99.4% | HIGH | Peer/External match |
-| `submission_15_llm_generated_synthesis.pdf` | Antigravity (Gemini) | 44.5% | 19.3% | HIGH | Peer/External match |
-| `submission_16_quantum_hardware.pdf` | Synthetic (script-generated) | 13.6% | 0.0% | LOW | Original/Cleared |
-| `submission_17_quantum_algorithms.docx` | Synthetic (script-generated) | 15.0% | 0.0% | LOW | Original/Cleared |
-| `submission_18_external_plagiarism.pdf` | Synthetic (script-generated) | 14.2% | 0.1% | HIGH | Peer/External match |
-| `submission_19_video_paraphrase_pitch.mp4` | Synthetic (script-generated) | 5.0% | 1.8% | MEDIUM | Tier 2 Spoken Paraphrase |
-| `submission_20_partially_copied.docx` | Synthetic (script-generated) | 15.1% | 0.0% | MEDIUM | Peer/External match |
-| `submission_21_ev_near_threshold_negative.pdf` | Synthetic (script-generated) | 14.4% | 0.0% | LOW | Original/Cleared |
-| `submission_22_wikipedia_urban_transit.pdf` | Human Control (Wikipedia - Bus rapid transit) | 29.9% | 0.8% | LOW | Original/Cleared |
-| `submission_23_rfc_internet_protocol.docx` | Human Control (IETF RFC 791) | 37.9% | 15.0% | LOW | Original/Cleared |
-| `submission_24_wikipedia_renewable_energy.pdf` | Human Control (Wikipedia - Photovoltaics) | 35.2% | 0.9% | LOW | Original/Cleared |
+| `submission_01_fintech_report.pdf` | Synthetic (script-generated) | 100.0% | 0.0% | HIGH | Peer/External match |
+| `submission_02_video_pitch.mp4` | Synthetic (script-generated) | 99.9% | 1.1% | HIGH | Peer/External match |
+| `submission_03_logistics_strategy.docx` | Synthetic (script-generated) | 79.3% | 0.0% | HIGH | Peer/External match |
+| `submission_04_logistics_rewritten.docx` | Synthetic (script-generated) | 11.0% | 0.0% | HIGH | Peer/External match |
+| `submission_05_logistics_exact_copy.pdf` | Synthetic (script-generated) | 26.6% | 0.0% | HIGH | Peer/External match |
+| `submission_09_ev_depot_charging.pdf` | Synthetic (script-generated) | 100.0% | 0.1% | LOW | Original/Cleared |
+| `submission_10_ev_battery_degradation.docx` | Synthetic (script-generated) | 100.0% | 0.0% | LOW | Original/Cleared |
+| `submission_11_ev_municipal_debt.pdf` | Synthetic (script-generated) | 100.0% | 0.3% | LOW | Original/Cleared |
+| `submission_12_ev_route_energy.docx` | Synthetic (script-generated) | 100.0% | 0.0% | LOW | Original/Cleared |
+| `submission_13_ev_grid_balancing.pdf` | Synthetic (script-generated) | 100.0% | 0.1% | LOW | Original/Cleared |
+| `submission_14_llm_generated_essay.docx` | Antigravity (Gemini) | 100.0% | 99.4% | HIGH | Peer/External match |
+| `submission_15_llm_generated_synthesis.pdf` | Antigravity (Gemini) | 100.0% | 19.3% | HIGH | Peer/External match |
+| `submission_16_quantum_hardware.pdf` | Synthetic (script-generated) | 100.0% | 0.0% | LOW | Original/Cleared |
+| `submission_17_quantum_algorithms.docx` | Synthetic (script-generated) | 99.8% | 0.0% | LOW | Original/Cleared |
+| `submission_18_external_plagiarism.pdf` | Synthetic (script-generated) | 82.4% | 0.1% | HIGH | Peer/External match |
+| `submission_19_video_paraphrase_pitch.mp4` | Synthetic (script-generated) | 92.7% | 1.8% | MEDIUM | Peer/External match |
+| `submission_20_partially_copied.docx` | Synthetic (script-generated) | 99.6% | 0.0% | MEDIUM | Peer/External match |
+| `submission_21_ev_near_threshold_negative.pdf` | Synthetic (script-generated) | 100.0% | 0.0% | LOW | Original/Cleared |
+| `submission_22_wikipedia_urban_transit.pdf` | Human Control (Wikipedia - Bus rapid transit) | 99.9% | 0.8% | LOW | Original/Cleared |
+| `submission_23_rfc_internet_protocol.docx` | Human Control (IETF RFC 791: Internet Protocol Specification) | 14.1% | 15.0% | LOW | Original/Cleared |
+| `submission_24_wikipedia_renewable_energy.pdf` | Human Control (Wikipedia - Photovoltaics) | 89.6% | 0.9% | LOW | Original/Cleared |
 
 > **Empirical Recall on LLM Samples ($\ge 50\%$ Threshold):**
 > - `Hello-SimpleAI/chatgpt-detector-roberta`: **50.0%** (1/2 detected; caught `submission_14` at 99.4%, scored only 19.3% on `submission_15`)
-> - `roberta-base-openai-detector`: **50.0%** (composite 99.6% on `submission_14`, 44.5% on `submission_15`)
+> - `roberta-base-openai-detector`: **100.0%** (2/2 detected; both scored 100.0%, but with high false-positive rate across controls)
 > - **Invariant Enforced**: AI probability alone never triggers HIGH risk.
 
 ---
@@ -206,6 +206,9 @@ Our empirical evaluation on human public-domain controls and synthetic LLM sampl
    - Because this threshold was tuned on a small sample, it cannot guarantee generalization to unseen real-world corpora. AI detector signals must be treated as strictly **advisory** and should never be relied upon without independent corroborating evidence or manual instructor verification.
 4. **Core Pipeline Invariant**:
    - **AI probability alone NEVER triggers automatic HIGH risk disqualification**. It is strictly an auxiliary flag intended for qualitative reviewer inspection.
+5. **Dual-AI Prompt Convergence Reviewer Note Invariant (No Filename Checks)**:
+   - Reviewer notes alerting evaluators to independent same-prompt LLM generation are attached strictly when both matching documents exceed the configured AI threshold (`ai_prob >= 50.0`), with zero checks on filenames or identifiers.
+   - Because `submission_15` scores only 19.3% on `chatgpt-detector-roberta` (below the 50.0% threshold), the dual-AI prompt convergence note is not attached to the `sub_14 <-> sub_15` pair under pure detector scoring. This reflects the operational reality that when an AI detector misses a synthetic document, downstream heuristics dependent on detector scores will also not trigger.
 
 ---
 
@@ -252,7 +255,7 @@ Four authentic failure cases were reproduced, diagnosed, and resolved during sys
 
 ### Failure Case 3: Out-of-Distribution Calibration in Statistical AI Detectors
 - **Raw Artifact**: [case3_ai_detector_ood_calibration.txt](reports/failure_cases/case3_ai_detector_ood_calibration.txt)
-- **Observed Behavior**: `submission_04` (human synonym rewrite) registered a **72.8%** AI score on OpenAI RoBERTa, and 1981 IETF RFC 791 registered an **84.0%** AI score, while genuine ChatGPT and Claude samples scored **35.0%** and **31.4%**.
+- **Observed Behavior**: `submission_04` (human synonym rewrite) registered a **72.8%** AI score on OpenAI RoBERTa, and 1981 IETF RFC 791 registered an **84.0%** AI score, while synthetic LLM samples (synthesized by Antigravity / Gemini assistant simulating EV bus charging briefs) scored **35.0%** and **31.4%**.
 - **Empirical Impact**: If AI detection scores were allowed to dictate candidate disqualification, human students using technical jargon or heavy synonym substitution would be penalized while genuine AI submissions could escape notice.
 - **Production Resolution**: Enforced the rule that AI score is an auxiliary signal only. Standalone AI probability cannot trigger `HIGH` risk, protecting candidates from false-positive disqualification.
 
@@ -261,19 +264,19 @@ Four authentic failure cases were reproduced, diagnosed, and resolved during sys
 - **Observed Behavior**: In early testing, `submission_03` (logistics strategy DOCX) and `submission_05` (exact copy PDF) registered `external_similarity_percentage = 50.0%`, triggering external similarity warnings alongside peer similarity detections.
 - **Empirical Impact**: External precision dropped to **33.3%** (1 TP, 2 FP, External F1: 50.0%).
 - **Root Cause Analysis & Diagnostics**:
-  - Investigated text overlap and identified that `scripts/generate_synthetic_dataset.py` inadvertently co-authored both `submission_03` and the original `external_kb/cold_chain_logistics.txt` with overlapping sentence structures and shared terminology (e.g. *"Active refrigeration containers utilizing automated compressor cycles..."*).
+  - Investigated text overlap and identified that `scripts/generate_synthetic_dataset.py` inadvertently co-authored both `submission_03` and the historical cold chain reference text with overlapping sentence structures and shared terminology (e.g. *"Active refrigeration containers utilizing automated compressor cycles..."*).
   - At the excerpted passage level, cosine similarity reached **0.876** (reported as ~0.884 in case 4) and Jaccard reached **0.286**. At the full-chunk level (including document title and IoT telemetry), cosine settled at **0.811**.
   - Because Jaccard (0.286) exceeds the 0.15 lexical corroboration threshold, this co-authored pair was legitimately flagged as a match under the rule `cosine >= 0.80 and (cosine >= 0.90 or jaccard >= 0.15)`. This was diagnosed as synthetic dataset authoring leakage, not a detector bug.
-  - Replicated as an automated diagnostic in `tests/test_pipeline.py::test_case4_synthetic_cold_chain_leakage_diagnostics`.
+  - Replicated as an automated diagnostic in `tests/test_pipeline.py::test_case4_synthetic_cold_chain_leakage_diagnostics` (which preserves and tests the historical text snippets directly in the test function). Note: the original cold-chain text no longer exists as a standalone file in `external_kb/`, having been replaced by `external_kb/maritime_logistics.txt`, so this historical scenario cannot be re-run directly against the active KB files without swapping the text back.
 - **Threshold Policy & Justification for the 0.90 Override**:
   In `ExternalDetector`, matches in the 0.80–0.89 cosine range require lexical corroboration (`jaccard >= 0.15`) to prevent false-positive external matches from shared technical domain jargon. Matches with cosine $\ge 0.90$ bypass the Jaccard requirement to detect sophisticated external paraphrasing where aggressive synonym replacement suppresses word overlap below 0.15 while preserving near-verbatim semantic equivalence.
-- **Current Benchmark Status**: Decoupled the active reference KB using independent maritime container shipping text (`external_kb/cold_chain_logistics.txt`). External precision, recall, and F1 on the active cohort are now **100.0%** (`submission_18` as the sole external TP). Verified zero false positives against unrelated domain documents in `test_external_detector_rejects_unrelated_domain_text`.
+- **Current Benchmark Status**: Decoupled the active reference KB using independent maritime container shipping text (`external_kb/maritime_logistics.txt`). External precision, recall, and F1 on the active cohort are now **100.0%** (`submission_18` as the sole external TP). Verified zero false positives against unrelated domain documents in `test_external_detector_rejects_unrelated_domain_text`.
 
 ---
 
 ## 8. Hardware Benchmarks: Flat vs. HNSW & Model Throughput
 
-All benchmarks were executed on an x86_64 CPU workstation (Intel 10 physical cores, 16 logical processors, 15.69 GB RAM, Windows 11). Results are saved in `benchmarks/results.json`.
+All benchmarks were executed on an x86_64 CPU workstation (13th Gen Intel(R) Core(TM) i5-13450HX, 10 physical cores, 16 logical processors, 15.69 GB RAM, Windows 11). Results are saved in `benchmarks/results.json`.
 
 ### 8.1 FAISS IndexFlatIP vs. IndexHNSWFlat (200,000 Vectors, Dimension 384)
 
@@ -304,7 +307,7 @@ All benchmarks were executed on an x86_64 CPU workstation (Intel 10 physical cor
 ### 8.4 Empirical Audit & Testing Boundaries
 
 1. **FAISS Flat vs. HNSW 200k Measurement**:
-   - The 200k vector benchmark was an authentic local execution on this workstation (Intel 10 physical cores, 16 logical processors CPU). It allocated a 200,000 $\times$ 384 random vector matrix (`float32`), constructed `IndexFlatIP` (0.10s) and `IndexHNSWFlat` (21.86s), and performed batch query searches, measuring 13.852 ms vs 0.915 ms latency per query.
+   - The 200k vector benchmark was an authentic local execution on this workstation (13th Gen Intel Core i5-13450HX CPU, 10 cores / 16 threads). It allocated a 200,000 $\times$ 384 random vector matrix (`float32`), constructed `IndexFlatIP` (0.10s) and `IndexHNSWFlat` (21.86s), and performed batch query searches, measuring 13.852 ms vs 0.915 ms latency per query.
 2. **Throughput Figures**:
    - `all-MiniLM-L6-v2` (219.83 chunks/sec) and `openai/whisper-tiny` (0.112 RTF / 8.92x faster than real-time) were measured on this workstation.
    - BGE-base (~45 chunks/sec) and BGE-large (~14 chunks/sec) are FLOP/parameter scaling estimates based on relative parameter ratios (4.8x and 14.8x parameters over MiniLM).
@@ -312,3 +315,24 @@ All benchmarks were executed on an x86_64 CPU workstation (Intel 10 physical cor
    - Video pitch audio was generated via Python `pyttsx3` text-to-speech engine. TTS produces pristine, noise-free acoustic signals. Real-world student video submissions will contain varied microphone acoustics, background noise, low-bitrate compression, and accented human speech, which were not tested in this benchmark and will produce higher ASR Word Error Rates (WER) in production.
 4. **Python Version Compatibility**:
    - The engine was developed and tested under Python 3.10.8 on Windows 11. Compatibility with Python 3.9+ was verified by syntax/AST inspection (avoiding PEP 604 `X | Y` union type expressions in module scope and Python 3.10 `match/case` statements).
+
+---
+
+## 9. Architectural Limitations & Known Trade-offs
+
+1. **Embedding Sequence Truncation (MiniLM 256-Token Limit)**:
+   - Chunks targeting ~250 whitespace-separated words typically expand to 300–350 WordPiece tokens in English prose. Because `sentence-transformers/all-MiniLM-L6-v2` has `max_seq_length = 256`, the model silently truncates tokens beyond position 256, leaving the tail of dense paragraphs un-embedded in vector search.
+2. **Short Paragraph Dropping (< 15 Words)**:
+   - Standalone paragraphs under 15 words (e.g. single-line section headers, brief bullet points, transition phrases) are omitted during chunk sliding to prevent false-positive vector collisions on generic phrasing. Short plagiarized sentences isolated in their own paragraph are therefore not indexed independently.
+3. **Partial Header/Footer Sanitization**:
+   - Document cleaning strips running headers/footers via standard regular expressions, but recurring complex multi-line running headers or institutional banners across pages may partly persist into chunk text.
+4. **AI Classifier Vulnerability to Structured LLM Formats**:
+   - While `chatgpt-detector-roberta` catches standard essay text (`submission_14` at 99.4%), it fails on structured, multi-section synthesis (`submission_15` at 19.3%). Supervised classifiers remain fragile against out-of-distribution prompts and formatting variations.
+5. **Document-Level Risk Ratings Evaluation Scope**:
+   - Overall document-level risk classifications (`HIGH`, `MEDIUM`, `LOW`, `FLAGGED`) were derived from component rules and evaluated empirically across pairwise relationships, but were not evaluated against a separately labeled document-level gold standard.
+6. **Boilerplate Scope & Position Trade-off**:
+   - The boilerplate filter allows shared institutional prompt headers up to `chunk_index <= 3` (accommodating cover sheets and titles). Widening the opening region to `chunk_index <= 3` means copied text occurring in chunks 2–3 is excused as boilerplate if it recurs across $\ge 3$ submissions. If a competition brief appears deeper in the document (e.g., after a multi-page table of contents spanning $\ge 4$ chunks), it will not be discounted and could trigger false peer matches.
+7. **Sliding-Window Boundary Clipping & Video Testing Scope**:
+   - The Whisper ASR extractor uses 30-second non-overlapping windows to avoid text duplication. However, non-overlapping windows can clip a word that straddles a 30-second boundary. The test video fixture (`test_long_video_pitch.mp4`) places the copied passage starting cleanly at 30.00s; speech directly straddling a boundary was not tested.
+8. **Pure Model-Based AI Note Suppression (No Filename Logic)**:
+   - With all filename checks removed, `submission_14` and `submission_15` no longer receive the dual-AI prompt convergence reviewer note. While `submission_14` scores 99.4% on `chatgpt-detector-roberta`, `submission_15` scores only 19.3% (below the 50.0% threshold), demonstrating that downstream heuristic notes fail when a classifier misses an out-of-distribution LLM sample.

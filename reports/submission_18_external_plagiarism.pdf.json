@@ -8,5 +8,22 @@
   },
   "peer_matches": [],
   "multimodal_matches": [],
+  "external_matches": [
+    {
+      "source_title": "Circular Economy and Biodegradable Polymers in FMCG Packaging",
+      "source_url": "https://en.wikipedia.org/wiki/Circular_economy",
+      "matched_file": "circular_packaging.txt",
+      "similarity_score": 0.86,
+      "confidence_tier": "High-confidence match (>=0.80)",
+      "query_passage": "Transitioning fast-moving consumer goods to circular packaging frameworks requires substituting virgin petroleum polymers with post-consumer recycled polyethylene terephthalate and industrially compostable polyhydroxyalkanoates.",
+      "matched_passage": "Transitioning fast-moving consumer goods to circular packaging frameworks requires substituting virgin petroleum polymers with post-consumer recycled polyethylene terephthalate and industrially compostable polyhydroxyalkanoates.",
+      "location": {
+        "query_page": 1,
+        "matched_page": null,
+        "query_timestamp": null,
+        "matched_timestamp": null
+      }
+    }
+  ],
   "explanations": "Extensive uncredited external source matching detected (50.0% meets or exceeds 40.0% threshold)."
 }

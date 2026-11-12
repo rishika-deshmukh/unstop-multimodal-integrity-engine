@@ -1,10 +1,10 @@
 """
 Model Downloader & Cache Warm-Up Script
-Pre-fetches and caches all required open-source models:
+Pre-fetches and caches all required open-source models configured in config.yaml:
 1. SentenceTransformers: all-MiniLM-L6-v2 (for dense vector embedding)
-2. OpenAI Whisper: tiny / base (for audio ASR)
+2. Hugging Face Whisper: openai/whisper-tiny (for audio ASR)
 3. GPT-2: for perplexity & burstiness statistical computation
-4. RoBERTa AI Detector: for supervised AI-generated text classification
+4. RoBERTa AI Detector: Hello-SimpleAI/chatgpt-detector-roberta (for supervised AI classification)
 """
 
 import sys
@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("model_downloader")
 
 def warm_up():
-    logger.info("Initializing model pre-caching...")
+    logger.info("Initializing model pre-caching matching config.yaml...")
 
     # 1. Sentence-Transformers
     try:
@@ -26,11 +26,12 @@ def warm_up():
     except Exception as e:
         logger.error(f"Failed to cache SentenceTransformer: {e}")
 
-    # 2. Whisper (Transformers pipeline using openai/whisper-tiny)
+    # 2. Whisper ASR (Hugging Face Transformers)
     try:
-        from transformers import pipeline
-        logger.info("Downloading Whisper 'openai/whisper-tiny'...")
-        _ = pipeline("automatic-speech-recognition", model="openai/whisper-tiny", chunk_length_s=30)
+        from transformers import WhisperProcessor, WhisperForConditionalGeneration
+        logger.info("Downloading Hugging Face Whisper 'openai/whisper-tiny'...")
+        _ = WhisperProcessor.from_pretrained("openai/whisper-tiny")
+        _ = WhisperForConditionalGeneration.from_pretrained("openai/whisper-tiny")
         logger.info("Whisper 'openai/whisper-tiny' cached successfully.")
     except Exception as e:
         logger.error(f"Failed to cache Whisper: {e}")
@@ -45,27 +46,16 @@ def warm_up():
     except Exception as e:
         logger.error(f"Failed to cache GPT-2: {e}")
 
-    # 4. RoBERTa AI Detector (Primary model from config.yaml: Hello-SimpleAI/chatgpt-detector-roberta)
+    # 4. RoBERTa AI Detector (Hello-SimpleAI/chatgpt-detector-roberta)
     try:
         from transformers import AutoTokenizer, AutoModelForSequenceClassification
+        logger.info("Downloading AI detector 'Hello-SimpleAI/chatgpt-detector-roberta'...")
         model_name = "Hello-SimpleAI/chatgpt-detector-roberta"
-        logger.info(f"Downloading primary AI detector ('{model_name}')...")
         _ = AutoTokenizer.from_pretrained(model_name)
         _ = AutoModelForSequenceClassification.from_pretrained(model_name)
-        logger.info(f"Primary AI detector '{model_name}' cached successfully.")
+        logger.info("AI detector 'Hello-SimpleAI/chatgpt-detector-roberta' cached successfully.")
     except Exception as e:
-        logger.error(f"Failed to cache primary AI detector: {e}")
-
-    # Optional benchmark detector (roberta-base-openai-detector)
-    try:
-        from transformers import AutoTokenizer, AutoModelForSequenceClassification
-        bm_name = "roberta-base-openai-detector"
-        logger.info(f"Downloading benchmark AI detector ('{bm_name}')...")
-        _ = AutoTokenizer.from_pretrained(bm_name)
-        _ = AutoModelForSequenceClassification.from_pretrained(bm_name)
-        logger.info(f"Benchmark AI detector '{bm_name}' cached successfully.")
-    except Exception as e:
-        logger.warning(f"Could not cache secondary benchmark detector: {e}")
+        logger.error(f"Failed to cache AI detector: {e}")
 
     logger.info("Model download and cache warm-up process complete.")
 

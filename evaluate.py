@@ -233,10 +233,14 @@ def run_evaluation(
     import torch
     from src.extractors.dispatcher import DocumentParser
 
-    logger.info("Evaluating Hello-SimpleAI/chatgpt-detector-roberta across submissions...")
+    logger.info("Evaluating AI classifiers across submissions...")
     chatgpt_tok = AutoTokenizer.from_pretrained("Hello-SimpleAI/chatgpt-detector-roberta")
     chatgpt_mod = AutoModelForSequenceClassification.from_pretrained("Hello-SimpleAI/chatgpt-detector-roberta")
     chatgpt_mod.eval()
+
+    openai_tok = AutoTokenizer.from_pretrained("roberta-base-openai-detector")
+    openai_mod = AutoModelForSequenceClassification.from_pretrained("roberta-base-openai-detector")
+    openai_mod.eval()
     parser = DocumentParser()
 
     ai_benchmark_rows = []
@@ -247,13 +251,11 @@ def run_evaluation(
             continue
 
         rep_file = reports_p / f"{doc_id}.json"
-        roberta_openai_score = 0.0
         assigned_risk = "LOW"
 
         if rep_file.exists():
             with open(rep_file, "r", encoding="utf-8") as rf:
                 rep = json.load(rf)
-                roberta_openai_score = rep.get("scores", {}).get("ai_generated_probability", 0.0)
                 assigned_risk = rep.get("total_integrity_risk", "LOW")
 
         doc_meta = manifest.get("documents", {}).get(doc_id, {})
@@ -279,11 +281,17 @@ def run_evaluation(
             logits = chatgpt_mod(**inputs).logits
             chatgpt_roberta_prob = torch.softmax(logits, dim=-1)[0, 1].item() * 100.0
 
+        # Run roberta-base-openai-detector
+        inputs_openai = openai_tok(sample_text, return_tensors="pt", truncation=True, max_length=512)
+        with torch.no_grad():
+            logits_openai = openai_mod(**inputs_openai).logits
+            openai_roberta_prob = torch.softmax(logits_openai, dim=-1)[0, 1].item() * 100.0
+
         ai_benchmark_rows.append({
             "doc_id": doc_id,
             "category": category,
             "is_llm": is_llm,
-            "openai_roberta": roberta_openai_score,
+            "openai_roberta": round(openai_roberta_prob, 1),
             "chatgpt_roberta": round(chatgpt_roberta_prob, 1),
             "assigned_risk": assigned_risk,
             "risk_driver": "Peer/External match" if assigned_risk in ("HIGH", "MEDIUM") else "Original/Cleared"

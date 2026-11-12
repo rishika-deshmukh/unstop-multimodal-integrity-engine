@@ -18,11 +18,13 @@ class BoilerplateFilter:
         self,
         min_doc_frequency: int = 3,
         similarity_threshold: float = 0.88,
-        short_chunk_word_limit: int = 15
+        short_chunk_word_limit: int = 15,
+        max_header_chunk_index: int = 3
     ):
         self.min_doc_frequency = min_doc_frequency
         self.similarity_threshold = similarity_threshold
         self.short_chunk_word_limit = short_chunk_word_limit
+        self.max_header_chunk_index = max_header_chunk_index
         self.discounted_records: List[Dict[str, any]] = []
 
     def identify_and_filter(
@@ -60,17 +62,17 @@ class BoilerplateFilter:
                 for i in range(n):
                     if chunks[i].is_boilerplate:
                         continue
-                    # Institutional prompt headers appear within opening document header positions (chunk_index in (0, 1)).
-                    # Substantive body paragraphs (chunk_index >= 2) shared among students represent
+                    # Institutional prompt headers appear within opening document header positions (chunk_index <= max_header_chunk_index).
+                    # Substantive body paragraphs later in the document shared among students represent
                     # peer collusion and must NEVER be excused as boilerplate, regardless of cohort prevalence.
-                    if chunks[i].chunk_index not in (0, 1):
+                    if chunks[i].chunk_index > self.max_header_chunk_index:
                         continue
 
-                    # Find other documents whose opening header (chunk_index in (0, 1)) matches
+                    # Find other documents whose opening header (chunk_index <= max_header_chunk_index) matches
                     matching_opening_docs: Set[str] = {chunks[i].doc_id}
                     matching_indices = []
                     for j in range(n):
-                        if i != j and chunks[j].chunk_index in (0, 1) and sim_matrix[i, j] >= self.similarity_threshold:
+                        if i != j and chunks[j].chunk_index <= self.max_header_chunk_index and sim_matrix[i, j] >= self.similarity_threshold:
                             matching_opening_docs.add(chunks[j].doc_id)
                             matching_indices.append(j)
 
@@ -97,13 +99,13 @@ class BoilerplateFilter:
                 for i in range(n):
                     if chunks[i].is_boilerplate:
                         continue
-                    if chunks[i].chunk_index not in (0, 1):
+                    if chunks[i].chunk_index > self.max_header_chunk_index:
                         continue
 
                     matching_opening_docs = {chunks[i].doc_id}
                     matching_indices = []
                     for j in range(n):
-                        if i != j and chunks[j].chunk_index in (0, 1):
+                        if i != j and chunks[j].chunk_index <= self.max_header_chunk_index:
                             if chunks[i].doc_id != chunks[j].doc_id:
                                 if compute_jaccard_similarity(chunks[i].text, chunks[j].text) >= 0.70:
                                     matching_opening_docs.add(chunks[j].doc_id)

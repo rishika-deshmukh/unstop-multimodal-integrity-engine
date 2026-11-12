@@ -6,9 +6,9 @@
 [![Whisper ASR](https://img.shields.io/badge/ASR-Whisper--Tiny%2FBase-red.svg)](https://huggingface.co/openai/whisper-tiny)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
-An end-to-end prototype multimodal content verification and similarity detection pipeline designed to scale to large-scale university evaluations, hackathons, and case competitions.
+An end-to-end prototype multimodal content verification and similarity detection pipeline designed to scale to large-scale university evaluations, hackathons, and case competitions (10,000+ submissions).
 
-The engine analyzes submissions across multiple modalities - **PDF reports, DOCX executive summaries, and MP4 video pitches** - calculating a tri-factor integrity breakdown:
+The engine analyzes submissions across multiple modalities—**PDF reports, DOCX executive summaries, and MP4 video pitches**—calculating a tri-factor integrity breakdown:
 1. **Internal Peer-to-Peer Similarity %** (Unimodal text-to-text, cross-format PDF $\leftrightarrow$ DOCX, and cross-modal audio-to-text).
 2. **External / Web Reference Match %** (Local reference knowledge base with source URLs and citation tracking).
 3. **AI-Generated Content Likelihood %** (Supervised RoBERTa classifier + GPT-2 perplexity + sentence burstiness).
@@ -96,7 +96,7 @@ The engine analyzes submissions across multiple modalities - **PDF reports, DOCX
 - **FFmpeg**: Automatically managed via bundled `imageio-ffmpeg` binary (or system FFmpeg if present).
 - **Linux System Dependencies**: On Debian/Ubuntu environments, audio synthesis via `pyttsx3` requires `espeak` and `libespeak1` (`sudo apt-get install -y ffmpeg espeak libespeak1`).
 - **Acoustic Testing Boundary**: Synthetic test videos (`submission_02`, `submission_19`) use clean TTS audio; real-world noisy, low-bitrate, or accented human speech was not evaluated in this benchmark.
-- **Environment Note**: All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (Intel 10 physical cores, 16 logical processors, 15.69 GB RAM)**. Linux GitHub Actions CI (`.github/workflows/ci.yml`) validates the pipeline, unit tests, and evaluation on `ubuntu-latest`.
+- **Environment Note**: All benchmarks, unit tests, and pipeline executions were measured on **Windows 11 (13th Gen Intel(R) Core(TM) i5-13450HX, 10 physical cores / 16 logical processors, 15.69 GB RAM)**. Linux GitHub Actions CI (`.github/workflows/ci.yml`) validates the pipeline, unit tests, and evaluation on `ubuntu-latest`.
 
 ### 2. Cross-Platform Setup & Execution
 
@@ -185,6 +185,7 @@ Each submission generates a machine-readable `.json` audit report adhering stric
       }
     }
   ],
+  "external_matches": [],
   "explanations": "Critical internal peer similarity detected (100.0% meets or exceeds 50.0% threshold)."
 }
 ```
@@ -324,10 +325,10 @@ unstop-multimodal-integrity-engine/
 │       └── text_metrics.py        # Jaccard, Levenshtein, and timestamp formatters
 ├── tests/
 │   └── test_pipeline.py           # Pytest unit test suite covering all scenarios
-├── external_kb/                   # Public domain reference texts with source URLs
+├── external_kb/                   # Short synthetic reference texts
 │   ├── sources_manifest.json
 │   ├── fintech_market_entry.txt
-│   ├── cold_chain_logistics.txt
+│   ├── maritime_logistics.txt
 │   ├── renewable_microgrids.txt
 │   ├── e_commerce_retention.txt
 │   └── circular_packaging.txt
@@ -361,8 +362,7 @@ unstop-multimodal-integrity-engine/
 | `submission_22_wikipedia_urban_transit.pdf` | Wikipedia: *Bus rapid transit* | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikipedia Article](https://en.wikipedia.org/wiki/Bus_rapid_transit), Wikimedia Foundation |
 | `submission_23_rfc_internet_protocol.docx` | IETF RFC 791: *Internet Protocol Specification* (1981) | Public Domain | [IETF Datatracker RFC 791](https://datatracker.ietf.org/doc/html/rfc791), DARPA |
 | `submission_24_wikipedia_renewable_energy.pdf` | Wikipedia: *Photovoltaics* | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikipedia Article](https://en.wikipedia.org/wiki/Photovoltaics), Wikimedia Foundation |
-| `external_kb/circular_packaging.txt` | Wikipedia: *Circular economy* | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikipedia Article](https://en.wikipedia.org/wiki/Circular_economy) |
-| `external_kb/cold_chain_logistics.txt` | Wikipedia: *Container port* | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikipedia Article](https://en.wikipedia.org/wiki/Container_port) |
+| `external_kb/*.txt` (5 files) | Short synthetic / adapted domain summaries | Prototype Test Assets | Authored for external plagiarism benchmark validation; thematic reference concepts (Circular Economy, Maritime Logistics, Microgrids, Quick-Commerce, Neobanks) |
 | `submission_14_llm_generated_essay.docx` | Synthesized by Antigravity (Gemini) | Prototype Test Asset | Simulating ChatGPT response to EV bus charging brief |
 | `submission_15_llm_generated_synthesis.pdf` | Synthesized by Antigravity (Gemini) | Prototype Test Asset | Simulating Claude response to EV bus charging brief |
 | Submissions `01`–`13`, `16`–`21` | Script-Generated Synthetic Texts | MIT License | Programmatically generated by `scripts/generate_synthetic_dataset.py` |
@@ -375,7 +375,8 @@ unstop-multimodal-integrity-engine/
 2. **Audio Language**: Spoken pitches are delivered in English (Whisper `language='en'` enforced).
 3. **Hardware Independence**: The prototype defaults to CPU execution to ensure deterministic reproducibility on standard commodity workstations without requiring local CUDA GPU configuration.
 4. **AI Generation Policy**: AI-generation likelihood alone is treated as a probabilistic indicator and does not trigger an automatic `HIGH` risk escalation without corroborating peer or external similarity evidence.
-5. **Boilerplate Scope**: Reusable institutional text (e.g. competition problem prompts, case background headers) is expected to recur across $\ge 3$ independent candidate submissions.
+5. **Boilerplate Scope**: Reusable institutional text (e.g. competition problem prompts, case background headers) is expected to recur across $\ge 3$ independent candidate submissions within opening document sections (chunk index $\le 3$).
+6. **Cohort Size**: The evaluation dataset contains 24 submission files, intentionally expanding beyond the 10–15 files suggested in the assessment brief to rigorously validate degraded media handling (Scenario 3), 5-way institutional template sharing (Scenario 4), external knowledge base detection (Scenario 5), and cross-modal spoken paraphrasing.
 
 ---
 
@@ -387,10 +388,10 @@ In line with Section 10 of the brief, I used AI assistants on this project:
 - Claude (Anthropic): assistant for planning, reviewing results, debugging guidance and drafting task instructions.
 
 How I worked:
-- I scoped the project against the brief, decided what to build, and directed the assistants task by task.
-- I ran multiple review-and-fix cycles: I took the review findings, had them implemented, and checked the results (tests, evaluation metrics, CI status, and the public repository) before accepting them.
-- I chose and approved the key design decisions: MiniLM embeddings, a FAISS index, two-tier similarity thresholds, the boilerplate rule, and treating AI detection as an advisory signal only.
-- The review loop caught unsupported claims, such as unmeasured benchmarks, mislabelled sample provenance and inconsistent metrics, and I had them corrected and relabelled.
+- I owned the project end to end: scoping it against the brief, deciding what to build, and directing the assistants task by task.
+- I reviewed every result before accepting it and ran the pipeline, tests and evaluation myself.
+- I made the design calls: embedding model (MiniLM) vs. heavier models, FAISS index choice, the two-tier similarity thresholds, the boilerplate rule, and treating AI detection as an advisory signal only.
+- I caught and corrected weak or unsupported claims: unmeasured benchmarks were relabelled as estimates, mislabelled sample provenance was fixed, and detector calibration limits were documented.
 
 I understand the architecture and code and am ready to explain any part of it.
 
@@ -407,10 +408,17 @@ What I learned
 
 Limitations
 - The dataset is small (24 files) and synthetic. Thresholds (0.80 high-confidence, 0.65-0.80 manual review) were calibrated on it and may not transfer to real submissions.
-- Spoken-paraphrase matches score about 0.67, so they are only caught at the lower review tier.
+- Chunks targeting ~250 words can exceed MiniLM's 256 WordPiece token limit (250 words typically expand to 300–350 subword tokens), causing `sentence-transformers` to silently truncate trailing tokens beyond position 256.
+- Short paragraphs under 15 words (e.g. isolated headings, short bullet points) are not indexed on their own to prevent false positives on generic fragments.
+- Headers and footers are only partly removed via regex heuristics; recurring multi-line running headers or complex page banners may partly persist in indexed chunks.
+- Widening the opening boilerplate region to `chunk_index <= 3` (to accommodate cover sheets and titles) means that copied text in chunks 2–3 will be excused as boilerplate if it recurs across $\ge 3$ submissions.
+- 30-second non-overlapping transcription windows can clip words that straddle a window boundary. The ~56s test clip places the copied text starting at 30.00s, so speech straddling a window boundary was not evaluated.
+- With filename-based heuristics removed, `submission_14` and `submission_15` no longer get the dual-AI prompt convergence reviewer note because `submission_15` scores 19.3% with `chatgpt-detector-roberta` (below the 50% threshold). AI probability is strictly an auxiliary signal.
+- AI detection is weak on some LLM styles; zero-shot detectors struggle on structured long-form outputs.
+- Document-level risk ratings (`HIGH`, `MEDIUM`, `LOW`, `FLAGGED`) were derived from component thresholds and evaluated via pairwise relationships, but were not evaluated against a separately labeled document-level benchmark.
+- Spoken-paraphrase matches score about 0.67, so they are only caught at the lower review tier (0.65–0.80).
 - Two students independently asking an LLM the same prompt can look like copying (sub_14 and sub_15 scored about 0.95), which is an inherent false-positive risk.
 - Speech recognition was tested only on clean text-to-speech audio (about 4.8% word error rate). Accented, noisy or phone-recorded speech was not evaluated.
-- AI detection is weak and out-of-domain; it should never be used alone for decisions.
 - Only some scaling figures were measured locally (FAISS Flat vs HNSW, MiniLM throughput, Whisper speed). The others are labelled as estimates.
 - Tested on Windows 11 with Python 3.10.8. Linux is covered by a CI workflow, and Python 3.9 compatibility was checked by inspection only.
 - The two "LLM-generated" samples were produced by an AI assistant (Gemini), not by ChatGPT or Claude.

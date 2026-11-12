@@ -26,5 +26,6 @@
       }
     }
   ],
+  "external_matches": [],
   "explanations": "Possible paraphrase detected: Tier 2 similarity (0.67 in 0.65-0.80 range); manual review recommended before concluding integrity violation."
 }

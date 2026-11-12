@@ -145,6 +145,15 @@ def run_pipeline(input_dir: str, output_dir: str, config_path: str = "config.yam
     reports_map: Dict[str, Dict[str, Any]] = {}
     doc_ids = [f.name for f in candidate_files]
 
+    # Precompute AI detection scores strictly using detector models (no filename heuristics)
+    ai_threshold = config.get("risk_thresholds", {}).get("medium", {}).get("ai_min_with_peer", {}).get("ai_min", 50.0)
+    doc_ai_results_map: Dict[str, Dict[str, Any]] = {}
+    for d_id, doc_obj in extracted_docs.items():
+        if doc_obj and doc_obj.is_usable and doc_obj.raw_text:
+            doc_ai_results_map[d_id] = ai_detector.analyze(doc_obj.raw_text)
+        else:
+            doc_ai_results_map[d_id] = {"ai_generated_probability": 0.0}
+
     for doc_id in doc_ids:
         doc = extracted_docs.get(doc_id)
         chunks = doc_chunks_map.get(doc_id, [])
@@ -161,6 +170,7 @@ def run_pipeline(input_dir: str, output_dir: str, config_path: str = "config.yam
                 ai_prob=0.0,
                 peer_matches=[],
                 multimodal_matches=[],
+                external_matches=[],
                 explanations=f"Submission flagged or skipped: {warn_msg}",
                 status=status,
                 warning_message=warn_msg
@@ -201,8 +211,8 @@ def run_pipeline(input_dir: str, output_dir: str, config_path: str = "config.yam
         ext_pct = ext_results["external_similarity_percentage"]
         ext_matches = ext_results["external_matches"]
 
-        # Signal 3: AI-Generation Estimation
-        ai_results = ai_detector.analyze(doc.raw_text)
+        # Signal 3: AI-Generation Estimation (using precomputed detector score)
+        ai_results = doc_ai_results_map.get(doc_id, {"ai_generated_probability": 0.0})
         ai_prob = ai_results["ai_generated_probability"]
 
         # Multi-Signal Risk Classification (Tier 2 matches in 0.65-0.80 range elevate risk to MEDIUM)
@@ -216,6 +226,18 @@ def run_pipeline(input_dir: str, output_dir: str, config_path: str = "config.yam
             max_tier2_sim=max_tier2_sim
         )
 
+        # Check for dual-AI prompt convergence on peer matches strictly by detector score (no filename heuristics)
+        is_current_ai = (ai_prob >= ai_threshold)
+        for m in peer_matches + mm_matches:
+            target_name = m.get("matched_file", "")
+            target_ai_prob = doc_ai_results_map.get(target_name, {}).get("ai_generated_probability", 0.0)
+            is_target_ai = (target_ai_prob >= ai_threshold)
+            if is_current_ai and is_target_ai:
+                dual_ai_note = "Reviewer note: High semantic similarity between AI-generated submissions may stem from independent generation using an identical assignment prompt rather than direct student-to-student copying."
+                m["attribution_note"] = f"{m.get('attribution_note', '')} {dual_ai_note}".strip()
+                if "independent generation" not in explanation_str:
+                    explanation_str += f" | {dual_ai_note}"
+
         # Boilerplate records discounted for this document
         discounted_bp = boilerplate_filter.get_discounted_for_doc(doc_id)
 
@@ -228,6 +250,7 @@ def run_pipeline(input_dir: str, output_dir: str, config_path: str = "config.yam
             ai_prob=ai_prob,
             peer_matches=peer_matches,
             multimodal_matches=mm_matches,
+            external_matches=ext_matches,
             explanations=explanation_str,
             status="SUCCESS"
         )

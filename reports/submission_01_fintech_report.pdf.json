@@ -44,5 +44,6 @@
       }
     }
   ],
+  "external_matches": [],
   "explanations": "Critical internal peer similarity detected (66.7% meets or exceeds 50.0% threshold)."
 }

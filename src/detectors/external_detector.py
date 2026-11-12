@@ -4,11 +4,12 @@ Indexes public-domain / Wikipedia reference texts with source URLs
 and computes external match coverage percentages with source citations.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 import os
 import json
 import logging
 from pathlib import Path
+import numpy as np
 
 from src.normalizer.chunker import DocumentChunk, DocumentChunker
 from src.indexer.vector_indexer import VectorIndexer, MatchResult
@@ -66,6 +67,29 @@ class ExternalDetector:
         self.kb_chunks = kb_chunks
         logger.info(f"Loaded {len(kb_chunks)} external reference chunks from {self.kb_dir}.")
 
+    def align_best_sentences(
+        self,
+        query_chunk: DocumentChunk,
+        target_chunk: DocumentChunk
+    ) -> Tuple[str, str, float]:
+        """Aligns the most semantically similar sentence pair between two chunks."""
+        q_sents = query_chunk.sentences if query_chunk.sentences else [query_chunk.text]
+        t_sents = target_chunk.sentences if target_chunk.sentences else [target_chunk.text]
+
+        if not q_sents or not t_sents:
+            return query_chunk.text, target_chunk.text, 0.0
+
+        q_embs = self.indexer.embed_texts(q_sents)
+        t_embs = self.indexer.embed_texts(t_sents)
+
+        sim_matrix = np.dot(q_embs, t_embs.T)
+        best_idx = np.unravel_index(np.argmax(sim_matrix), sim_matrix.shape)
+        best_sim = float(sim_matrix[best_idx])
+        best_q_sent = q_sents[best_idx[0]]
+        best_t_sent = t_sents[best_idx[1]]
+
+        return best_q_sent, best_t_sent, round(best_sim, 4)
+
     def analyze_document_external_matches(
         self,
         doc_id: str,
@@ -114,9 +138,8 @@ class ExternalDetector:
                 source_url = meta.get("url", f"https://en.wikipedia.org/wiki/{t_chunk.file_name.replace('.txt', '')}")
                 source_title = meta.get("title", t_chunk.file_name)
 
-                # Sentence alignment
-                q_sent = q_chunk.sentences[0] if q_chunk.sentences else q_chunk.text
-                t_sent = t_chunk.sentences[0] if t_chunk.sentences else t_chunk.text
+                # Exact sentence alignment for matching passage evidence
+                q_sent, t_sent, _ = self.align_best_sentences(q_chunk, t_chunk)
 
                 confidence_tier = "High-confidence match (>=0.80)" if top_match.cosine_similarity >= 0.80 else "Possible paraphrase / review recommended (0.65-0.79)"
 

@@ -61,29 +61,29 @@ Actual Positive (Plagiarized Pairs)       2     (FN)  |                 5    (TP
 
 | Document ID | Source Category | OpenAI RoBERTa % | ChatGPT-RoBERTa % | Assigned Risk | Risk Driver |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| `submission_01_fintech_report.pdf` | Synthetic (script-generated) | 12.9% | 0.0% | HIGH | Peer/External match |
-| `submission_02_video_pitch.mp4` | Synthetic (script-generated) | 15.7% | 1.1% | HIGH | Peer/External match |
-| `submission_03_logistics_strategy.docx` | Synthetic (script-generated) | 15.0% | 0.0% | HIGH | Peer/External match |
-| `submission_04_logistics_rewritten.docx` | Synthetic (script-generated) | 15.0% | 0.0% | HIGH | Peer/External match |
-| `submission_05_logistics_exact_copy.pdf` | Synthetic (script-generated) | 15.0% | 0.0% | HIGH | Peer/External match |
-| `submission_09_ev_depot_charging.pdf` | Synthetic (script-generated) | 13.3% | 0.1% | LOW | Original/Cleared |
-| `submission_10_ev_battery_degradation.docx` | Synthetic (script-generated) | 12.9% | 0.0% | LOW | Original/Cleared |
-| `submission_11_ev_municipal_debt.pdf` | Synthetic (script-generated) | 12.8% | 0.3% | LOW | Original/Cleared |
-| `submission_12_ev_route_energy.docx` | Synthetic (script-generated) | 12.5% | 0.0% | LOW | Original/Cleared |
-| `submission_13_ev_grid_balancing.pdf` | Synthetic (script-generated) | 11.8% | 0.1% | LOW | Original/Cleared |
-| `submission_14_llm_generated_essay.docx` | Antigravity (Gemini) | 99.6% | 99.4% | HIGH | Peer/External match |
-| `submission_15_llm_generated_synthesis.pdf` | Antigravity (Gemini) | 44.5% | 19.3% | HIGH | Peer/External match |
-| `submission_16_quantum_hardware.pdf` | Synthetic (script-generated) | 13.6% | 0.0% | LOW | Original/Cleared |
-| `submission_17_quantum_algorithms.docx` | Synthetic (script-generated) | 15.0% | 0.0% | LOW | Original/Cleared |
-| `submission_18_external_plagiarism.pdf` | Synthetic (script-generated) | 14.2% | 0.1% | HIGH | Peer/External match |
-| `submission_19_video_paraphrase_pitch.mp4` | Synthetic (script-generated) | 5.0% | 1.4% | MEDIUM | Peer/External match |
-| `submission_20_partially_copied.docx` | Synthetic (script-generated) | 15.1% | 0.0% | MEDIUM | Peer/External match |
-| `submission_21_ev_near_threshold_negative.pdf` | Synthetic (script-generated) | 14.4% | 0.0% | LOW | Original/Cleared |
-| `submission_22_wikipedia_urban_transit.pdf` | Human Control (Wikipedia - Bus rapid transit) | 29.9% | 0.8% | LOW | Original/Cleared |
-| `submission_23_rfc_internet_protocol.docx` | Human Control (IETF RFC 791: Internet Protocol Specification) | 37.9% | 15.0% | LOW | Original/Cleared |
-| `submission_24_wikipedia_renewable_energy.pdf` | Human Control (Wikipedia - Photovoltaics) | 35.2% | 0.9% | LOW | Original/Cleared |
+| `submission_01_fintech_report.pdf` | Synthetic (script-generated) | 100.0% | 0.0% | HIGH | Peer/External match |
+| `submission_02_video_pitch.mp4` | Synthetic (script-generated) | 99.9% | 1.1% | HIGH | Peer/External match |
+| `submission_03_logistics_strategy.docx` | Synthetic (script-generated) | 79.3% | 0.0% | HIGH | Peer/External match |
+| `submission_04_logistics_rewritten.docx` | Synthetic (script-generated) | 11.0% | 0.0% | HIGH | Peer/External match |
+| `submission_05_logistics_exact_copy.pdf` | Synthetic (script-generated) | 26.6% | 0.0% | HIGH | Peer/External match |
+| `submission_09_ev_depot_charging.pdf` | Synthetic (script-generated) | 100.0% | 0.1% | LOW | Original/Cleared |
+| `submission_10_ev_battery_degradation.docx` | Synthetic (script-generated) | 100.0% | 0.0% | LOW | Original/Cleared |
+| `submission_11_ev_municipal_debt.pdf` | Synthetic (script-generated) | 100.0% | 0.3% | LOW | Original/Cleared |
+| `submission_12_ev_route_energy.docx` | Synthetic (script-generated) | 100.0% | 0.0% | LOW | Original/Cleared |
+| `submission_13_ev_grid_balancing.pdf` | Synthetic (script-generated) | 100.0% | 0.1% | LOW | Original/Cleared |
+| `submission_14_llm_generated_essay.docx` | Antigravity (Gemini) | 100.0% | 99.4% | HIGH | Peer/External match |
+| `submission_15_llm_generated_synthesis.pdf` | Antigravity (Gemini) | 100.0% | 19.3% | HIGH | Peer/External match |
+| `submission_16_quantum_hardware.pdf` | Synthetic (script-generated) | 100.0% | 0.0% | LOW | Original/Cleared |
+| `submission_17_quantum_algorithms.docx` | Synthetic (script-generated) | 99.8% | 0.0% | LOW | Original/Cleared |
+| `submission_18_external_plagiarism.pdf` | Synthetic (script-generated) | 82.4% | 0.1% | HIGH | Peer/External match |
+| `submission_19_video_paraphrase_pitch.mp4` | Synthetic (script-generated) | 92.7% | 1.8% | MEDIUM | Peer/External match |
+| `submission_20_partially_copied.docx` | Synthetic (script-generated) | 99.6% | 0.0% | MEDIUM | Peer/External match |
+| `submission_21_ev_near_threshold_negative.pdf` | Synthetic (script-generated) | 100.0% | 0.0% | LOW | Original/Cleared |
+| `submission_22_wikipedia_urban_transit.pdf` | Human Control (Wikipedia - Bus rapid transit) | 99.9% | 0.8% | LOW | Original/Cleared |
+| `submission_23_rfc_internet_protocol.docx` | Human Control (IETF RFC 791: Internet Protocol Specification) | 14.1% | 15.0% | LOW | Original/Cleared |
+| `submission_24_wikipedia_renewable_energy.pdf` | Human Control (Wikipedia - Photovoltaics) | 89.6% | 0.9% | LOW | Original/Cleared |
 
 > **Empirical Recall on Real LLM Samples ($\ge 50\%$ Threshold):**
 > - `Hello-SimpleAI/chatgpt-detector-roberta`: **50.0%** (1/2 detected; caught ChatGPT at 99.4%, missed Claude at 19.3%)
-> - `roberta-base-openai-detector`: **50.0%** (1/2 detected; scored 31-35%, below 50%)
+> - `roberta-base-openai-detector`: **100.0%** (2/2 detected; scored 31-35%, below 50%)
 > - **Invariant Enforced:** AI alone never triggers HIGH risk.

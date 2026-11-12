@@ -8,6 +8,7 @@
   },
   "peer_matches": [],
   "multimodal_matches": [],
+  "external_matches": [],
   "explanations": "Submission flagged or skipped: Zero-byte empty PDF submission: submission_06_corrupt_empty.pdf",
   "status": "SKIPPED_EMPTY",
   "warning": "Zero-byte empty PDF submission: submission_06_corrupt_empty.pdf"
